@@ -2,11 +2,11 @@
 ;; (C) Copyright IBM Corp. 2016 All Rights Reserved.
 ;;
 
-(defproject kale "1.2.0-SNAPSHOT"
-  :description "The command line administration tool for Enhanced Information Retrieval"
-  :url "https://github.ibm.com/Enhanced-Retrieval-Admin/knowledge-expansion-admin-cli"
+(defproject kale "1.2.0"
+  :description "A command line tool for provisioning and configuring the Retrieve and Rank Service and the Document Conversion Service"
+  :url "https://github.com/IBM-Watson/kale"
   :min-lein-version "2.5.0"
-  :license {:name "IBM"}
+  :license {:name "MIT"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/data.codec "0.1.0"]
                  [cheshire "5.5.0"]
@@ -15,7 +15,6 @@
                  ;; Not a direct dependency.
                  ;; This is here to lock in a specific version.
                  [riddley "0.1.12"]]
-  ;; :pedantic? :abort
   :main ^:skip-aot kale.main
   :target-path "target/%s"
   :prep-tasks [["exec" "solr/package.clj"]
