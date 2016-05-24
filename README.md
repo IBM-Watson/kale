@@ -72,11 +72,8 @@ Now you can run the tool with a simple `java` command line:
 $ java -jar target/uberjar/kale-1.4.0-SNAPSHOT-standalone.jar
 ```
 
-Recommendation: create an alias:
-
-```bash
-$ alias kale="java -jar /full/path/to/kale/target/uberjar/kale-1.4.0-SNAPSHOT-standalone.jar"
-```
+To make running `kale` easier, it's recommended that you create an alias (see
+instructions under "Setup and run").
 
 ## Licensing
 
