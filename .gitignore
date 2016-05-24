@@ -1,0 +1,17 @@
+/.lein-*
+/.nrepl-port
+/checkouts
+/classes
+/target
+*.class
+*.jar
+*.swp
+*.zip
+broken-convert.json
+kale-state.json
+orchestration_service.conf
+orchestration_service_config.json
+pom.xml
+pom.xml.asc
+test-convert.json
+test-file.html

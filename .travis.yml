@@ -1,0 +1,7 @@
+language: clojure
+
+script:
+    - lein cloverage
+    - lein bikeshed
+    - lein eastwood '{:exclude-linters [:suspicious-expression]}'
+    - lein kibit
