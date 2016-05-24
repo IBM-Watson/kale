@@ -17,11 +17,11 @@ Recommendation: create a short alias to setup a command named `kale`.
 
 On Linux, OSX and other Unix-style systems, the `alias` command can be used like this:
 
-    alias kale="java -jar /full/path/to/kale-1.2.0-SNAPSHOT-standalone.jar"
+    alias kale="java -jar /full/path/to/kale-1.2.0-standalone.jar"
 
 And on Windows, the `doskey` command can be used like this:
 
-    doskey kale=java -jar C:\full\path\to\kale-1.2.0-SNAPSHOT-standalone.jar $*
+    doskey kale=java -jar C:\full\path\to\kale-1.2.0-standalone.jar $*
 
 Now the `kale` command should be available. Try:
 
@@ -58,21 +58,22 @@ $ lein run <command>
 
 ```bash
 $ lein uberjar
-Compiling kale.core
-Created /knowledge-expansion-admin-cli/target/uberjar/kale-1.2.0-SNAPSHOT.jar
-Created /knowledge-expansion-admin-cli/target/uberjar/kale-1.2.0-SNAPSHOT-standalone.jar
+Compiling ...
+...
+Created .../kale/target/uberjar/kale-1.3.0-SNAPSHOT.jar
+Created .../kale/target/uberjar/kale-1.3.0-SNAPSHOT-standalone.jar
 ```
 
 Now you can run the tool with a simple `java` command line:
 
 ```bash
-$ java -jar target/uberjar/cli-0.1.0-SNAPSHOT-standalone.jar
+$ java -jar target/uberjar/kale-1.3.0-SNAPSHOT-standalone.jar
 ```
 
 Recommendation: create an alias:
 
 ```bash
-$ alias kale="java -jar /full/path/to/knowledge-expansion-admin-cli/target/uberjar/kale-1.2.0-SNAPSHOT-standalone.jar"
+$ alias kale="java -jar /full/path/to/kale/target/uberjar/kale-1.3.0-SNAPSHOT-standalone.jar"
 ```
 
 ## Licensing
