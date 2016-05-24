@@ -1,7 +1,9 @@
 language: clojure
 
+cache:
+  directories:
+  - $HOME/.m2
+
 script:
     - lein cloverage
     - lein bikeshed
-    - lein eastwood '{:exclude-linters [:suspicious-expression]}'
-    - lein kibit
