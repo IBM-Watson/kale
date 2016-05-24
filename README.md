@@ -1,8 +1,10 @@
 # Kale
 
-`kale` is a command line tool for provisioning and configuring the IBM
-Watson Retrieve and Rank Service and the IBM Watson Document
-Conversion Service.
+`kale` is a command line tool for provisioning and configuring the [IBM Watson
+Retrieve and Rank
+Service](http://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/retrieve-rank.html)
+and the [IBM Watson Document Conversion
+Service](http://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/document-conversion.html).
 
 ## Use: download and run
 
