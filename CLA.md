@@ -2,8 +2,7 @@ Individual Contributor License Agreement ("Agreement")
 
 **International Business Machines, Inc. (IBM)**
 
-[https://github.com/IBM-Watson/kale/CLA.md](https://github.com/IBM-Watson/kale/CLA.md)
-
+https://github.com/IBM-Watson/kale/blob/master/CLA.md
 
 Thank you for your interest in the Kale project ("the Project").
 
