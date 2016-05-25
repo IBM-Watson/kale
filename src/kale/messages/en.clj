@@ -450,6 +450,65 @@ configuration will saved to your current working directory.
           "    'orchestration_service_config.json' contains"
           " configurations sent to the 'index_document' API call.")}
 
+  :delete-messages
+    {:missing-space-name "Please specify the name of the space to delete."
+     :no-delete-current-space
+     "You cannot delete the space you are currently working in."
+     :unknown-space "No space named '%s' was found."
+     :space-service-num "This space contains %d service(s)."
+     :space-delete-confirm "Are you sure you want to delete space '%s'"
+     :delete-cancel "Deletion cancelled."
+     :space-deleted (str "Deletion initiated for space '%s'."
+                         new-line "The space will be deleted shortly.")
+
+     :missing-rnr-name
+     "Please specify the name of the retrieve_and_rank service to delete."
+     :unknown-rnr "No retrieve_and_rank service named '%s' was found."
+     :not-rnr-service
+     "The service named '%s' is not a retrieve_and_rank service."
+     :rnr-cluster-num "This retrieve_and_rank instance contains %d cluster(s)."
+     :service-delete-confirm "Are you sure you want to delete service '%s'"
+     :deleting-rnr-key "Deleting key for retrieve_and_rank service '%s'."
+     :deleting-rnr-service "Deleting retrieve_and_rank service '%s'."
+     :rnr-deleted
+     (str "Deletion initiated for retrieve_and_rank service '%s'."
+          new-line "The service will be deleted shortly.")
+
+     :missing-dc-name
+     "Please specify the name of the document_conversion service to delete."
+     :unknown-dc "No document_conversion service named '%s' was found."
+     :not-dc-service
+     "The service named '%s' is not a document_conversion service."
+     :deleting-dc-key "Deleting key for document_conversion service '%s'."
+     :deleting-dc-service "Deleting document_conversion service '%s'."
+     :dc-deleted
+     (str "Deletion initiated for document_conversion service '%s'."
+          new-line "The service will be deleted shortly.")
+
+     :missing-cluster-name "Please specify the name of the cluster to delete."
+     :unknown-cluster-rnr
+     (str "Couldn't determine which service to delete the cluster from."
+          new-line "Please select a retrieve_and_rank service.")
+     :unknown-cluster "Didn't find cluster '%s' in '%s'."
+     :cluster-obj-num
+     "This cluster contains %d Solr configuration(s) and %d collection(s)."
+     :cluster-delete-confirm "Are you sure you want to delete cluster '%s'"
+     :cluster-deleted "Cluster '%s' has been deleted from '%s'."
+
+     :missing-config-name
+     "Please specify the name of the Solr configuration to delete."
+     :unknown-config-cluster
+     (str "Couldn't determine which cluster to delete the configuration from."
+          new-line "Please select a Solr cluster to work with.")
+     :config-deleted "Solr configuration '%s' has been deleted from '%s/%s'."
+
+     :missing-collection-name
+     "Please specify the name of the collection to delete."
+     :unknown-collection-cluster
+     (str "Couldn't determine which cluster to delete the collection "
+          "from." new-line "Please select a Solr cluster.")
+     :collection-deleted "Collection '%s' has been deleted from '%s/%s'."}
+
   :list-messages
     {:available-orgs "Available organizations:"
      :current-org "Currently using organization '%s'"

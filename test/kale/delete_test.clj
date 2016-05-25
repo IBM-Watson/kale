@@ -14,6 +14,8 @@
             [kale.retrieve-and-rank :as rnr]
             [kale.persistence :as persist]))
 
+(common/set-language :en)
+
 (def default-state {:login {:cf-token "TOKEN"
                             :endpoint "URL"}
                     :services (merge c/entry1 c/entry2)
