@@ -1,8 +1,10 @@
 # Kale
 
-`kale` is a command line tool for provisioning and configuring the IBM
-Watson Retrieve and Rank Service and the IBM Watson Document
-Conversion Service.
+`kale` is a command line tool for provisioning and configuring the [IBM Watson
+Retrieve and Rank
+Service](http://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/retrieve-rank.html)
+and the [IBM Watson Document Conversion
+Service](http://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/document-conversion.html).
 
 ## Use: download and run
 
@@ -70,11 +72,8 @@ Now you can run the tool with a simple `java` command line:
 $ java -jar target/uberjar/kale-1.4.0-SNAPSHOT-standalone.jar
 ```
 
-Recommendation: create an alias:
-
-```bash
-$ alias kale="java -jar /full/path/to/kale/target/uberjar/kale-1.4.0-SNAPSHOT-standalone.jar"
-```
+To make running `kale` easier, it's recommended that you create an alias (see
+instructions under ["Setup and run"](#setup-and-run)).
 
 ## Licensing
 
