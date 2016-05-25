@@ -17,7 +17,7 @@
 ██╔═██╗ ██╔══██║██║     ██╔══╝
 ██║  ██╗██║  ██║███████╗███████╗
 ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝
-Version 1.3.0
+Version 1.4.0-SNAPSHOT
 
 The command line administration tool for Enhanced Information
 Retrieval.
