@@ -78,7 +78,7 @@ $ alias kale="java -jar /full/path/to/kale/target/uberjar/kale-1.3.0-SNAPSHOT-st
 
 ## Licensing
 
-All sample code contained within this project repository or any
+All code contained within this project repository or any
 subdirectories is licensed according to the terms of the MIT license,
 which can be viewed in the file [LICENSE](LICENSE).
 

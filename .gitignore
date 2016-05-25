@@ -2,6 +2,7 @@
 /.nrepl-port
 /checkouts
 /classes
+/converted
 /target
 *.class
 *.jar
