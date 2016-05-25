@@ -362,6 +362,7 @@ configuration will saved to your current working directory.
 
   :login-messages
     {:login-start "Logging in..."
+     :loading-services "Loading services..."
      :login-done "Log in successful!"
 
      :using-username "Using username '%s'"

@@ -123,7 +123,8 @@
         {:keys [org space]} (state :org-space)
         org-space (get-org-space cf-auth org space username)
         space-guid (-> org-space :guid :space)
-        services (cf/get-services cf-auth space-guid)]
+        services (do (println (get-msg :loading-services))
+                     (cf/get-services cf-auth space-guid))]
     {:login {:username username
              :cf-token access_token
              :endpoint endpoint}

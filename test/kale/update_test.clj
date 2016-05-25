@@ -7,6 +7,7 @@
             [kale.cloud-foundry :as cf]
             [kale.cloud-foundry-constants :refer [entry1 entry2]]
             [kale.retrieve-and-rank :as rnr]
+            [kale.common :refer [new-line]]
             [kale.persistence :refer [write-state]]
             [clojure.test :refer [deftest is]]
             [slingshot.slingshot :refer [throw+]]
@@ -179,8 +180,11 @@
         captured-state (atom {})]
     (with-redefs [write-state (fn [state] (reset! captured-state state))
                   cf/get-services (fn [_ _] entry2)]
-      (sut/update-org-space "new-org" "NEW_ORG_GUID"
-                            "new-space" "NEW_SPACE_GUID" default-state)
+      (is (= (str "Loading services..." new-line)
+             (with-out-str
+               (sut/update-org-space "new-org" "NEW_ORG_GUID"
+                                     "new-space" "NEW_SPACE_GUID"
+                                     default-state))))
       (is (= @captured-state (merge default-state expected-update))))))
 
 (deftest update-org-space-same-selections
@@ -188,8 +192,11 @@
     (with-redefs [write-state (fn [state] (reset! captured-state state))
                   cf/get-services (fn [_ _] entry1)
                   sut/list-missing-selections (fn [_ _] [])]
-      (sut/update-org-space "org-name" "ORG_GUID"
-                            "space-name" "SPACE_GUID" default-state)
+      (is (= (str "Loading services..." new-line)
+             (with-out-str
+               (sut/update-org-space "org-name" "ORG_GUID"
+                                     "space-name" "SPACE_GUID"
+                                     default-state))))
       (is (= @captured-state default-state)))))
 
 (deftest update-selection-no-children

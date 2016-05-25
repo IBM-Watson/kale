@@ -60,7 +60,7 @@
                                    :guid
                                     {:org org-guid
                                      :space space-guid}}}))
-    (get-msg :space-created space-name)))
+    (str new-line (get-msg :space-created space-name) new-line)))
 
 (defn create-service-with-plan
   "Create an instance of a service using the specified plan"
@@ -118,7 +118,7 @@
     (update-user-selection (update-in state [:services] merge service-entry)
                            (keyword service-type)
                            service-name))
-    (get-msg :service-created service-name))
+    (str new-line (get-msg :service-created service-name) new-line))
 
 (def create-service-options {
   :enterprise aliases/enterprise-option})
@@ -167,7 +167,7 @@
                              :cluster
                              (merge {:service-key (name service-key)}
                                     cluster)))
-    (get-msg :cluster-created cluster-name)))
+    (str new-line (get-msg :cluster-created cluster-name) new-line)))
 
 (defmethod create :solr-configuration
   [state [cmd what config-name config-zip & args] flags]
@@ -197,7 +197,7 @@
                            {:service-key (name service-key)
                             :cluster-id solr_cluster_id
                             :config-name config-name}))
-  (get-msg :config-created config-name))
+  (str new-line (get-msg :config-created config-name) new-line))
 
 (defmethod create :collection
   [state [cmd what collection-name & args] flags]
@@ -223,7 +223,7 @@
                             :cluster-id solr_cluster_id
                             :cluster-name cluster_name
                             :collection-name collection-name})
-    (get-msg :collection-created collection-name)))
+    (str new-line (get-msg :collection-created collection-name) new-line)))
 
 (defn fail-missing-item
   [item]
@@ -288,4 +288,4 @@
                 (get-orchestration-config state collection))
     (write-json "orchestration_service.conf"
                 (orchestration-service state conversion-service)))
-  (get-msg :crawl-config-created))
+  (str new-line (get-msg :crawl-config-created) new-line))

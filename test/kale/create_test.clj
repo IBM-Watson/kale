@@ -44,8 +44,8 @@
                   cf/create-space
                   (fn [_ _ _ _] (c/space-entity "NEW_GUID" "new-space"))
                   persist/write-state (fn [state] (reset! output-state state))]
-      (is (= (str "Space 'new-space' has been created"
-                  " and selected for future actions.")
+      (is (= (str new-line "Space 'new-space' has been created"
+                  " and selected for future actions." new-line)
              (sut/create default-state
                          ["create" "space" "new-space"] [])))
       (is (= {:login {:cf-token "TOKEN"
@@ -145,8 +145,8 @@
                                                (if (= service-guid "GUID")
                                                  service-key nil))
                   persist/write-state (fn [state] (reset! output-state state))]
-      (is (= (str "Service 'new-service' has been created"
-                  " and selected for future actions.")
+      (is (= (str new-line "Service 'new-service' has been created"
+                  " and selected for future actions." new-line)
              (sut/create-service-with-key default-state
                                           "retrieve_and_rank"
                                           "new-service"
@@ -238,9 +238,10 @@
                   persist/write-state (fn [state] (reset! output-state state))]
       (is (= (str "Creating cluster 'cluster-name' in 'rnr'." new-line)
              (with-out-str
-               (is (= (str "Cluster 'cluster-name' has been created"
+               (is (= (str new-line "Cluster 'cluster-name' has been created"
                            " and selected for future actions." new-line
-                           "It will take a few minutes to become available.")
+                           "It will take a few minutes to become available."
+                           new-line)
                       (sut/create {:services {:rnr {:type "retrieve_and_rank"}}
                                    :user-selections {:retrieve_and_rank "rnr"}}
                                   ["create" "cluster" "cluster-name" 1]
@@ -285,8 +286,10 @@
       (is (= (str "Creating configuration 'english' in 'rnr/cluster-name'."
                   new-line)
              (with-out-str
-               (is (= (str "Solr configuration named 'english' has been"
-                           " created and selected for future actions.")
+               (is (= (str new-line
+                           "Solr configuration named 'english' has been"
+                           " created and selected for future actions."
+                           new-line)
                       (sut/create
                         {:services {:rnr {:type "retrieve_and_rank"}}
                          :user-selections
@@ -316,8 +319,10 @@
       (is (= (str "Creating configuration 'my-conf' in 'rnr/cluster-name'."
                   new-line)
              (with-out-str
-               (is (= (str "Solr configuration named 'my-conf' has been"
-                           " created and selected for future actions.")
+               (is (= (str new-line
+                           "Solr configuration named 'my-conf' has been"
+                           " created and selected for future actions."
+                           new-line)
                       (sut/create
                         {:services {:rnr {:type "retrieve_and_rank"}}
                          :user-selections
@@ -385,8 +390,8 @@
                   " 'rnr-service/cluster' using config 'default-config'."
                   new-line)
              (with-out-str
-               (is (= (str "Collection 'new-collection' has been created and "
-                           "selected for future actions.")
+               (is (= (str new-line "Collection 'new-collection' has been "
+                           "created and selected for future actions." new-line)
                       (sut/create {:user-selections
                                    (merge sample-cluster
                                           sample-config)}
@@ -424,13 +429,15 @@
                    []))))
 
 (deftest create-crawler-indeed
-  (is (= (str "Created two files for setting up the Data Crawler:"
+  (is (= (str new-line
+              "Created two files for setting up the Data Crawler:"
               new-line
               "    'orchestration_service.conf' contains document_conversion"
               " service connection information."
               new-line
               "    'orchestration_service_config.json' contains"
-              " configurations sent to the 'index_document' API call.")
+              " configurations sent to the 'index_document' API call."
+              new-line)
          (sut/create {:user-selections
                       {:document_conversion "test-dc"
                        :collection
