@@ -37,5 +37,5 @@
                      query-string)]
       (str (get-msg :found-num-results (:numFound response))
            new-line new-line
-           (str/join \newline (map #(result highlighting %)
+           (str/join new-line (map #(result highlighting %)
                                    (:docs response)))))))
