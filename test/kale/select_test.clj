@@ -16,6 +16,8 @@
             [slingshot.test :refer :all]
             [kale.retrieve-and-rank :as rnr]))
 
+(common/set-language :en)
+
 (def default-state {:login {:cf-token "TOKEN"
                             :endpoint "URL"}
                     :services entry1

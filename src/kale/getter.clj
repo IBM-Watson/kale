@@ -4,11 +4,16 @@
 
 (ns kale.getter
   (:require [cheshire.core :as json]
-            [kale.common :refer [fail]]
+            [kale.common :refer [fail get-command-msg]]
             [kale.retrieve-and-rank :as rnr]))
 
 ;; Aimed for a side-effect free functional style, passing "state" in,
 ;; and not ever have the side effect of persisting state.
+
+(defn get-msg
+  "Return the corresponding getter message"
+   [msg-key & args]
+   (apply get-command-msg :getter-messages msg-key args))
 
 (defn single-service
   "Look in our known services for services matching service-type. If
@@ -55,12 +60,10 @@
       {}
       (let [raw (try (slurp file)
                      (catch Exception e
-                       (fail (str "Couldn't read conversion configuration"
-                                  " file '" file "'."))))]
+                       (fail (get-msg :cant-read-file file))))]
         (try (json/decode raw true)
              (catch Exception e
-               (fail (str "The contents of conversion configuration '"
-                          file "' is not valid JSON."))))))))
+               (fail (get-msg :invalid-json file))))))))
 
 (defn conversion-service
   "Return the one document conversion service the user wants to be

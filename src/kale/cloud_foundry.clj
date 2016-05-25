@@ -5,11 +5,17 @@
 (ns kale.cloud-foundry
   (:require [kale.watson-service :as ws]
             [cheshire.core :as json]
-            [kale.common :refer [fail trace-enabled set-trace new-line]]
+            [kale.common :refer [fail trace-enabled set-trace
+                                 new-line get-command-msg]]
             [clojure.string :refer [split]]
             [clojure.data.codec.base64 :as b64]
             [cheshire.core :as json]
             [slingshot.slingshot :refer [try+ throw+]]))
+
+(defn get-msg
+  "Return the corresponding service message"
+   [msg-key & args]
+   (apply get-command-msg :service-messages msg-key args))
 
 (defn cf-request
   "Make a HTTP request using the given function and handle
@@ -23,9 +29,7 @@
          (let [decoded (json/decode (exception :body))
                error_code (decoded "error_code")]
            (if (= error_code "CF-InvalidAuthToken")
-             (fail (str "The authentication token for this session "
-                        "is either invalid or expired." new-line
-                        "Please run 'kale login' to acquire a new one."))
+             (fail (get-msg :bad-cf-token))
              (throw+ exception)))
          (catch Exception e (throw+ exception))))))
 
@@ -127,7 +131,7 @@
                    :else encoded)
           decoded (String. (b64/decode (.getBytes padded)) "UTF-8")]
       ((json/decode decoded) "user_id"))
-    (catch Exception e (fail "Unable to determine user ID."))))
+    (catch Exception e (fail (get-msg :user-id-fail)))))
 
 (defn create-space
   "Creates a space on the specified organization"

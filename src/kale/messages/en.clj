@@ -333,7 +333,8 @@ clusters.
 
 By running the above command, a zip file containing the Solr
 configuration will saved to your current working directory.
-"}
+"
+     :no-help-msg "I'm sorry. I don't have any help for '%s'."}
 
   :main-messages
     {:not-implemented "'%s' is not implemented yet."
@@ -443,12 +444,126 @@ configuration will saved to your current working directory.
      :missing-item
      (str "Couldn't determine which %s to tell the crawler to use." new-line
           "Please create a %s or select an existing one.")
+     :collection-item "collection"
+     :dc-service-item "document_conversion service"
      :crawl-config-created
      (str "Created two files for setting up the Data Crawler:" new-line
           "    'orchestration_service.conf' contains document_conversion"
           " service connection information."  new-line
           "    'orchestration_service_config.json' contains"
           " configurations sent to the 'index_document' API call.")}
+
+  :delete-messages
+    {:missing-space-name "Please specify the name of the space to delete."
+     :no-delete-current-space
+     "You cannot delete the space you are currently working in."
+     :unknown-space "No space named '%s' was found."
+     :space-service-num "This space contains %d service(s)."
+     :space-delete-confirm "Are you sure you want to delete space '%s'"
+     :delete-cancel "Deletion cancelled."
+     :space-deleted (str "Deletion initiated for space '%s'."
+                         new-line "The space will be deleted shortly.")
+
+     :missing-rnr-name
+     "Please specify the name of the retrieve_and_rank service to delete."
+     :unknown-rnr "No retrieve_and_rank service named '%s' was found."
+     :not-rnr-service
+     "The service named '%s' is not a retrieve_and_rank service."
+     :rnr-cluster-num "This retrieve_and_rank instance contains %d cluster(s)."
+     :service-delete-confirm "Are you sure you want to delete service '%s'"
+     :deleting-rnr-key "Deleting key for retrieve_and_rank service '%s'."
+     :deleting-rnr-service "Deleting retrieve_and_rank service '%s'."
+     :rnr-deleted
+     (str "Deletion initiated for retrieve_and_rank service '%s'."
+          new-line "The service will be deleted shortly.")
+
+     :missing-dc-name
+     "Please specify the name of the document_conversion service to delete."
+     :unknown-dc "No document_conversion service named '%s' was found."
+     :not-dc-service
+     "The service named '%s' is not a document_conversion service."
+     :deleting-dc-key "Deleting key for document_conversion service '%s'."
+     :deleting-dc-service "Deleting document_conversion service '%s'."
+     :dc-deleted
+     (str "Deletion initiated for document_conversion service '%s'."
+          new-line "The service will be deleted shortly.")
+
+     :missing-cluster-name "Please specify the name of the cluster to delete."
+     :unknown-cluster-rnr
+     (str "Couldn't determine which service to delete the cluster from."
+          new-line "Please select a retrieve_and_rank service.")
+     :unknown-cluster "Didn't find cluster '%s' in '%s'."
+     :cluster-obj-num
+     "This cluster contains %d Solr configuration(s) and %d collection(s)."
+     :cluster-delete-confirm "Are you sure you want to delete cluster '%s'"
+     :cluster-deleted "Cluster '%s' has been deleted from '%s'."
+
+     :missing-config-name
+     "Please specify the name of the Solr configuration to delete."
+     :unknown-config-cluster
+     (str "Couldn't determine which cluster to delete the configuration from."
+          new-line "Please select a Solr cluster to work with.")
+     :config-deleted "Solr configuration '%s' has been deleted from '%s/%s'."
+
+     :missing-collection-name
+     "Please specify the name of the collection to delete."
+     :unknown-collection-cluster
+     (str "Couldn't determine which cluster to delete the collection "
+          "from." new-line "Please select a Solr cluster.")
+     :collection-deleted "Collection '%s' has been deleted from '%s/%s'."}
+
+  :select-messages
+    {:missing-org-name "Please specify an org to change to."
+     :unknown-org "Unable to locate org '%s'."
+     :switch-org (str "Switched to using org '%s'." new-line
+                      "Switched to using space '%s'." new-line)
+     :other-spaces-num "There are %d other spaces in this org."
+     :other-spaces "Other space(s) in this org include [%s]."
+
+     :missing-space-name "Please specify a space to change to."
+     :unknown-space "Unable to locate space '%s'."
+     :switch-space "Switched to using space '%s'."
+
+     :unknown-service "No service named '%s' was found."
+     :wrong-service-type "'%s' is a %s service, not a %s service."
+     :unclear-default-service
+     "Couldn't figure out a default %s service to use."
+     :service-selected "You have selected '%s' as your current %s service."
+
+     :missing-convert-filename (str "Please give the name of a file that "
+                                    "contains conversion configuration JSON.")
+     :cant-read-file "Cannot read the file '%s'."
+     :invalid-json "The contents of '%s' is not JSON."
+     :convert-file-selected "Conversion configuration is now set to '%s'."
+
+     :unclear-base-rnr "Please select or create a retrieve_and_rank service."
+     :no-clusters "No Solr clusters found in '%s'."
+     :unknown-cluster (str "No Solr cluster named '%s' found in '%s'."
+                           new-line "Available clusters: %s")
+     :unclear-default-cluster (str "Please select a cluster to use." new-line
+                                   "Available clusters: %s")
+     :multiple-clusters "There are %d with the name '%s'."
+     :cluster-selected "You have selected '%s' as your current Solr cluster."
+
+     :unclear-base-cluster
+     "Please select or create a retrieve_and_rank cluster."
+     :no-configs "No Solr configurations found in '%s'."
+     :unknown-config
+     (str "No Solr configurations named '%s' found in '%s/%s'."
+          new-line "Available configurations: %s")
+     :unclear-default-config
+     (str "Please select a Solr configuration to use." new-line
+          "Available configurations: %s")
+     :config-selected
+     "You have selected '%s' as your current Solr configuration."
+
+     :no-collections "No Solr collections found in '%s/%s'."
+     :unknown-collection (str "No Solr collection named '%s' found in '%s/%s'."
+                              new-line "Available collections: %s")
+     :unclear-default-collection (str "Please select a collection to use."
+                                      new-line "Available collections: %s")
+     :collection-selected
+     "You have selected '%s' as your current Solr collection."}
 
   :list-messages
     {:available-orgs "Available organizations:"
@@ -512,4 +627,31 @@ configuration will saved to your current working directory.
      :title-label "  title: "
      :snippet-label "snippet: "
      :missing-collection "Please create or select a collection to work with."
-     :found-num-results "Found %s results."}})
+     :found-num-results "Found %s results."}
+
+  :service-messages
+    {:trace-request "REQUEST:"
+     :trace-response "RESPONSE:"
+     :trace-zip-content "[ZIP CONTENT]"
+
+     :bad-cf-token (str "The authentication token for this session "
+                        "is either invalid or expired." new-line
+                        "Please run 'kale login' to acquire a new one.")
+     :invalid-solr-name
+     (str "Invalid object name." new-line
+          "Solr object names should only contain "
+          "alphanumeric characters, periods, hyphens and underscores.")
+     :user-id-fail "Unable to determine user ID."
+     :rnr-no-creds
+     (str "Target retrieve_and_rank service has no access credentials."
+          new-line "Please select a service that does have credentials.")
+     :cluster-hint (str "Try specifying a cluster size instead of "
+                        "using the default 'free' size.")
+     :dc-no-creds
+     (str "Target document_conversion service has no access credentials."
+          new-line "Please select a service that does have credentials.")}
+
+  :getter-messages
+    {:cant-read-file "Couldn't read conversion configuration file '%s'."
+     :invalid-json
+     "The contents of conversion configuration '%s' is not valid JSON."}})

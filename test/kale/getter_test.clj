@@ -4,8 +4,11 @@
 
 (ns kale.getter-test
   (:require [kale.getter :as my]
+            [kale.common :refer [set-language]]
             [kale.retrieve-and-rank :as rnr]
             [clojure.test :refer :all]))
+
+(set-language :en)
 
 (deftest default-index-document-version
   (is (= "2016-03-18"

@@ -3,11 +3,16 @@
 ;;
 
 (ns kale.watson-service
-    (:require [kale.common :refer [trace-enabled]]
+    (:require [kale.common :refer [trace-enabled get-command-msg]]
               [clojure.pprint :refer [pprint]]
               [cheshire.core :as json]
               [clj-http.client :as client]
               [slingshot.slingshot :refer [throw+ try+]]))
+
+(defn get-msg
+  "Return the corresponding service message"
+   [msg-key & args]
+   (apply get-command-msg :service-messages msg-key args))
 
 (defn setup-multipart
   "Expands a simple hashmap of name:value pairs into
@@ -25,14 +30,14 @@
 
 (defn trace-api
   [request response]
-  (println "REQUEST:")
+  (println (get-msg :trace-request))
   (pprint request)
-  (println "RESPONSE:")
+  (println (get-msg :trace-response))
   (if (some? (response :body))
     (let [content-type ((response :headers) "Content-Type")]
       (cond
         (some? (re-find #"zip" content-type))
-          (pprint (assoc response :body "[ZIP CONTENT]"))
+          (pprint (assoc response :body (get-msg :trace-zip-content)))
         (some? (re-find #"json" content-type))
           (pprint (update-in response [:body] json/decode true))
         :else (pprint response)))
