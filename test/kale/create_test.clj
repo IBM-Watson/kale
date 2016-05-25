@@ -458,9 +458,14 @@
 
   (is (= (str "{" new-line
               "  \"retrieve_and_rank\" : {" new-line
-              "    \"service_instance_id\" : null," new-line
               "    \"cluster_id\" : \"CLUSTER-ID\"," new-line
-              "    \"search_collection\" : \"new-collection\"" new-line
+              "    \"search_collection\" : \"new-collection\"," new-line
+              "    \"service_instance_id\" : null," new-line
+              "    \"fields\" : {" new-line
+              "      \"include\" : [ \"body\", \"contentHtml\","
+              " \"contentText\", \"id\", \"indexedTimestamp\","
+              " \"searchText\", \"sourceUrl\", \"title\" ]" new-line
+              "    }" new-line
               "  }" new-line
               "}")
          (slurp "orchestration_service_config.json"))))

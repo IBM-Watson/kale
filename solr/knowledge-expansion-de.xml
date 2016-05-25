@@ -71,7 +71,7 @@ END_COPYRIGHT -->
        ending in _i (like myid_i, z_i) RESTRICTION: the glob-like
        pattern in the name attribute must have a "*" only at the start
        or the end. -->
-  <dynamicField name="*"
+  <dynamicField name="*_dynamic"
                 type="ignored"
                 multiValued="true"/>
 
