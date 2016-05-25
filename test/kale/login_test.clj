@@ -193,15 +193,17 @@
     (with-redefs [cf/get-services (fn [_ _] (merge entry1 entry2))
                   sut/get-org-space (fn [_ _ _ _] org-space-entry)
                   cf/get-oauth-tokens (fn [_ _ _] {:access_token token})]
-      (t/is (= {:login {:username user
-                        :cf-token token
-                        :endpoint endpoint}
-                :services (merge entry1 entry2)
-                :org-space org-space-entry}
-               (sut/load-user-info
-                user "scotty" endpoint {:org-space
-                                         {:org "org-name"
-                                          :space-name "space-name"}}))))))
+      (t/is (= (str "Loading services..." new-line)
+               (with-out-str
+                 (t/is (= {:login {:username user
+                                   :cf-token token
+                                   :endpoint endpoint}
+                           :services (merge entry1 entry2)
+                           :org-space org-space-entry}
+                          (sut/load-user-info
+                            user "scotty" endpoint
+                            {:org-space {:org "org-name"
+                                         :space-name "space-name"}})))))))))
 
 (def user-info
   {:login {:username "redshirt"

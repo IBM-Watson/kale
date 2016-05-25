@@ -5,6 +5,7 @@
 (ns kale.update
   (:require [kale.cloud-foundry :as cf]
             [kale.retrieve-and-rank :as rnr]
+            [kale.common :refer [get-command-msg]]
             [kale.persistence :as persist]
             [slingshot.slingshot :refer [try+]]))
 
@@ -93,7 +94,10 @@
         unchanged? (and (= (org-space :org) org-name)
                         (= (org-space :space) space-name))
 
-        services (cf/get-services cf-auth space-guid)
+        services (do (println (get-command-msg
+                                :login-messages
+                                :loading-services))
+                     (cf/get-services cf-auth space-guid))
         org-space {:org org-name
                    :space space-name
                    :guid
