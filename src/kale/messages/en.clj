@@ -624,4 +624,9 @@ configuration will saved to your current working directory.
      :title-label "  title: "
      :snippet-label "snippet: "
      :missing-collection "Please create or select a collection to work with."
-     :found-num-results "Found %s results."}})
+     :found-num-results "Found %s results."}
+
+  :getter-messages
+    {:cant-read-file "Couldn't read conversion configuration file '%s'."
+     :invalid-json
+     "The contents of conversion configuration '%s' is not valid JSON."}})
