@@ -4,10 +4,12 @@
 
 (ns kale.watson-service-test
   (:require [kale.watson-service :as sut]
-            [kale.common :refer [new-line]]
+            [kale.common :refer [new-line set-language]]
             [clj-http.fake :refer [with-fake-routes-in-isolation]]
             [slingshot.test :refer :all]
             [clojure.test :refer [deftest is]]))
+
+(set-language :en)
 
 (deftest multipart-fun
   (is (= {:multipart [{:name "key1" :content "value1"}

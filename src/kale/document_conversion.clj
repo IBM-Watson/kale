@@ -4,15 +4,14 @@
 
 (ns kale.document-conversion
   (:require [kale.watson-service :as ws]
-            [kale.common :refer [fail new-line]]
+            [kale.common :refer [fail new-line get-command-msg]]
             [slingshot.slingshot :refer [throw+]]))
 
 (defn dc-request
   "Make a HTTP request, but first check for missing credentials."
   [& args]
   (if (nil? (second args))
-    (fail (str "Target document_conversion service has no access credentials."
-               new-line "Please select a service that does have credentials."))
+    (fail (get-command-msg :service-messages :dc-no-creds))
     (apply ws/text args)))
 
 (defn convert

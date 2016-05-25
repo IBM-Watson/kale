@@ -5,11 +5,14 @@
 (ns kale.cloud-foundry-test
   (:require [kale.cloud-foundry :as cf]
             [kale.cloud-foundry-constants :refer :all]
+            [kale.common :refer [set-language]]
             [clj-http.fake :refer [with-fake-routes-in-isolation]]
             [cheshire.core :as json]
             [clojure.test :as t :refer [deftest is]]
             [slingshot.slingshot :refer [try+ throw+]]
             [slingshot.test :refer :all]))
+
+(set-language :en)
 
 (deftest cf-request-invalid-token
   (is (thrown+-with-msg?

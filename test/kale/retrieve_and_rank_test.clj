@@ -4,13 +4,15 @@
 
 (ns kale.retrieve-and-rank-test
   (:require [kale.retrieve-and-rank :as rnr]
-            [kale.common :refer [fail new-line]]
+            [kale.common :refer [fail new-line set-language]]
             [clj-http.fake :refer [with-fake-routes-in-isolation]]
             [slingshot.test :refer :all]
             [slingshot.slingshot :refer [try+]]
             [cheshire.core :as json]
             [clojure.test :refer :all]
             [clojure.java.io :as io]))
+
+(set-language :en)
 
 (deftest validate-solr-name-bad-chars
   (map (fn [solr-name]

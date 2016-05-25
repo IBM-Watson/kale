@@ -20,4 +20,4 @@
                   (commands what-str)
                   :help)]
     (get-msg what)
-    (str "I'm sorry. I don't have any help for " what-str)))
+    (get-msg :no-help-msg what-str)))

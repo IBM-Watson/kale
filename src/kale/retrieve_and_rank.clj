@@ -4,10 +4,15 @@
 
 (ns kale.retrieve-and-rank
   (:require [kale.watson-service :as ws]
-            [kale.common :refer [fail new-line]]
+            [kale.common :refer [fail new-line get-command-msg]]
             [clojure.string :as str]
             [cheshire.core :as json]
             [slingshot.slingshot :refer [try+ throw+]]))
+
+(defn get-msg
+  "Return the corresponding service message"
+   [msg-key & args]
+   (apply get-command-msg :service-messages msg-key args))
 
 (defn exception-response-msg
   "Parse exception response message sent from R&R service"
@@ -36,17 +41,14 @@
   "Check if the solr object name contains valid characters"
   [solr-name]
   (when-not (re-matches #"^[-._a-zA-Z0-9]*$" solr-name)
-    (fail (str "Invalid object name." new-line
-               "Solr object names should only contain "
-               "alphanumeric characters, periods, hyphens and underscores."))))
+    (fail (get-msg :invalid-solr-name))))
 
 (defn rnr-request
   "Make a HTTP request using the given function, but first check
    for missing credentials."
   [ws-func args]
   (if (nil? (second args))
-    (fail (str "Target retrieve_and_rank service has no access credentials."
-               new-line "Please select a service that does have credentials."))
+    (fail (get-msg :rnr-no-creds))
     (apply ws-func args)))
 
 (defn rnr-text
@@ -97,8 +99,7 @@
            exception
            (throw+ (update-in
                       exception [:body] str
-                      new-line "Try specifying a cluster size instead of "
-                      "using the default 'free' size.")))))
+                      new-line (get-msg :cluster-hint))))))
 
 (defn delete-cluster
   "Delete a Solr cluster."

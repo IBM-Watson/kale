@@ -266,9 +266,9 @@
   (let [collection (my/collection state)
         conversion-service (my/conversion-service state)]
     (when-not collection
-      (fail-missing-item "collection"))
+      (fail-missing-item (get-msg :collection-item)))
     (when-not conversion-service
-      (fail-missing-item "document_conversion service"))
+      (fail-missing-item (get-msg :dc-service-item)))
     (write-json "orchestration_service_config.json"
                 (get-orchestration-config state collection))
     (write-json "orchestration_service.conf"

@@ -333,7 +333,8 @@ clusters.
 
 By running the above command, a zip file containing the Solr
 configuration will saved to your current working directory.
-"}
+"
+     :no-help-msg "I'm sorry. I don't have any help for '%s'."}
 
   :main-messages
     {:not-implemented "'%s' is not implemented yet."
@@ -443,6 +444,8 @@ configuration will saved to your current working directory.
      :missing-item
      (str "Couldn't determine which %s to tell the crawler to use." new-line
           "Please create a %s or select an existing one.")
+     :collection-item "collection"
+     :dc-service-item "document_conversion service"
      :crawl-config-created
      (str "Created two files for setting up the Data Crawler:" new-line
           "    'orchestration_service.conf' contains document_conversion"
@@ -625,6 +628,28 @@ configuration will saved to your current working directory.
      :snippet-label "snippet: "
      :missing-collection "Please create or select a collection to work with."
      :found-num-results "Found %s results."}
+
+  :service-messages
+    {:trace-request "REQUEST:"
+     :trace-response "RESPONSE:"
+     :trace-zip-content "[ZIP CONTENT]"
+
+     :bad-cf-token (str "The authentication token for this session "
+                        "is either invalid or expired." new-line
+                        "Please run 'kale login' to acquire a new one.")
+     :invalid-solr-name
+     (str "Invalid object name." new-line
+          "Solr object names should only contain "
+          "alphanumeric characters, periods, hyphens and underscores.")
+     :user-id-fail "Unable to determine user ID."
+     :rnr-no-creds
+     (str "Target retrieve_and_rank service has no access credentials."
+          new-line "Please select a service that does have credentials.")
+     :cluster-hint (str "Try specifying a cluster size instead of "
+                        "using the default 'free' size.")
+     :dc-no-creds
+     (str "Target document_conversion service has no access credentials."
+          new-line "Please select a service that does have credentials.")}
 
   :getter-messages
     {:cant-read-file "Couldn't read conversion configuration file '%s'."

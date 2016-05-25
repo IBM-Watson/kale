@@ -4,8 +4,11 @@
 
 (ns kale.document-conversion-test
   (:require [kale.document-conversion :as dc]
+            [kale.common :refer [set-language]]
             [clj-http.fake :refer [with-fake-routes-in-isolation]]
             [clojure.test :refer :all]))
+
+(set-language :en)
 
 (deftest rnr-request-no-credentials
   (is (thrown+-with-msg?
