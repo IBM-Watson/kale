@@ -262,13 +262,13 @@
   (let [version (my/index-document-version state)
         {:keys [url username password]}
         (get-in conversion-service [1 :credentials])]
-    {:http_timeout 600
+    {:base_url url
      :concurrent_upload_connection_limit 100
-     :base_url url
+     :config_file "orchestration_service_config.json"
+     :credentials {:username username :password password}
      :endpoint (str "/v1/index_document?version=" version)
-     :credentials {:username username
-                   :password password}
-     :config_file "orchestration_service_config.json"}))
+     :http_timeout 600
+     :send_stats {:jvm true :os true}}))
 
 (defn write-json
   [file json]
