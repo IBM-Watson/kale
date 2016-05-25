@@ -462,7 +462,7 @@
               "    \"search_collection\" : \"new-collection\"," new-line
               "    \"service_instance_id\" : null," new-line
               "    \"fields\" : {" new-line
-              "      \"includes\" : [ \"body\", \"contentHtml\","
+              "      \"include\" : [ \"body\", \"contentHtml\","
               " \"contentText\", \"id\", \"indexedTimestamp\","
               " \"searchText\", \"sourceUrl\", \"title\" ]" new-line
               "    }" new-line

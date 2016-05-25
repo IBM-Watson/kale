@@ -240,14 +240,14 @@
     {:cluster_id cluster-id
      :search_collection collection-name
      :service_instance_id guid
-     :fields {:includes [:body
-                         :contentHtml
-                         :contentText
-                         :id
-                         :indexedTimestamp
-                         :searchText
-                         :sourceUrl
-                         :title]}}))
+     :fields {:include [:body
+                        :contentHtml
+                        :contentText
+                        :id
+                        :indexedTimestamp
+                        :searchText
+                        :sourceUrl
+                        :title]}}))
 
 (defn get-orchestration-config
   "Get the configuration for orchestration, returns a string containing JSON.
