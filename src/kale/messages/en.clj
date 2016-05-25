@@ -509,6 +509,59 @@ configuration will saved to your current working directory.
           "from." new-line "Please select a Solr cluster.")
      :collection-deleted "Collection '%s' has been deleted from '%s/%s'."}
 
+  :select-messages
+    {:missing-org-name "Please specify an org to change to."
+     :unknown-org "Unable to locate org '%s'."
+     :switch-org (str "Switched to using org '%s'." new-line
+                      "Switched to using space '%s'." new-line)
+     :other-spaces-num "There are %d other spaces in this org."
+     :other-spaces "Other space(s) in this org include [%s]."
+
+     :missing-space-name "Please specify a space to change to."
+     :unknown-space "Unable to locate space '%s'."
+     :switch-space "Switched to using space '%s'."
+
+     :unknown-service "No service named '%s' was found."
+     :wrong-service-type "'%s' is a %s service, not a %s service."
+     :unclear-default-service
+     "Couldn't figure out a default %s service to use."
+     :service-selected "You have selected '%s' as your current %s service."
+
+     :missing-convert-filename (str "Please give the name of a file that "
+                                    "contains conversion configuration JSON.")
+     :cant-read-file "Cannot read the file '%s'."
+     :invalid-json "The contents of '%s' is not JSON."
+     :convert-file-selected "Conversion configuration is now set to '%s'."
+
+     :unclear-base-rnr "Please select or create a retrieve_and_rank service."
+     :no-clusters "No Solr clusters found in '%s'."
+     :unknown-cluster (str "No Solr cluster named '%s' found in '%s'."
+                           new-line "Available clusters: %s")
+     :unclear-default-cluster (str "Please select a cluster to use." new-line
+                                   "Available clusters: %s")
+     :multiple-clusters "There are %d with the name '%s'."
+     :cluster-selected "You have selected '%s' as your current Solr cluster."
+
+     :unclear-base-cluster
+     "Please select or create a retrieve_and_rank cluster."
+     :no-configs "No Solr configurations found in '%s'."
+     :unknown-config
+     (str "No Solr configurations named '%s' found in '%s/%s'."
+          new-line "Available configurations: %s")
+     :unclear-default-config
+     (str "Please select a Solr configuration to use." new-line
+          "Available configurations: %s")
+     :config-selected
+     "You have selected '%s' as your current Solr configuration."
+
+     :no-collections "No Solr collections found in '%s/%s'."
+     :unknown-collection (str "No Solr collection named '%s' found in '%s/%s'."
+                              new-line "Available collections: %s")
+     :unclear-default-collection (str "Please select a collection to use."
+                                      new-line "Available collections: %s")
+     :collection-selected
+     "You have selected '%s' as your current Solr collection."}
+
   :list-messages
     {:available-orgs "Available organizations:"
      :current-org "Currently using organization '%s'"
