@@ -54,8 +54,9 @@
                 cf/get-services (fn [_ _] {})
                 cf/delete-space (fn [_ space-guid]
                                   (is (= space-guid "SPACE_GUID1")))]
-    (is (= (str "Deletion initiated for space 'space1'."
-                new-line "The space will be deleted shortly.")
+    (is (= (str new-line "Deletion initiated for space 'space1'."
+                new-line "The space will be deleted shortly."
+                new-line)
            (sut/delete default-state ["delete" "space" "space1"] [])))))
 
 (deftest delete-space-with-services-no
@@ -77,8 +78,9 @@
                                   (is (= space-guid "SPACE_GUID1")))]
     (is (= (str "This space contains 1 service(s)." new-line)
            (with-out-str
-             (is (= (str "Deletion initiated for space 'space1'."
-                         new-line "The space will be deleted shortly.")
+             (is (= (str new-line "Deletion initiated for space 'space1'."
+                         new-line "The space will be deleted shortly."
+                         new-line)
                     (sut/delete default-state
                                 ["delete" "space" "space1"]
                                 ["--yes"]))))))))
@@ -91,8 +93,9 @@
                                   (is (= space-guid "SPACE_GUID1")))]
     (is (= (str "This space contains 1 service(s)." new-line)
            (with-out-str
-             (is (= (str "Deletion initiated for space 'space1'."
-                         new-line "The space will be deleted shortly.")
+             (is (= (str new-line "Deletion initiated for space 'space1'."
+                         new-line "The space will be deleted shortly."
+                         new-line)
                     (sut/delete default-state
                                 ["delete" "space" "space1"]
                                 []))))))))
@@ -196,9 +199,10 @@
                   new-line
                   "Deleting retrieve_and_rank service 'rnr-service'." new-line)
              (with-out-str
-               (is (= (str "Deletion initiated for retrieve_and_rank"
+               (is (= (str new-line "Deletion initiated for retrieve_and_rank"
                            " service 'rnr-service'."
-                           new-line "The service will be deleted shortly.")
+                           new-line "The service will be deleted shortly."
+                           new-line)
                       (sut/delete default-state
                                   ["delete" "rnr" "rnr-service"]
                                   []))))))
@@ -219,9 +223,10 @@
                   "Deleting document_conversion service 'dc-service'."
                   new-line)
              (with-out-str
-               (is (= (str "Deletion initiated for document_conversion"
+               (is (= (str new-line "Deletion initiated for document_conversion"
                            " service 'dc-service'."
-                           new-line "The service will be deleted shortly.")
+                           new-line "The service will be deleted shortly."
+                           new-line)
                       (sut/delete default-state
                                   ["delete" "dc" "dc-service"]
                                   []))))))
@@ -317,7 +322,8 @@
     (is (= (str "This cluster contains 1 Solr configuration(s) and "
                 "1 collection(s)." new-line)
            (with-out-str
-             (is (= "Cluster 'cluster-name' has been deleted from 'rnr'."
+             (is (= (str new-line "Cluster 'cluster-name' has been deleted"
+                         " from 'rnr'." new-line)
                     (sut/delete {:services {:rnr {:type "retrieve_and_rank"}}
                                  :user-selections
                                  {:retrieve_and_rank "rnr"
@@ -339,7 +345,8 @@
     (is (= (str "This cluster contains 1 Solr configuration(s) and "
                 "1 collection(s)." new-line)
            (with-out-str
-             (is (= "Cluster 'cluster-name' has been deleted from 'rnr'."
+             (is (= (str new-line "Cluster 'cluster-name' has been deleted"
+                         " from 'rnr'." new-line)
                     (sut/delete {:services {:rnr {:type "retrieve_and_rank"}}
                                  :user-selections
                                  {:retrieve_and_rank "rnr"
@@ -359,7 +366,8 @@
                 rnr/delete-cluster (fn [_ _] nil)
                 persist/write-state (fn [_] (throw+
                                              "No state change expected."))]
-    (is (= "Cluster 'cluster-two' has been deleted from 'rnr'."
+    (is (= (str new-line "Cluster 'cluster-two' has been deleted from 'rnr'."
+                new-line)
            (sut/delete {:services {:rnr {:type "retrieve_and_rank"}}
                         :user-selections
                         {:retrieve_and_rank "rnr"
@@ -377,7 +385,8 @@
                   rnr/list-collections (fn [_ _] [])
                   rnr/delete-cluster (fn [_ _] nil)
                   persist/write-state (fn [state] (reset! output-state state))]
-      (is (= "Cluster 'cluster-name' has been deleted from 'rnr'."
+      (is (= (str new-line "Cluster 'cluster-name' has been deleted from 'rnr'."
+                  new-line)
              (sut/delete {:services {:rnr {:type "retrieve_and_rank"}}
                           :user-selections
                           {:retrieve_and_rank "rnr"
@@ -406,8 +415,8 @@
   (with-redefs [rnr/delete-config (fn [_ _ _] nil)
                 persist/write-state (fn [_] (throw+
                                              "No state change expected."))]
-    (is (= (str "Solr configuration 'this-config' has been deleted "
-                "from 'rnr/my-cluster'.")
+    (is (= (str new-line "Solr configuration 'this-config' has been deleted "
+                "from 'rnr/my-cluster'." new-line)
            (sut/delete {:services {:rnr {:type "retrieve_and_rank"}}
                         :user-selections
                         {:retrieve_and_rank "rnr"
@@ -424,8 +433,8 @@
   (let [output-state (atom {})]
     (with-redefs [rnr/delete-config (fn [_ _ _] nil)
                   persist/write-state (fn [state] (reset! output-state state))]
-      (is (= (str "Solr configuration 'this-config' has been deleted "
-                  "from 'rnr/my-cluster'.")
+      (is (= (str new-line "Solr configuration 'this-config' has been deleted "
+                  "from 'rnr/my-cluster'." new-line)
              (sut/delete {:services {:rnr {:type "retrieve_and_rank"}}
                           :user-selections
                           {:retrieve_and_rank "rnr"
@@ -469,8 +478,8 @@
     (with-redefs [rnr/list-collections (fn [_ _] ["doomed-collection"])
                   rnr/delete-collection (fn [_ _ _] nil)
                   persist/write-state (fn [state] (reset! output-state state))]
-      (is (= (str "Collection 'doomed-collection' has been deleted from "
-                  "'rnr-service/cluster'.")
+      (is (= (str new-line "Collection 'doomed-collection' has been deleted "
+                  "from 'rnr-service/cluster'." new-line)
              (sut/delete {:services {:rnr-service {:type "retrieve_and_rank"}}
                           :user-selections sample-cluster}
                          ["delete" "collection" "doomed-collection"]
@@ -482,8 +491,8 @@
     (with-redefs [rnr/list-collections (fn [_ _] ["doomed-collection"])
                   rnr/delete-collection (fn [_ _ _] nil)
                   persist/write-state (fn [state] (reset! output-state state))]
-      (is (= (str "Collection 'doomed-collection' has been deleted from "
-                  "'rnr-service/cluster'.")
+      (is (= (str new-line "Collection 'doomed-collection' has been deleted "
+                  "from 'rnr-service/cluster'." new-line)
              (sut/delete {:services {:rnr-service {:type "retrieve_and_rank"}}
                           :user-selections
                             (merge sample-cluster

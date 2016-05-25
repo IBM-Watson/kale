@@ -65,7 +65,7 @@
                                                  space-name)))
             (fail (get-msg :delete-cancel)))))
       (cf/delete-space cf-auth space-guid)
-      (get-msg :space-deleted space-name))))
+      (str new-line (get-msg :space-deleted space-name) new-line))))
 
 (defmethod delete :retrieve-and-rank
   [state [cmd what service-name & args] flags]
@@ -99,7 +99,7 @@
       ;; Delete service information from the state
       (delete-user-selection (update-in state [:services] dissoc kw)
                              (keyword type) (fn [_] true))
-      (get-msg :rnr-deleted service-name))))
+      (str new-line (get-msg :rnr-deleted service-name) new-line))))
 
 (defmethod delete :document-conversion
   [state [cmd what service-name & args] flags]
@@ -125,7 +125,7 @@
       ;; Delete service information from the state
       (delete-user-selection (update-in state [:services] dissoc kw)
                              (keyword type) (fn [_] true))
-      (get-msg :dc-deleted service-name))))
+      (str new-line (get-msg :dc-deleted service-name) new-line))))
 
 (defmethod delete :cluster
   ;; Delete a Solr cluster given its name.
@@ -166,7 +166,9 @@
         (rnr/delete-cluster credentials (:solr_cluster_id cluster-info))
         (delete-user-selection state :cluster
                                #(= cluster-name (:cluster_name %)))
-        (get-msg :cluster-deleted cluster-name (name service-key))))))
+        (str new-line
+             (get-msg :cluster-deleted cluster-name (name service-key))
+             new-line)))))
 
 (defmethod delete :solr-configuration
   [state [cmd what config-name & args] flags]
@@ -182,7 +184,9 @@
      solr_cluster_id config-name)
     (delete-user-selection state :config
                            #(= config-name (:config-name %)))
-    (get-msg :config-deleted config-name (name service-key) cluster_name)))
+    (str new-line
+        (get-msg :config-deleted config-name (name service-key) cluster_name)
+        new-line)))
 
 (defmethod delete :collection
   [state [cmd what collection-name & args] flags]
@@ -197,5 +201,7 @@
                            solr_cluster_id collection-name)
     (delete-user-selection state :collection
                            #(= collection-name (:collection-name %)))
-    (get-msg :collection-deleted
-             collection-name (name service-key) cluster_name)))
+    (str new-line
+         (get-msg :collection-deleted
+                  collection-name (name service-key) cluster_name)
+         new-line)))
