@@ -442,17 +442,21 @@
                      [])))
 
   (is (= (str "{" new-line
-              "  \"http_timeout\" : 600," new-line
-              "  \"concurrent_upload_connection_limit\" : 100," new-line
               "  \"base_url\" : null," new-line
-              "  \"endpoint\" : \"/v1/index_document?version=2016-03-18\","
+              "  \"concurrent_upload_connection_limit\" : 100," new-line
+              "  \"config_file\" : \"orchestration_service_config.json\","
               new-line
               "  \"credentials\" : {" new-line
               "    \"username\" : null," new-line
               "    \"password\" : null" new-line
               "  }," new-line
-              "  \"config_file\" : \"orchestration_service_config.json\""
+              "  \"endpoint\" : \"/v1/index_document?version=2016-03-18\","
               new-line
+              "  \"http_timeout\" : 600," new-line
+              "  \"send_stats\" : {" new-line
+              "    \"jvm\" : true," new-line
+              "    \"os\" : true" new-line
+              "  }" new-line
               "}")
          (slurp "orchestration_service.conf")))
 
