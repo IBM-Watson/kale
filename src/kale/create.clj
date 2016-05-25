@@ -229,18 +229,33 @@
   [item]
   (fail (get-msg :missing-item item item)))
 
+(defn rnr-portion
+  "Generate the Retrieve and Rank portion of the Orchestration
+   configuration that comes from our information."
+  [{:keys [services]}
+   {:keys [cluster-id collection-name service-key]}]
+
+  (let [rnr-key (keyword service-key)
+        {:keys [guid]} (rnr-key services)]
+    {:cluster_id cluster-id
+     :search_collection collection-name
+     :service_instance_id guid
+     :fields {:includes [:body
+                         :contentHtml
+                         :contentText
+                         :id
+                         :indexedTimestamp
+                         :searchText
+                         :sourceUrl
+                         :title]}}))
+
 (defn get-orchestration-config
   "Get the configuration for orchestration, returns a string containing JSON.
    For failures, display a message to the user and throw an exception."
-  [state {:keys [cluster-id collection-name service-key]}]
-  (let [json (my/conversion-configuration state)
-        rnr-key (keyword service-key)
-        {:keys [guid]} ((keyword service-key) (:services state))]
-    (update-in json
-               [:retrieve_and_rank]
-               #(merge % {:service_instance_id guid
-                          :cluster_id cluster-id
-                          :search_collection collection-name}))))
+  [state collection]
+  (update-in (my/conversion-configuration state)
+             [:retrieve_and_rank]
+             #(merge % (rnr-portion state collection))))
 
 (defn orchestration-service
   [state conversion-service]
