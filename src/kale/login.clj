@@ -151,8 +151,8 @@
         selections (get-selections state (and prev-endpoint? prev-username?))
         new-state (merge state user-info selections)]
       (write-state new-state)
-      (str (get-msg :login-done) new-line new-line
-           (list-working-environment new-state))))
+      (str new-line (get-msg :login-done) new-line
+           new-line (list-working-environment new-state))))
 
 (defn logout
   "Log the user out, by removing their login information from
@@ -166,4 +166,4 @@
                                 [:org-space] dissoc :guid)
                      [:login] dissoc :cf-token)
           :services))
-  (get-msg :logout-done))
+  (str new-line (get-msg :logout-done) new-line))

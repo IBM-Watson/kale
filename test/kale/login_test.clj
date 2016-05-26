@@ -222,7 +222,8 @@
       (t/is (= (str "Logging in..." new-line)
                (with-out-str
                  (t/is (=
-                     (str "Log in successful!" new-line new-line
+                     (str new-line
+                          "Log in successful!" new-line new-line
                           "Current environment:" new-line
                           "   user:                         redshirt" new-line
                           "   endpoint:                     "
@@ -243,5 +244,5 @@
   (with-redefs [write-state (fn [_])]
     (t/is (= (str "Logging out..." new-line)
              (with-out-str
-               (t/is (= "Log out successful!"
+               (t/is (= (str new-line "Log out successful!" new-line)
                         (sut/logout {} [] []))))))))
