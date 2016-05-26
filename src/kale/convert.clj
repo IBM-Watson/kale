@@ -5,7 +5,8 @@
 (ns kale.convert
   (:require [clojure.java.io :as io]
             [kale.common :refer [fail new-line readable-files?
-                                 get-command-msg get-options]]
+                                 get-command-msg get-options
+                                 new-line]]
             [kale.getter :as my]
             [kale.document-conversion :as dc]
             [clojure.string :as str]
@@ -62,4 +63,4 @@
           version (my/index-document-version state)]
       (doseq [in-file filenames]
         (convert-one config endpoint version in-file))
-      (get-msg :conversion-completed))))
+      (str new-line (get-msg :conversion-completed) new-line))))

@@ -4,7 +4,7 @@
 
 (ns kale.get-command-test
   (:require [kale.get-command :as sut]
-            [kale.common :refer [set-language]]
+            [kale.common :refer [set-language new-line]]
             [clojure.test :refer [deftest is]]
             [slingshot.slingshot :refer [throw+]]
             [slingshot.test :refer :all]
@@ -47,7 +47,7 @@
 
 (deftest get-config-success
   (with-redefs [rnr/download-config (fn [_ _ _] (byte-array [65 66 67 68 69]))]
-    (is (= "Configuration saved into 'fake-conf.zip'."
+    (is (= (str new-line "Configuration saved into 'fake-conf.zip'." new-line)
            (sut/get-command {:services {:rnr {:type "retrieve_and_rank"}}
                              :user-selections
                              {:retrieve_and_rank "rnr"
@@ -60,7 +60,7 @@
 
 (deftest get-config-selection-success
   (with-redefs [rnr/download-config (fn [_ _ _] (byte-array [65 66 67 68 69]))]
-    (is (= "Configuration saved into 'fake-conf.zip'."
+    (is (= (str new-line "Configuration saved into 'fake-conf.zip'." new-line)
            (sut/get-command {:services {:rnr {:type "retrieve_and_rank"}}
                              :user-selections
                              {:retrieve_and_rank "rnr"

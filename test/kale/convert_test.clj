@@ -103,9 +103,9 @@
               " no protocol: /v1/index_document?version=2016-03-18"
               new-line)
          (with-out-str
-           (is (= (str "Conversion completed."
+           (is (= (str new-line "Conversion completed."
                        " Please find the converted output"
-                       " in the directory 'converted'.")
+                       " in the directory 'converted'." new-line)
                   (sut/convert {:services {:dc {:type "document_conversion"
                                                 :credentials {}}}}
                                ["conv" "test-file.html"]

@@ -4,7 +4,7 @@
 
 (ns kale.get-command
   (:require [kale.common :refer [fail get-options reject-extra-args
-                                unknown-action get-command-msg]]
+                                unknown-action new-line get-command-msg]]
             [kale.aliases :as aliases]
             [kale.retrieve-and-rank :as rnr]
             [kale.getter :as my]
@@ -49,4 +49,4 @@
       (with-open [zip-file (io/output-stream
                             (io/file (str config-name ".zip")))]
         (.write zip-file zip-contents)))
-    (get-msg :saved-config config-name)))
+    (str new-line (get-msg :saved-config config-name) new-line)))
