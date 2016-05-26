@@ -75,6 +75,11 @@ $ java -jar target/uberjar/kale-1.5.0-SNAPSHOT-standalone.jar
 To make running `kale` easier, it's recommended that you create an alias (see
 instructions under ["Setup and run"](#setup-and-run)).
 
+## Contributing
+
+We are thrilled you are considering contributing to <code>kale</code>!
+Please read our [guidelines for contributing](CONTRIBUTING.md).
+
 ## Licensing
 
 All code contained within this project repository or any
