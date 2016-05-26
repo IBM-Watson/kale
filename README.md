@@ -62,14 +62,14 @@ $ lein run <command>
 $ lein uberjar
 Compiling ...
 ...
-Created .../kale/target/uberjar/kale-1.4.0-SNAPSHOT.jar
-Created .../kale/target/uberjar/kale-1.4.0-SNAPSHOT-standalone.jar
+Created .../kale/target/uberjar/kale-1.5.0-SNAPSHOT.jar
+Created .../kale/target/uberjar/kale-1.5.0-SNAPSHOT-standalone.jar
 ```
 
 Now you can run the tool with a simple `java` command line:
 
 ```bash
-$ java -jar target/uberjar/kale-1.4.0-SNAPSHOT-standalone.jar
+$ java -jar target/uberjar/kale-1.5.0-SNAPSHOT-standalone.jar
 ```
 
 To make running `kale` easier, it's recommended that you create an alias (see
