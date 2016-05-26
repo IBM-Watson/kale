@@ -29,6 +29,106 @@ Now the `kale` command should be available. Try:
 
     kale help
 
+### Example run
+
+Here is an unedited run through of provisioning commands to prepare a
+Solr collection as a target for running the Data Crawler.
+
+After downloading `kale` from
+[releases](https://github.com/IBM-Watson/kale/releases) I opened a
+terminal window. The `$` is my command prompt. I typed each command
+shown on the lines starting with `$`. All other text is output from
+running `kale`.
+
+```
+$ alias 'kale=java -jar /Users/ba/Downloads/kale-1.4.0-standalone.jar'
+$ kale login
+Username? ba@us.ibm.com
+Endpoint (default: https://api.ng.bluemix.net)?
+Using endpoint 'https://api.ng.bluemix.net'
+Password?
+Logging in...
+Using org 'ba@us.ibm.com'
+Using space 'dev'
+Loading services...
+Log in successful!
+
+Current environment:
+   user:                         ba@us.ibm.com
+   endpoint:                     https://api.ng.bluemix.net
+   org:                          ba@us.ibm.com
+   space:                        dev
+
+$ kale create space example
+
+Space 'example' has been created and selected for future actions.
+
+$ kale create document_conversion example-dc
+Creating document_conversion service 'example-dc' using the 'standard' plan.
+Creating key for service 'example-dc'.
+
+Service 'example-dc' has been created and selected for future actions.
+
+$ kale create retrieve_and_rank example-rnr
+Creating retrieve_and_rank service 'example-rnr' using the 'standard' plan.
+Creating key for service 'example-rnr'.
+
+Service 'example-rnr' has been created and selected for future actions.
+
+$ kale create cluster example-cluster
+Creating cluster 'example-cluster' in 'example-rnr'.
+
+Cluster 'example-cluster' has been created and selected for future actions.
+It will take a few minutes to become available.
+
+$ kale list services
+Available services in the 'example' space:
+   [standard] document_conversion service named: example-dc
+
+   [standard] retrieve_and_rank service named: example-rnr
+      Cluster name: example-cluster, size: free, status: NOT_AVAILABLE
+
+Currently using the following selections:
+   document_conversion service:  example-dc
+   retrieve_and_rank service:    example-rnr
+   cluster:                      example-cluster
+
+$ kale list services
+Available services in the 'example' space:
+   [standard] document_conversion service named: example-dc
+
+   [standard] retrieve_and_rank service named: example-rnr
+      Cluster name: example-cluster, size: free, status: READY
+         configs:
+         collections:
+
+Currently using the following selections:
+   document_conversion service:  example-dc
+   retrieve_and_rank service:    example-rnr
+   cluster:                      example-cluster
+
+$ kale create solr-config english
+Creating configuration 'english' in 'example-rnr/example-cluster'.
+
+Solr configuration named 'english' has been created and selected for future actions.
+
+$ kale create collection example-collection
+Creating collection 'example-collection' in 'example-rnr/example-cluster' using config 'english'.
+
+Collection 'example-collection' has been created and selected for future actions.
+
+$ kale create crawler-config
+
+Created two files for setting up the Data Crawler:
+    'orchestration_service.conf' contains document_conversion service connection information.
+    'orchestration_service_config.json' contains configurations sent to the 'index_document' API call.
+```
+
+The two files created at the end of this run,
+`orchestration_service.conf` and `orchestration_service_config.json`
+can be dropped, unmodified, into a Data Crawler configuration to point
+the crawler run at the services we just created.
+
 ## Development
 
 ### Preparation for build, test and run
