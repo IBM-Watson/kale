@@ -1,3 +1,7 @@
+;;
+;; (C) Copyright IBM Corp. 2016 All Rights Reserved.
+;;
+
 (require '[clojure.java.io :as io])
 
 (import '[java.io FileOutputStream]
