@@ -5,8 +5,8 @@
 (ns kale.main
   (:require [kale.aliases :refer [commands] :as aliases]
             [kale.getter :refer [user-selection]]
-            [kale.common :refer [fail set-trace set-language
-                                 get-command-msg]]
+            [kale.common :refer [fail try-function get-command-msg
+                                 set-trace set-language]]
             [kale.select]
             [kale.convert]
             [kale.create]
@@ -17,8 +17,7 @@
             [kale.list]
             [kale.login]
             [kale.refresh]
-            [kale.search]
-            [slingshot.slingshot :refer [try+]])
+            [kale.search])
   (:gen-class))
 
 (defn get-msg
@@ -89,56 +88,27 @@
   ([] (error-exit 1))
   ([exit-status] (System/exit exit-status)))
 
-(def ^:const byte-array-class (class (byte-array 0)))
-
-(defn handle-fail
-  "kale.common/fail exception handling"
-  [{:keys [message]}]
-  (println message)
-  (error-exit))
-
-(defn handle-http
-  "HTTP exception handling"
-  [{:keys [status body trace-redirects]}]
-  (println (get-msg :http-call (first trace-redirects)))
-    (if (neg? status)
-      (println (get-msg :http-exception))
-      (println (get-msg :http-error-status status)))
-    (if (= byte-array-class (class body))
-      (println (String. body))
-      (println body))
-    (error-exit))
-
-(defn handle-other
-  "Generic exception handling"
-  [e]
-  (println (get-msg :other-exception))
-  (println (str e))
-  (error-exit))
-
-(defn -main
-  "The command line entry point."
+(defn main
   [& arguments]
   (let [{:keys [args flags options]} (read-flags arguments)
         command (commands (first args))
         state (kale.persistence/read-state)
         language (keyword (user-selection state :language))]
-    (try+
-      (when (some? (options :trace))
-        (set-trace true))
-      (when (some? language)
-        (set-language language))
+    (when (some? (options :trace))
+      (set-trace true))
+    (when (some? language)
+      (set-language language))
 
-      (if (or (some? (options :help))
-                  (some? (aliases/help (second args))))
-        (println (kale.help/help {} (concat ["help"] args) []))
-        (if (nil? command)
-          (println (kale.help/help {} (concat ["help"] args) flags))
-          (do (when-not (or (#{:help :login} command) (:services state))
-                (println (get-msg :please-login (get-cmd-name command)))
-                (error-exit))
-              (println ((verbs command) state args flags)))))
+    (if (or (some? (options :help))
+            (some? (aliases/help (second args))))
+      (println (kale.help/help {} (concat ["help"] args) []))
+      (if (nil? command)
+        (println (kale.help/help {} (concat ["help"] args) flags))
+        (do (when-not (or (#{:help :login} command) (:services state))
+              (fail (get-msg :please-login (get-cmd-name command))))
+            (println ((verbs command) state args flags)))))))
 
-      (catch [:type :kale.common/fail] e (handle-fail e))
-      (catch (number? (:status %)) e (handle-http e))
-      (catch Exception e (handle-other e)))))
+(defn -main
+  "The command line entry point."
+  [& arguments]
+  (try-function main arguments error-exit))

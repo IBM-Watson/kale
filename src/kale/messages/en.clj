@@ -338,15 +338,16 @@ configuration will saved to your current working directory.
 
   :main-messages
     {:not-implemented "'%s' is not implemented yet."
+     :please-login "Please login to use the '%s' command."}
+
+  :common-messages
+    {:unknown-language "Language '%s' is not available."
      :http-call "A call to: %s"
      :http-exception "triggered an unexpected exception:"
      :http-error-status "returned an unexpected error status code %s"
      :other-exception (str "Something unexpected failed while trying to "
                            "process your command. This exception was thrown:")
-     :please-login "Please login to use the '%s' command."}
 
-  :common-messages
-    {:unknown-language "Language '%s' is not available."
      :unknown-option "Unknown option: %s"
      :too-many-args
      "Too many arguments provided to '%s'. Please omit '%s'."

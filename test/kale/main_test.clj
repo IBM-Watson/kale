@@ -83,13 +83,7 @@
   (with-redefs [commands (fn [_] :nothing)
                 read-state (fn [] {})
                 error-exit (fn [])]
-    ;; This isn't great, but putting in an exit for error-exit causes
-    ;; cloverage to end prematurely.  Normally we shouldn't be expecting
-    ;; a NullPointerException but we kind of need to let it happen here.
-    (is (= (str "Please login to use the 'nothing' command." new-line
-                "Something unexpected failed while trying to "
-                "process your command. This exception was thrown:" new-line
-                "java.lang.NullPointerException" new-line)
+    (is (= (str "Please login to use the 'nothing' command." new-line)
            (with-out-str (sut/-main "action"))))))
 
 (deftest main-prints-fail-message
