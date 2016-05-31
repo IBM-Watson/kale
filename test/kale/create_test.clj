@@ -8,6 +8,7 @@
             [kale.cloud-foundry :as cf]
             [kale.cloud-foundry-constants :as c]
             [cheshire.core :as json]
+            [clj-time.core :refer [in-minutes]]
             [clj-http.fake :refer [with-fake-routes-in-isolation]]
             [kale.common :refer [new-line] :as common]
             [clojure.test :refer [deftest is]]
@@ -265,6 +266,28 @@
       (is (= (str "..." new-line)
              (with-out-str
                (sut/wait-for-cluster {} "CLUSTER-ID")))))))
+
+(deftest wait-for-cluster-long
+  (let [counter (atom 0)]
+    (with-redefs [rnr/get-cluster
+                  (fn [_ _]
+                    (swap! counter inc)
+                    (if (= @counter 3)
+                      {:solr_cluster_status "READY"}
+                      {:solr_cluster_status "NOT_AVAILABLE"}))
+                  in-minutes (fn [_] (if (< @counter 3) 0 5))]
+      (is (= (str "..." new-line
+                  "Still waiting on cluster to become ready." new-line
+                  new-line)
+             (with-out-str
+               (sut/wait-for-cluster {} "CLUSTER-ID")))))))
+
+(deftest wait-for-cluster-timeout
+  (with-redefs [in-minutes (fn [_] 30)]
+    (is (thrown+-with-msg?
+         [:type :kale.common/fail]
+         #"Timed out waiting for cluster to become available."
+         (with-out-str (sut/wait-for-cluster {} "CLUSTER-ID"))))))
 
 (deftest create-cluster-wait
   (with-redefs [rnr/list-clusters (fn [_] [])

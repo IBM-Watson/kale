@@ -414,6 +414,8 @@ configuration will saved to your current working directory.
      :existing-cluster "A cluster named '%s' already exists."
      :creating-cluster "Creating cluster '%s' in '%s'."
      :waiting-on-cluster "Waiting for cluster to become ready."
+     :still-waiting-on-cluster "Still waiting on cluster to become ready."
+     :cluster-timed-out "Timed out waiting for cluster to become available."
      :cluster-created
      "Cluster '%s' has been created and selected for future actions."
      :cluster-created-soon

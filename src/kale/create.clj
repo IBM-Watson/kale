@@ -4,6 +4,7 @@
 
 (ns kale.create
   (:require [cheshire.core :as json]
+            [clj-time.core :as t]
             [kale.aliases :as aliases]
             [kale.cloud-foundry :as cf]
             [kale.select :refer [select]]
@@ -148,13 +149,22 @@
 (defn wait-for-cluster
   "Wait for the cluster to become ready"
   [endpoint cluster-id]
-  ;; Need a timeout here
-  (let [status (atom "NOT_AVAILABLE")]
-    (while (= @status "NOT_AVAILABLE")
-      (reset! status (:solr_cluster_status
-                       (rnr/get-cluster endpoint cluster-id)))
+  (let [status (atom "NOT_AVAILABLE")
+        start-time (t/now)
+        update-time (atom (t/now))
+        wait-time (fn [target] (t/in-minutes (t/interval target (t/now))))]
+    (while (and (= @status "NOT_AVAILABLE")
+                (< (wait-time start-time) 30))
+      (reset! status (:solr_cluster_status (rnr/get-cluster endpoint
+                                                            cluster-id)))
       (print ".")
+      (when (>= (wait-time @update-time) 5)
+        ;; Inform the user that we're still waiting
+        (println (str new-line (get-msg :still-waiting-on-cluster)))
+        (reset! update-time (t/now)))
       (flush))
+    (when (>= (wait-time start-time) 30)
+      (fail (get-msg :cluster-timed-out)))
     (println)))
 
 (def create-cluster-options {
