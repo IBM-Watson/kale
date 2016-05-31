@@ -6,9 +6,12 @@
   (:require [cheshire.core :as json]
             [kale.aliases :as aliases]
             [kale.cloud-foundry :as cf]
+            [kale.select :refer [select]]
+            [kale.delete :refer [delete]]
             [kale.common :refer [fail readable-files? new-line
                                 get-options reject-extra-args
-                                unknown-action get-command-msg]]
+                                unknown-action get-command-msg
+                                try-function]]
             [kale.getter :as my]
             [kale.persistence :as persist]
             [kale.retrieve-and-rank :as rnr]
@@ -28,7 +31,8 @@
    :document-conversion aliases/document-conversion
    :retrieve-and-rank aliases/retrieve-and-rank
    :solr-configuration aliases/solr-configuration
-   :space aliases/space})
+   :space aliases/space
+   :turtle aliases/turtle})
 
 (defmulti create (fn [_ [_ what & _] _]
                    (or (some (fn [[k a]] (when (a what) k)) create-items)
@@ -39,7 +43,7 @@
   (unknown-action what cmd
                  ["space" "document_conversion" "retrieve_and_rank"
                   "cluster" "solr-configuration" "collection"
-                  "crawler-configuration"]))
+                  "crawler-configuration" "turtle"]))
 
 (defmethod create :space
   [state [cmd what space-name & args] flags]
@@ -224,6 +228,49 @@
                             :cluster-name cluster_name
                             :collection-name collection-name})
     (str new-line (get-msg :collection-created collection-name) new-line)))
+
+(defn wizard-command
+  "Run the specified command and rollback if it fails"
+  [state command args flags rollback]
+  (println (format "[Running command 'kale %s%s']"
+                   (str/join " " args)
+                   (str (when (seq flags) " ")
+                        (str/join " " flags))))
+  (println (try-function command [state args flags] rollback)))
+
+(defn run-wizard
+  "Run a list of commands and rollback if any of the commands fail"
+  [cmd-list rollback]
+  (doseq [cmd cmd-list]
+    (let [state (persist/read-state)]
+      (apply wizard-command (concat [state] cmd [rollback])))))
+
+(defmethod create :turtle
+  [state [cmd what turtle-name & args] flags]
+  (reject-extra-args args cmd what)
+  (let [options (get-options flags create-service-options)
+        starting-space (-> state :org-space :space)]
+    (when-not turtle-name
+      (fail (get-msg :missing-collection-name)))
+
+    ;; Create the space to put the turtle instance in
+    (wizard-command
+      state create ["create" "space" turtle-name] []
+      (fn [] (fail (format "Unable to create turtle '%s' due to errors."
+                         turtle-name))))
+    ;; Create the turtle components
+    (run-wizard
+      ;; Actions to follow
+      [[create ["create" "document_conversion" (str turtle-name "-dc")] []]
+       [create ["create" "retrieve_and_rank" (str turtle-name "-rnr")] []]]
+      ;; Rollback
+      (fn [] (println (str new-line "[ERROR: Starting rollback]"))
+             (run-wizard [[select ["select" "space" starting-space] []]
+                          [delete ["delete" "space" turtle-name] ["--y"]]]
+                         (fn [] nil))
+             (fail (format "Unable to create turtle '%s' due to errors."
+                           turtle-name))))
+    (format "Turtle '%s' creation successful!" turtle-name)))
 
 (defn fail-missing-item
   [item]
