@@ -131,6 +131,9 @@
 (def enterprise-option
   #{"--enterprise" "-enterprise" "-etp"})
 
+(def wait-option
+  #{"--wait" "-wait" "-w"})
+
 (def yes-option
   #{"--yes" "-yes" "--y" "-y"})
 

@@ -254,6 +254,35 @@
                                           :cluster_size 1}}}
              @output-state)))))
 
+(deftest wait-for-cluster
+  (let [counter (atom 0)]
+    (with-redefs [rnr/get-cluster
+                  (fn [_ _]
+                    (swap! counter inc)
+                    (if (= @counter 3)
+                      {:solr_cluster_status "READY"}
+                      {:solr_cluster_status "NOT_AVAILABLE"}))]
+      (is (= (str "..." new-line)
+             (with-out-str
+               (sut/wait-for-cluster {} "CLUSTER-ID")))))))
+
+(deftest create-cluster-wait
+  (with-redefs [rnr/list-clusters (fn [_] [])
+                rnr/create-cluster (fn [_ n s] {:solr_cluster_id "id"
+                                                :cluster_name n
+                                                :cluster_size s})
+                sut/wait-for-cluster (fn [_ _])
+                persist/write-state (fn [_])]
+    (is (= (str "Creating cluster 'cluster-name' in 'rnr'." new-line
+                "Waiting for cluster to become ready." new-line)
+           (with-out-str
+             (is (= (str new-line "Cluster 'cluster-name' has been created"
+                         " and selected for future actions." new-line)
+                    (sut/create {:services {:rnr {:type "retrieve_and_rank"}}
+                                 :user-selections {:retrieve_and_rank "rnr"}}
+                                ["create" "cluster" "cluster-name" 1]
+                                ["--wait"]))))))))
+
 (deftest create-config-missing-name
   (is (thrown+-with-msg?
        [:type :kale.common/fail]

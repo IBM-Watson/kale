@@ -157,6 +157,11 @@ Cluster sizes are in the range of 1 to 8.
     kale create cluster <name>
     kale create cluster <name> <cluster-size>
 
+Cluster creation typically takes some time.  Kale by default will just start
+the cluster creation process without waiting for the creation to complete.
+By setting the '--wait' option the tool wait until the cluster is READY
+before returning control back to the user.
+
 Kale includes default Solr configurations for the following languages:
 arabic, brazilian, german, english, spanish, french, italian, and japanese.
 When creating a Solr configuration, one can either specify one of these
@@ -408,7 +413,10 @@ configuration will saved to your current working directory.
           "an existing one.")
      :existing-cluster "A cluster named '%s' already exists."
      :creating-cluster "Creating cluster '%s' in '%s'."
+     :waiting-on-cluster "Waiting for cluster to become ready."
      :cluster-created
+     "Cluster '%s' has been created and selected for future actions."
+     :cluster-created-soon
      (str "Cluster '%s' has been created and selected for future actions."
           new-line "It will take a few minutes to become available.")
 

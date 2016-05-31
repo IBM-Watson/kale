@@ -66,6 +66,11 @@
   [endpoint]
   (:clusters (rnr-json :get endpoint "/v1/solr_clusters")))
 
+(defn get-cluster
+  "Get a specific Solr cluster."
+  [endpoint cluster-id]
+  (rnr-json :get endpoint (str "/v1/solr_clusters/" cluster-id)))
+
 (defn list-configs
   "List of Solr configurations"
   [endpoint cluster-id]
