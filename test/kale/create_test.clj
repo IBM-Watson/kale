@@ -459,6 +459,33 @@
                        :collection-name "new-collection"}})}
              @output-state)))))
 
+(defn test-command
+  [_ args flags]
+  (format "Running %s with options %s" args flags))
+
+(defn bad-command
+  [_ _ _]
+  (common/fail "Something bad happened."))
+
+(deftest run-wizard-success
+  (is (= (str "[Running command 'kale foo bar']" new-line
+              "Running [\"foo\" \"bar\"] with options []" new-line
+              "[Running command 'kale bar foo -a']" new-line
+              "Running [\"bar\" \"foo\"] with options [\"-a\"]" new-line)
+         (with-out-str (sut/run-wizard [[test-command ["foo" "bar"] []]
+                                        [test-command ["bar" "foo"] ["-a"]]]
+                                       (fn [] "rollback"))))))
+
+(deftest run-wizard-rollback
+  (is (= (str "[Running command 'kale foo bar']" new-line
+              "Running [\"foo\" \"bar\"] with options []" new-line
+              "[Running command 'kale bar foo -a']" new-line
+              "Something bad happened." new-line
+              "rollback" new-line)
+         (with-out-str (sut/run-wizard [[test-command ["foo" "bar"] []]
+                                        [bad-command ["bar" "foo"] ["-a"]]]
+                                       (fn [] "rollback"))))))
+
 (deftest create-crawler-no-collection
   (with-redefs [rnr/list-clusters (fn [_] [])
                 rnr/list-collections (fn [_ _] [])]
