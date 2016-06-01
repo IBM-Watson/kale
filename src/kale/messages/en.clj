@@ -453,6 +453,12 @@ configuration will saved to your current working directory.
      :collection-created (str "Collection '%s' has been created"
                               " and selected for future actions.")
 
+     :wizard-running-cmd "[Running command 'kale %s%s']"
+     :missing-wizard-name "Please specify the base name for the wizard to use."
+     :wizard-failure "Unable to create turtle '%s' due to errors."
+     :wizard-rollback "[ERROR: Starting rollback]"
+     :wizard-success "Turtle '%s' creation successful!"
+
      :missing-item
      (str "Couldn't determine which %s to tell the crawler to use." new-line
           "Please create a %s or select an existing one.")
@@ -650,7 +656,7 @@ configuration will saved to your current working directory.
                         "is either invalid or expired." new-line
                         "Please run 'kale login' to acquire a new one.")
      :invalid-solr-name
-     (str "Invalid object name." new-line
+     (str "Invalid object name '%s'." new-line
           "Solr object names should only contain "
           "alphanumeric characters, periods, hyphens and underscores.")
      :user-id-fail "Unable to determine user ID."

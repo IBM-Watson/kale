@@ -149,14 +149,13 @@
 (defn wait-for-cluster
   "Wait for the cluster to become ready"
   [endpoint cluster-id]
-  (let [status (atom "NOT_AVAILABLE")
-        start-time (t/now)
+  (let [start-time (t/now)
         update-time (atom (t/now))
         wait-time (fn [target] (t/in-minutes (t/interval target (t/now))))]
-    (while (and (= @status "NOT_AVAILABLE")
+    (while (and (= "NOT_AVAILABLE"
+                   (:solr_cluster_status (rnr/get-cluster endpoint
+                                                          cluster-id)))
                 (< (wait-time start-time) 30))
-      (reset! status (:solr_cluster_status (rnr/get-cluster endpoint
-                                                            cluster-id)))
       (print ".")
       (when (>= (wait-time @update-time) 5)
         ;; Inform the user that we're still waiting
@@ -165,6 +164,9 @@
       (flush))
     (when (>= (wait-time start-time) 30)
       (fail (get-msg :cluster-timed-out)))
+    ;; Sadly there is a small delay between when a cluster saying that it
+    ;; is ready and when it is *actually* ready.
+    (Thread/sleep 4000)
     (println)))
 
 (def create-cluster-options {
@@ -263,10 +265,10 @@
 (defn wizard-command
   "Run the specified command and rollback if it fails"
   [state command args flags rollback]
-  (println (format "[Running command 'kale %s%s']"
-                   (str/join " " args)
-                   (str (when (seq flags) " ")
-                        (str/join " " flags))))
+  (println (get-msg :wizard-running-cmd
+                    (str/join " " args)
+                    (str (when (seq flags) " ")
+                         (str/join " " flags))))
   (println (try-function command [state args flags] rollback)))
 
 (defn run-wizard
@@ -277,31 +279,43 @@
       (apply wizard-command (concat [state] cmd [rollback])))))
 
 (defmethod create :turtle
-  [state [cmd what turtle-name & args] flags]
+  [state [cmd what turtle-name config-name config-zip & args] flags]
   (reject-extra-args args cmd what)
   (let [options (get-options flags create-service-options)
         starting-space (-> state :org-space :space)]
     (when-not turtle-name
-      (fail (get-msg :missing-collection-name)))
+      (fail (get-msg :missing-wizard-name)))
+    (when-not config-name
+      (fail (get-msg :missing-config-name)))
+    (rnr/validate-solr-name turtle-name)
+    (rnr/validate-solr-name config-name)
+    ;; Check if there will be any errors getting the config zip
+    (if config-zip
+      (do (readable-files? [config-zip])
+          (io/file config-zip))
+      (let [resource (io/resource (str config-name ".zip"))]
+        (when-not resource
+          (fail (get-msg :unknown-packaged-config config-name)))
+          (io/input-stream resource)))
 
     ;; Create the space to put the turtle instance in
     (wizard-command
       state create ["create" "space" turtle-name] []
-      (fn [] (fail (format "Unable to create turtle '%s' due to errors."
-                         turtle-name))))
-    ;; Create the turtle components
+      (fn [] (fail (get-msg :wizard-failure turtle-name))))
     (run-wizard
-      ;; Actions to follow
+      ;; Actions to create the turtle components
       [[create ["create" "document_conversion" (str turtle-name "-dc")] []]
-       [create ["create" "retrieve_and_rank" (str turtle-name "-rnr")] []]]
+       [create ["create" "retrieve_and_rank" (str turtle-name "-rnr")] []]
+       [create ["create" "cluster" (str turtle-name "-cluster")] ["--wait"]]
+       [create ["create" "solr-configuration" config-name] []]
+       [create ["create" "collection" (str turtle-name "-collection")] []]]
       ;; Rollback
-      (fn [] (println (str new-line "[ERROR: Starting rollback]"))
+      (fn [] (println (str new-line (get-msg :wizard-rollback)))
              (run-wizard [[select ["select" "space" starting-space] []]
                           [delete ["delete" "space" turtle-name] ["--y"]]]
                          (fn [] nil))
-             (fail (format "Unable to create turtle '%s' due to errors."
-                           turtle-name))))
-    (format "Turtle '%s' creation successful!" turtle-name)))
+             (fail (get-msg :wizard-failure turtle-name))))
+    (get-msg :wizard-success turtle-name)))
 
 (defn fail-missing-item
   [item]

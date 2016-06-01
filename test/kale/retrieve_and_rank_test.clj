@@ -18,7 +18,7 @@
   (map (fn [solr-name]
          (is (thrown+-with-msg?
               [:type :kale.common/fail]
-              #"Invalid object name."
+              #"Invalid object name"
               (rnr/validate-solr-name solr-name))))
         ["my-obj#",
          "my@obj",

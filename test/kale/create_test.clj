@@ -260,7 +260,7 @@
     (with-redefs [rnr/get-cluster
                   (fn [_ _]
                     (swap! counter inc)
-                    (if (= @counter 3)
+                    (if (= @counter 4)
                       {:solr_cluster_status "READY"}
                       {:solr_cluster_status "NOT_AVAILABLE"}))]
       (is (= (str "..." new-line)
@@ -272,7 +272,7 @@
     (with-redefs [rnr/get-cluster
                   (fn [_ _]
                     (swap! counter inc)
-                    (if (= @counter 3)
+                    (if (= @counter 4)
                       {:solr_cluster_status "READY"}
                       {:solr_cluster_status "NOT_AVAILABLE"}))
                   in-minutes (fn [_] (if (< @counter 3) 0 5))]
@@ -283,7 +283,9 @@
                (sut/wait-for-cluster {} "CLUSTER-ID")))))))
 
 (deftest wait-for-cluster-timeout
-  (with-redefs [in-minutes (fn [_] 30)]
+  (with-redefs [in-minutes (fn [_] 30)
+                rnr/get-cluster (fn [_ _]
+                                  {:solr_cluster_status "NOT_AVAILABLE"})]
     (is (thrown+-with-msg?
          [:type :kale.common/fail]
          #"Timed out waiting for cluster to become available."
@@ -485,6 +487,46 @@
          (with-out-str (sut/run-wizard [[test-command ["foo" "bar"] []]
                                         [bad-command ["bar" "foo"] ["-a"]]]
                                        (fn [] "rollback"))))))
+
+(deftest create-wizard-missing-name
+  (is (thrown+-with-msg?
+       [:type :kale.common/fail]
+       #"Please specify the base name for the wizard to use."
+       (sut/create {} ["create" "turtle"] []))))
+
+(deftest create-wizard-missing-config-name
+  (is (thrown+-with-msg?
+       [:type :kale.common/fail]
+       #"Please specify the name of the Solr configuration to create."
+       (sut/create {} ["create" "turtle" "turtle"] []))))
+
+(deftest create-wizard-no-zip-file-specified
+  (is (thrown+-with-msg?
+       [:type :kale.common/fail]
+       #"'my-conf' is not a prepackaged Solr configuration."
+       (sut/create {} ["create" "turtle" "turtle" "my-conf"] []))))
+
+(deftest create-wizard-missing-zip-file
+  (is (thrown+-with-msg?
+       [:type :kale.common/fail]
+       #"Cannot read the file named 'no-such-config.zip'."
+       (sut/create {} ["create" "turtle" "turtle"
+                       "my-conf" "no-such-config.zip"] []))))
+
+(deftest create-wizard-prepackaged-config
+  (with-redefs [sut/wizard-command (fn [_ _ _ _ _])
+                sut/run-wizard (fn [_ _])]
+    (is (= "Turtle 'turtle' creation successful!"
+           (sut/create {} ["create" "turtle" "turtle" "english"] [])))))
+
+(deftest create-wizard-config-from-file
+  (with-redefs [common/readable-files? (fn [_] true)
+                rnr/upload-config (fn [_ _ _ _] nil)
+                sut/wizard-command (fn [_ _ _ _ _])
+                sut/run-wizard (fn [_ _])]
+    (is (= "Turtle 'turtle' creation successful!"
+           (sut/create {} ["create" "turtle" "turtle"
+                           "my-conf" "test-config.zip"] [])))))
 
 (deftest create-crawler-no-collection
   (with-redefs [rnr/list-clusters (fn [_] [])

@@ -41,7 +41,7 @@
   "Check if the solr object name contains valid characters"
   [solr-name]
   (when-not (re-matches #"^[-._a-zA-Z0-9]*$" solr-name)
-    (fail (get-msg :invalid-solr-name))))
+    (fail (get-msg :invalid-solr-name solr-name))))
 
 (defn rnr-request
   "Make a HTTP request using the given function, but first check
