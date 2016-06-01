@@ -38,6 +38,7 @@ Commands:
     kale create cluster <name>
     kale create solr-configuration english|german|spanish
     kale create collection <name>
+    kale create wizard <name> english|german|spanish
     kale create crawler-configuration
 
     kale delete space <name>
@@ -168,10 +169,21 @@ When creating a Solr configuration, one can either specify one of these
 configurations or please specify the zip file containing the details of
 the configuration being created.
 
-    kale create config <langauge>
-    kale create config <name> <solr-config.zip>
+    kale create configuration <langauge>
+    kale create configuration <name> <solr-config.zip>
 
     kale create collection <name>
+
+The operations for creating the services and Solr collection can
+be performed using a single command called 'kale create wizard':
+
+    kale create wizard <base-name> <langauge>
+    kale create wizard <base-name> <config-name> <solr-config.zip>
+
+The user provides a base name to determine the name of the components
+being created. The values <language>, <config-name> and <solr-config.zip>
+are the same parameters used to upload a Solr configuration to Solr cluster.
+The wizard command will create a new space to create the components in.
 
 Once you have created a document_conversion service and a Solr
 collection, you can create configuration files formatted for use by
@@ -455,9 +467,12 @@ configuration will saved to your current working directory.
 
      :wizard-running-cmd "[Running command 'kale %s%s']"
      :missing-wizard-name "Please specify the base name for the wizard to use."
-     :wizard-failure "Unable to create turtle '%s' due to errors."
+     :wizard-failure
+     (str "Unable to create Enhanced Information Retrieval instance '%s'"
+          " due to errors.")
      :wizard-rollback "[ERROR: Starting rollback]"
-     :wizard-success "Turtle '%s' creation successful!"
+     :wizard-success
+     "Enhanced Information Retrieval instance '%s' creation successful!"
 
      :missing-item
      (str "Couldn't determine which %s to tell the crawler to use." new-line

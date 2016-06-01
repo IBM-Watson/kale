@@ -119,8 +119,8 @@
 (def collection
   #{"coll" "collect" "collection"})
 
-(def turtle
-  #{"turtle"})
+(def wizard
+  #{"wizard" "wiz"})
 
 (def organization
   #{"organization" "org" "o"})

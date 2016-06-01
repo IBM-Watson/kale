@@ -492,40 +492,42 @@
   (is (thrown+-with-msg?
        [:type :kale.common/fail]
        #"Please specify the base name for the wizard to use."
-       (sut/create {} ["create" "turtle"] []))))
+       (sut/create {} ["create" "wizard"] []))))
 
 (deftest create-wizard-missing-config-name
   (is (thrown+-with-msg?
        [:type :kale.common/fail]
        #"Please specify the name of the Solr configuration to create."
-       (sut/create {} ["create" "turtle" "turtle"] []))))
+       (sut/create {} ["create" "wizard" "turtle"] []))))
 
 (deftest create-wizard-no-zip-file-specified
   (is (thrown+-with-msg?
        [:type :kale.common/fail]
        #"'my-conf' is not a prepackaged Solr configuration."
-       (sut/create {} ["create" "turtle" "turtle" "my-conf"] []))))
+       (sut/create {} ["create" "wizard" "turtle" "my-conf"] []))))
 
 (deftest create-wizard-missing-zip-file
   (is (thrown+-with-msg?
        [:type :kale.common/fail]
        #"Cannot read the file named 'no-such-config.zip'."
-       (sut/create {} ["create" "turtle" "turtle"
+       (sut/create {} ["create" "wizard" "turtle"
                        "my-conf" "no-such-config.zip"] []))))
 
 (deftest create-wizard-prepackaged-config
   (with-redefs [sut/wizard-command (fn [_ _ _ _ _])
                 sut/run-wizard (fn [_ _])]
-    (is (= "Turtle 'turtle' creation successful!"
-           (sut/create {} ["create" "turtle" "turtle" "english"] [])))))
+    (is (= (str "Enhanced Information Retrieval instance 'turtle'"
+                " creation successful!")
+           (sut/create {} ["create" "wizard" "turtle" "english"] [])))))
 
 (deftest create-wizard-config-from-file
   (with-redefs [common/readable-files? (fn [_] true)
                 rnr/upload-config (fn [_ _ _ _] nil)
                 sut/wizard-command (fn [_ _ _ _ _])
                 sut/run-wizard (fn [_ _])]
-    (is (= "Turtle 'turtle' creation successful!"
-           (sut/create {} ["create" "turtle" "turtle"
+    (is (= (str "Enhanced Information Retrieval instance 'turtle'"
+                " creation successful!")
+           (sut/create {} ["create" "wizard" "turtle"
                            "my-conf" "test-config.zip"] [])))))
 
 (deftest create-crawler-no-collection
