@@ -27,4 +27,5 @@
          ["resources/italian.zip"   "solr/knowledge-expansion-it.xml"]
          ["resources/japanese.zip"  "solr/knowledge-expansion-jp.xml"]]]
   (zipfile out-path [["schema.xml" schema]
-                     ["solrconfig.xml" "solr/solrconfig.xml"]]))
+                     ["solrconfig.xml" "solr/solrconfig.xml"]
+                     ["lang/stopwords_en.txt" "solr/lang/stopwords_en.txt"]]))
