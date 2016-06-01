@@ -95,7 +95,7 @@ END_COPYRIGHT -->
              termVectors="true"
              termPositions="true"
              termOffsets="true"
-             class="solr.TextField">
+             class="com.ibm.watson.hector.plugins.fieldtype.WatsonTextField">
     <analyzer type="index">
         <tokenizer class="solr.StandardTokenizerFactory"/>
         <filter class="solr.LowerCaseFilterFactory"/>
