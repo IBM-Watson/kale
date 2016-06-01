@@ -166,7 +166,7 @@
       (fail (get-msg :cluster-timed-out)))
     ;; Sadly there is a small delay between when a cluster saying that it
     ;; is ready and when it is *actually* ready.
-    (Thread/sleep 4000)
+    (Thread/sleep 8000)
     (println)))
 
 (def create-cluster-options {
