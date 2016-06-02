@@ -7,7 +7,7 @@
             [clojure.test :refer [deftest is]]))
 
 (def alias-count-for-commands
-  (apply + (map count [sut/select
+  (apply + (map count [sut/assemble
                        sut/convert
                        sut/create
                        sut/delete
@@ -17,7 +17,8 @@
                        sut/login
                        sut/logout
                        sut/refresh
-                       sut/search])))
+                       sut/search
+                       sut/select])))
 
 (deftest alias-collisions
   (is (= (count sut/commands) alias-count-for-commands)

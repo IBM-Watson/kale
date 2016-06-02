@@ -7,12 +7,9 @@
             [clj-time.core :as t]
             [kale.aliases :as aliases]
             [kale.cloud-foundry :as cf]
-            [kale.select :refer [select]]
-            [kale.delete :refer [delete]]
             [kale.common :refer [fail readable-files? new-line
                                 get-options reject-extra-args
-                                unknown-action get-command-msg
-                                try-function]]
+                                unknown-action get-command-msg]]
             [kale.getter :as my]
             [kale.persistence :as persist]
             [kale.retrieve-and-rank :as rnr]
@@ -32,8 +29,7 @@
    :document-conversion aliases/document-conversion
    :retrieve-and-rank aliases/retrieve-and-rank
    :solr-configuration aliases/solr-configuration
-   :space aliases/space
-   :wizard aliases/wizard})
+   :space aliases/space})
 
 (defmulti create (fn [_ [_ what & _] _]
                    (or (some (fn [[k a]] (when (a what) k)) create-items)
@@ -44,7 +40,7 @@
   (unknown-action what cmd
                  ["space" "document_conversion" "retrieve_and_rank"
                   "cluster" "solr-configuration" "collection"
-                  "crawler-configuration" "wizard"]))
+                  "crawler-configuration"]))
 
 (defmethod create :space
   [state [cmd what space-name & args] flags]
@@ -261,62 +257,6 @@
                             :cluster-name cluster_name
                             :collection-name collection-name})
     (str new-line (get-msg :collection-created collection-name) new-line)))
-
-(defn wizard-command
-  "Run the specified command and rollback if it fails"
-  [state command args flags rollback]
-  (println (get-msg :wizard-running-cmd
-                    (str/join " " args)
-                    (str (when (seq flags) " ")
-                         (str/join " " flags))))
-  (println (try-function command [state args flags] rollback)))
-
-(defn run-wizard
-  "Run a list of commands and rollback if any of the commands fail"
-  [cmd-list rollback]
-  (doseq [cmd cmd-list]
-    (let [state (persist/read-state)]
-      (apply wizard-command (concat [state] cmd [rollback])))))
-
-(defmethod create :wizard
-  [state [cmd what base-name config-name config-zip & args] flags]
-  (reject-extra-args args cmd what)
-  (let [options (get-options flags create-service-options)
-        starting-space (-> state :org-space :space)]
-    (when-not base-name
-      (fail (get-msg :missing-wizard-name)))
-    (when-not config-name
-      (fail (get-msg :missing-config-name)))
-    (rnr/validate-solr-name base-name)
-    (rnr/validate-solr-name config-name)
-    ;; Check if there will be any errors when getting the config zip
-    (if config-zip
-      (do (readable-files? [config-zip])
-          (io/file config-zip))
-      (let [resource (io/resource (str config-name ".zip"))]
-        (when-not resource
-          (fail (get-msg :unknown-packaged-config config-name)))
-          (io/input-stream resource)))
-
-    ;; Create the space to put the instance in
-    (wizard-command
-      state create ["create" "space" base-name] []
-      (fn [] (fail (get-msg :wizard-failure base-name))))
-    ;; Create the individual components in the newly made space
-    (run-wizard
-      [[create ["create" "document_conversion" (str base-name "-dc")] []]
-       [create ["create" "retrieve_and_rank" (str base-name "-rnr")] []]
-       [create ["create" "cluster" (str base-name "-cluster")] ["--wait"]]
-       [create (concat ["create" "solr-configuration" config-name]
-                       (if (some? config-zip) [config-zip] [])) []]
-       [create ["create" "collection" (str base-name "-collection")] []]]
-      ;; Rollback
-      (fn [] (println (str new-line (get-msg :wizard-rollback)))
-             (run-wizard [[select ["select" "space" starting-space] []]
-                          [delete ["delete" "space" base-name] ["--y"]]]
-                         (fn [] nil))
-             (fail (get-msg :wizard-failure base-name))))
-    (get-msg :wizard-success base-name)))
 
 (defn fail-missing-item
   [item]

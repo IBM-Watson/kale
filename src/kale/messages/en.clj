@@ -38,7 +38,6 @@ Commands:
     kale create cluster <name>
     kale create solr-configuration english|german|spanish
     kale create collection <name>
-    kale create wizard <name> english|german|spanish
     kale create crawler-configuration
 
     kale delete space <name>
@@ -63,6 +62,7 @@ Commands:
     kale list services
 
     kale refresh
+    kale assemble <name> english|german|spanish
     kale get solr-configuration <name>
     kale convert <file>
     kale search <query>
@@ -173,17 +173,6 @@ the configuration being created.
     kale create configuration <name> <solr-config.zip>
 
     kale create collection <name>
-
-The operations for creating the services and Solr collection can
-be performed using a single command called 'kale create wizard':
-
-    kale create wizard <base-name> <langauge>
-    kale create wizard <base-name> <config-name> <solr-config.zip>
-
-The user provides a base name to determine the name of the components
-being created. The values <language>, <config-name> and <solr-config.zip>
-are the same parameters used to upload a Solr configuration to Solr cluster.
-The wizard command will create a new space to create the components in.
 
 Once you have created a document_conversion service and a Solr
 collection, you can create configuration files formatted for use by
@@ -351,6 +340,22 @@ clusters.
 By running the above command, a zip file containing the Solr
 configuration will saved to your current working directory.
 "
+
+     :assemble
+"The 'assemble' command is useful for running all the commands for
+creating the two services and a Solr collection for an Enhanced
+Information Retrieval instance in a single operation:
+
+    kale create wizard <base-name> <langauge>
+    kale create wizard <base-name> <config-name> <solr-config.zip>
+
+The user provides a base name to determine the name of the components
+being created. The values <language>, <config-name> and <solr-config.zip>
+are the same parameters used to create a Solr configuration on a Solr
+cluster. The command will create a new space to create the components in
+and uses the 'free' size when creating a Solr cluster.
+"
+
      :no-help-msg "I'm sorry. I don't have any help for '%s'."}
 
   :main-messages
@@ -465,15 +470,6 @@ configuration will saved to your current working directory.
      :collection-created (str "Collection '%s' has been created"
                               " and selected for future actions.")
 
-     :wizard-running-cmd "[Running command 'kale %s%s']"
-     :missing-wizard-name "Please specify the base name for the wizard to use."
-     :wizard-failure
-     (str "Unable to create Enhanced Information Retrieval instance '%s'"
-          " due to errors.")
-     :wizard-rollback "[ERROR: Starting rollback]"
-     :wizard-success
-     "Enhanced Information Retrieval instance '%s' creation successful!"
-
      :missing-item
      (str "Couldn't determine which %s to tell the crawler to use." new-line
           "Please create a %s or select an existing one.")
@@ -485,6 +481,30 @@ configuration will saved to your current working directory.
           " service connection information."  new-line
           "    'orchestration_service_config.json' contains"
           " configurations sent to the 'index_document' API call.")}
+
+  :assemble-messages
+    {:running-cmd "[Running command 'kale %s%s']"
+     :missing-base-name
+     "Please specify the base name to use for the components."
+     :missing-config-name
+     "Please specify the name of the Solr configuration to create."
+     :unknown-packaged-config
+     (str "'%s' is not a prepackaged Solr configuration." new-line
+          "Please select one of the prepackaged configurations, "
+          "or specify" new-line
+          "the name of a zip file containing the Solr configuration."
+          new-line new-line
+          "Available packages can be found by running 'kale help create'.")
+     :unknown-cluster-config
+     (str "Couldn't determine which cluster to create the configuration in."
+          new-line "Please create a Solr cluster or select "
+                   "an existing one.")
+     :failure
+     (str "Unable to create Enhanced Information Retrieval instance '%s'"
+          " due to errors.")
+     :starting-rollback "[ERROR: Starting rollback]"
+     :success
+     "Enhanced Information Retrieval instance '%s' creation successful!"}
 
   :delete-messages
     {:missing-space-name "Please specify the name of the space to delete."

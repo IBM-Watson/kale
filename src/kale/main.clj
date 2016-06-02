@@ -7,7 +7,7 @@
             [kale.getter :refer [user-selection]]
             [kale.common :refer [fail try-function get-command-msg
                                  set-trace set-language]]
-            [kale.select]
+            [kale.assemble]
             [kale.convert]
             [kale.create]
             [kale.delete]
@@ -17,7 +17,8 @@
             [kale.list]
             [kale.login]
             [kale.refresh]
-            [kale.search])
+            [kale.search]
+            [kale.select])
   (:gen-class))
 
 (defn get-msg
@@ -61,7 +62,8 @@
 
 (def verbs
   "Our supported verbs and the functions implementing each"
-  {:convert        kale.convert/convert
+  {:assemble       kale.assemble/assemble
+   :convert        kale.convert/convert
    :create         kale.create/create
    :delete         kale.delete/delete
    :get-command    kale.get-command/get-command
