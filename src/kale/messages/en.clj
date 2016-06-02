@@ -348,13 +348,16 @@ creating the two services and Solr collection for an Enhanced
 Information Retrieval instance in a single operation:
 
     kale assemble <base-name> <langauge>
+    kale assemble <base-name> <langauge> <cluster-size>
     kale assemble <base-name> <config-name> <solr-config.zip>
+    kale assemble <base-name> <config-name> <solr-config.zip> <cluster-size>
 
 The user provides a base name to determine the name of the components
 being created. The values <language>, <config-name> and <solr-config.zip>
 are the same parameters used to create a Solr configuration on a Solr
-cluster. The command will create a new space to create the components in
-and uses the 'free' size when creating a Solr cluster.
+cluster. When <cluster-size> is not specified the command will use the
+'free' size when creating a Solr cluster. A new space will be created to
+store the components.
 
 Services can be provisioned using the 'enterprise' plan by setting the
 enterprise flag:
@@ -508,6 +511,7 @@ these services will be provisioned using the 'standard' plan.
      (str "Couldn't determine which cluster to create the configuration in."
           new-line "Please create a Solr cluster or select "
                    "an existing one.")
+     :cluster-size "Cluster size must be an integer in the range of 1 to 7."
 
      :no-rnr-enterprise
      (str "Warning: The 'enterprise' plan is currently not available for"
@@ -517,7 +521,7 @@ these services will be provisioned using the 'standard' plan.
      :failure
      (str "Unable to create Enhanced Information Retrieval instance '%s'"
           " due to errors.")
-     :starting-rollback "[Error: Starting rollback]"
+     :starting-rollback "[An error occurred, starting rollback]"
      :success
      "Enhanced Information Retrieval instance '%s' creation successful!"}
 
