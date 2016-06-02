@@ -1,3 +1,7 @@
+;;
+;; (C) Copyright IBM Corp. 2016 All Rights Reserved.
+;;
+
 (require '[clojure.java.io :as io])
 
 (import '[java.io FileOutputStream]
@@ -13,14 +17,16 @@
 
 (io/make-parents "resources/.dummy")
 
-(doseq [[out-path schema]
-        [["resources/arabic.zip"    "solr/knowledge-expansion-ar.xml"]
-         ["resources/brazilian.zip" "solr/knowledge-expansion-br.xml"]
-         ["resources/german.zip"    "solr/knowledge-expansion-de.xml"]
-         ["resources/english.zip"   "solr/knowledge-expansion-en.xml"]
-         ["resources/spanish.zip"   "solr/knowledge-expansion-es.xml"]
-         ["resources/french.zip"    "solr/knowledge-expansion-fr.xml"]
-         ["resources/italian.zip"   "solr/knowledge-expansion-it.xml"]
-         ["resources/japanese.zip"  "solr/knowledge-expansion-jp.xml"]]]
+(doseq [[out-path schema stopwords protwords]
+        [["resources/arabic.zip"    "solr/knowledge-expansion-ar.xml" "solr/lang/stopwords_ar.txt" "solr/lang/protwords_ar.txt"]
+         ["resources/brazilian.zip" "solr/knowledge-expansion-br.xml" "solr/lang/stopwords_br.txt" "solr/lang/protwords_br.txt"]
+         ["resources/german.zip"    "solr/knowledge-expansion-de.xml" "solr/lang/stopwords_de.txt" "solr/lang/protwords_de.txt"]
+         ["resources/english.zip"   "solr/knowledge-expansion-en.xml" "solr/lang/stopwords_en.txt" "solr/lang/protwords_en.txt"]
+         ["resources/spanish.zip"   "solr/knowledge-expansion-es.xml" "solr/lang/stopwords_es.txt" "solr/lang/protwords_es.txt"]
+         ["resources/french.zip"    "solr/knowledge-expansion-fr.xml" "solr/lang/stopwords_fr.txt" "solr/lang/protwords_fr.txt"]
+         ["resources/italian.zip"   "solr/knowledge-expansion-it.xml" "solr/lang/stopwords_it.txt" "solr/lang/protwords_it.txt"]
+         ["resources/japanese.zip"  "solr/knowledge-expansion-jp.xml" "solr/lang/stopwords_jp.txt" "solr/lang/protwords_jp.txt"]]]
   (zipfile out-path [["schema.xml" schema]
-                     ["solrconfig.xml" "solr/solrconfig.xml"]]))
+                     ["solrconfig.xml" "solr/solrconfig.xml"]
+                     ["lang/stopwords.txt" stopwords]
+                     ["lang/protwords.txt" protwords]]))

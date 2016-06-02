@@ -95,8 +95,25 @@ END_COPYRIGHT -->
              termVectors="true"
              termPositions="true"
              termOffsets="true"
-             class="solr.TextField">
-    <analyzer class="org.apache.lucene.analysis.en.EnglishAnalyzer"/>
+             class="com.ibm.watson.hector.plugins.fieldtype.WatsonTextField">
+    <analyzer type="index">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.EnglishPossessiveFilterFactory"/>
+        <filter class="solr.KeywordMarkerFilterFactory" protected="lang/protwords.txt"/>
+        <filter class="solr.PorterStemFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.StopFilterFactory"
+          ignoreCase="true"
+          words="lang/stopwords.txt"
+        />
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.EnglishPossessiveFilterFactory"/>
+        <filter class="solr.KeywordMarkerFilterFactory" protected="lang/protwords.txt"/>
+        <filter class="solr.PorterStemFilterFactory"/>
+    </analyzer>
   </fieldType>
 
   <!-- Since fields of this type are by default not stored or indexed,
