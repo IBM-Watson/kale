@@ -42,7 +42,7 @@
 
 (defn assemble
   "Run the series of commands for creating the two services and
-  a Solr collection"
+  Solr collection"
   [state [cmd base-name config-name config-zip & args] flags]
   (reject-extra-args args cmd)
   (let [options (get-options flags assemble-options)
@@ -62,13 +62,16 @@
           (fail (get-msg :unknown-packaged-config config-name)))
           (io/input-stream resource)))
 
+    (when (some? (options :enterprise))
+      (println (get-msg :no-rnr-enterprise)))
     ;; Create the space to put the instance in
     (wizard-command
       state create ["create" "space" base-name] []
       (fn [] (fail (get-msg :failure base-name))))
     ;; Create the individual components in the newly made space
     (run-wizard
-      [[create ["create" "document_conversion" (str base-name "-dc")] []]
+      [[create ["create" "document_conversion" (str base-name "-dc")]
+               (if (some? (options :enterprise)) ["--enterprise"] [])]
        [create ["create" "retrieve_and_rank" (str base-name "-rnr")] []]
        [create ["create" "cluster" (str base-name "-cluster")] ["--wait"]]
        [create (concat ["create" "solr-configuration" config-name]

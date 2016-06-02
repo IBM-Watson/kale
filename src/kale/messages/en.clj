@@ -131,6 +131,7 @@ the services. By default services are provisioned using the 'standard'
 plan. The 'enterprise' plan provides improved resources than the
 typical 'standard' plan. Services are created using this plan by
 setting the enterprise option when creating the service, eg:
+
     kale create <service-type> <name> --enterprise
 
 Note that this plan is only available on orgs that allow for enterprise
@@ -343,17 +344,26 @@ configuration will saved to your current working directory.
 
      :assemble
 "The 'assemble' command is useful for running all the commands for
-creating the two services and a Solr collection for an Enhanced
+creating the two services and Solr collection for an Enhanced
 Information Retrieval instance in a single operation:
 
-    kale create wizard <base-name> <langauge>
-    kale create wizard <base-name> <config-name> <solr-config.zip>
+    kale assemble <base-name> <langauge>
+    kale assemble <base-name> <config-name> <solr-config.zip>
 
 The user provides a base name to determine the name of the components
 being created. The values <language>, <config-name> and <solr-config.zip>
 are the same parameters used to create a Solr configuration on a Solr
 cluster. The command will create a new space to create the components in
 and uses the 'free' size when creating a Solr cluster.
+
+Services can be provisioned using the 'enterprise' plan by setting the
+enterprise flag:
+
+    kale assemble <base-name> <language> --enterprise
+
+Note that 'enterprise' provisioning is not currently available for
+Retrieve and Rank services.  Regardless of setting the enterprise flag,
+these services will be provisioned using the 'standard' plan.
 "
 
      :no-help-msg "I'm sorry. I don't have any help for '%s'."}
@@ -483,8 +493,7 @@ and uses the 'free' size when creating a Solr cluster.
           " configurations sent to the 'index_document' API call.")}
 
   :assemble-messages
-    {:running-cmd "[Running command 'kale %s%s']"
-     :missing-base-name
+    {:missing-base-name
      "Please specify the base name to use for the components."
      :missing-config-name
      "Please specify the name of the Solr configuration to create."
@@ -499,10 +508,16 @@ and uses the 'free' size when creating a Solr cluster.
      (str "Couldn't determine which cluster to create the configuration in."
           new-line "Please create a Solr cluster or select "
                    "an existing one.")
+
+     :no-rnr-enterprise
+     (str "Warning: The 'enterprise' plan is currently not available for"
+          new-line
+          "retrieve_and_rank services. Using the 'standard' plan instead.")
+     :running-cmd "[Running command 'kale %s%s']"
      :failure
      (str "Unable to create Enhanced Information Retrieval instance '%s'"
           " due to errors.")
-     :starting-rollback "[ERROR: Starting rollback]"
+     :starting-rollback "[Error: Starting rollback]"
      :success
      "Enhanced Information Retrieval instance '%s' creation successful!"}
 

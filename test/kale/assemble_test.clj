@@ -80,3 +80,14 @@
                 " creation successful!")
            (sut/assemble {} ["assemble" "turtle"
                              "my-conf" "test-config.zip"] [])))))
+
+(deftest assemble-enterprise
+  (with-redefs [sut/wizard-command (fn [_ _ _ _ _])
+                sut/run-wizard (fn [_ _])]
+    (is (= (str "Warning: The 'enterprise' plan is currently not available for"
+                 new-line "retrieve_and_rank services. "
+                "Using the 'standard' plan instead." new-line)
+           (with-out-str (is (= (str "Enhanced Information Retrieval instance "
+                                     "'turtle' creation successful!")
+                                (sut/assemble {} ["assemble" "turtle" "english"]
+                                                 ["-etp"]))))))))
