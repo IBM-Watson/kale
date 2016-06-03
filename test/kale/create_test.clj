@@ -41,7 +41,7 @@
 (deftest create-space-indeed
   (let [output-state (atom {})]
     (with-redefs [cf/get-spaces (fn [_ _] (c/spaces-response :resources))
-                  cf/get-user-guid (fn [_] "USER_GUID")
+                  cf/get-user-data (fn [_] {"user_id" "USER_GUID"})
                   cf/create-space
                   (fn [_ _ _ _] (c/space-entity "NEW_GUID" "new-space"))
                   persist/write-state (fn [state] (reset! output-state state))]

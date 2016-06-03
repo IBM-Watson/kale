@@ -50,7 +50,7 @@
     (fail (get-msg :missing-space-name)))
   (let [cf-auth (cf/generate-auth state)
         org-guid (-> state :org-space :guid :org)
-        user-guid (cf/get-user-guid (cf-auth :token))
+        user-guid ((cf/get-user-data (cf-auth :token)) "user_id")
         space (cf/create-space cf-auth org-guid user-guid space-name)
         space-guid (-> space :metadata :guid)]
     (persist/write-state (merge state

@@ -6,7 +6,8 @@
   (:require [kale.watson-service :as ws]
             [cheshire.core :as json]
             [kale.common :refer [fail trace-enabled set-trace
-                                 new-line get-command-msg]]
+                                 new-line get-command-msg
+                                 prompt-user-hidden]]
             [clojure.string :refer [split]]
             [clojure.data.codec.base64 :as b64]
             [cheshire.core :as json]
@@ -54,8 +55,8 @@
 
 (defn get-oauth-tokens
   [username password url]
-  (let [info (cf-json :get {:url url} "/v2/info")
-        login-url (info :authorization_endpoint)
+  (let [endpoint-info (cf-json :get {:url url} "/v2/info")
+        login-url (endpoint-info :authorization_endpoint)
         tracing? @trace-enabled]
     ;; Don't trace an API call using user credentials!
     (set-trace false)
@@ -64,6 +65,24 @@
                           {:form-params
                            {:password password
                             :username username
+                            :grant_type "password"}})]
+      (set-trace tracing?)
+      tokens)))
+
+(defn get-oauth-tokens-sso
+  [url]
+  (let [endpoint-info (cf-json :get {:url url} "/v2/info")
+        login-url (endpoint-info :authorization_endpoint)
+        login-info (cf-json :get {:url login-url} "/login")
+        prompt (str (-> login-info :prompts :passcode second) "? ")
+        passcode (prompt-user-hidden prompt false)
+        tracing? @trace-enabled]
+    ;; Don't trace an API call using user credentials!
+    (set-trace false)
+    (let [tokens (cf-json :post {:username "cf" :url login-url}
+                          "/oauth/token"
+                          {:form-params
+                           {:passcode passcode
                             :grant_type "password"}})]
       (set-trace tracing?)
       tokens)))
@@ -119,8 +138,8 @@
   [cf-auth org-guid]
   (cf-paged-json :get cf-auth (str "/v2/organizations/" org-guid "/spaces")))
 
-(defn get-user-guid
-  "Extracts user-guid information from the access token"
+(defn get-user-data
+  "Extracts user information from the access token"
   [token]
   (try+
     (let [encoded (second (split token #"\."))
@@ -130,7 +149,7 @@
                    (= (mod length 4) 3) (str encoded "=")
                    :else encoded)
           decoded (String. (b64/decode (.getBytes padded)) "UTF-8")]
-      ((json/decode decoded) "user_id"))
+      (json/decode decoded))
     (catch Exception e (fail (get-msg :user-id-fail)))))
 
 (defn create-space

@@ -191,8 +191,7 @@
         token (cf-auth :token)
         user "redshirt"]
     (with-redefs [cf/get-services (fn [_ _] (merge entry1 entry2))
-                  sut/get-org-space (fn [_ _ _ _] org-space-entry)
-                  cf/get-oauth-tokens (fn [_ _ _] {:access_token token})]
+                  sut/get-org-space (fn [_ _ _ _] org-space-entry)]
       (t/is (= (str "Loading services..." new-line)
                (with-out-str
                  (t/is (= {:login {:username user
@@ -201,7 +200,7 @@
                            :services (merge entry1 entry2)
                            :org-space org-space-entry}
                           (sut/load-user-info
-                            user "scotty" endpoint
+                            user endpoint token
                             {:org-space {:org "org-name"
                                          :space-name "space-name"}})))))))))
 
@@ -218,6 +217,8 @@
                   sut/get-endpoint (fn [_ _] "https://api.endpoint.net")
                   sut/get-password (fn [] "scotty")
                   sut/load-user-info (fn [_ _ _ _] user-info)
+                  cf/get-oauth-tokens (fn [_ _ _] {:access_token "TOKEN"})
+                  cf/get-user-data (fn [_] {"user_name" "redshirt"})
                   write-state (fn [state] (reset! captured-state state))]
       (t/is (= (str "Logging in..." new-line)
                (with-out-str
@@ -231,7 +232,23 @@
                           "   org:                          org-name" new-line
                           "   space:                        space-name"
                           new-line)
-                     (sut/login {:foo "bar"} (seq '("login")) []))))))
+                     (sut/login {:foo "bar"} ["login"] []))))))
+      (t/is (= @captured-state
+               {:foo "bar"
+                :login {:username "redshirt"
+                        :cf-token "TOKEN"
+                        :endpoint "https://api.endpoint.net"}
+                :org-space {:org "org-name"
+                            :space "space-name"}})))))
+
+(t/deftest login-sso
+  (let [captured-state (atom {})]
+    (with-redefs [sut/get-endpoint (fn [_ _] "https://api.endpoint.net")
+                  sut/load-user-info (fn [_ _ _ _] user-info)
+                  cf/get-oauth-tokens-sso (fn [_] {:access_token "TOKEN"})
+                  cf/get-user-data (fn [_] {"user_name" "redshirt"})
+                  write-state (fn [state] (reset! captured-state state))]
+      (with-out-str (sut/login {:foo "bar"} ["login"] ["--sso"]))
       (t/is (= @captured-state
                {:foo "bar"
                 :login {:username "redshirt"

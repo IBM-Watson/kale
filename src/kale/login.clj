@@ -4,6 +4,7 @@
 
 (ns kale.login
   (:require [kale.persistence :refer [write-state]]
+            [kale.aliases :as aliases]
             [kale.cloud-foundry :as cf]
             [kale.list :refer [list-working-environment]]
             [kale.update :refer [get-selections]]
@@ -116,10 +117,9 @@
             :space (-> space :metadata :guid)}}))
 
 (defn load-user-info
-  "Log into Cloud Foundry and get user information"
-  [username password endpoint state]
-  (let [{:keys [access_token]} (cf/get-oauth-tokens username password endpoint)
-        cf-auth {:url endpoint :token access_token}
+  "Load information related to the user's environment"
+  [username endpoint access_token state]
+  (let [cf-auth {:url endpoint :token access_token}
         {:keys [org space]} (state :org-space)
         org-space (get-org-space cf-auth org space username)
         space-guid (-> org-space :guid :space)
@@ -131,21 +131,35 @@
      :services services
      :org-space org-space}))
 
+(def login-options
+  {:sso aliases/sso-option})
+
 (defn login
   "Allow the user to login.  Pulls in some access credentials
    and other information from Bluemix, which runs on Cloud Foundry."
   [state [cmd username-arg endpoint-arg password-arg & args] flags]
   (reject-extra-args args cmd)
-  (get-options flags {})
-  (let [username (get-username state username-arg)
+  (let [options (get-options flags login-options)
+        username (when (nil? (options :sso))
+                   (get-username state username-arg))
         endpoint (get-endpoint state endpoint-arg)
-        password (get-password)
+        password (when (nil? (options :sso))
+                   (get-password))
         prev-endpoint? (= endpoint (-> state :login :endpoint))
-        prev-username? (= username (-> state :login :username))
+        prev-username? (if (nil? (options :sso))
+                         (= username (-> state :login :username)
+                         true))
 
+        {:keys [access_token]} (if (some? (options :sso))
+                                 (cf/get-oauth-tokens-sso endpoint)
+                                 (cf/get-oauth-tokens username
+                                                      password
+                                                      endpoint))
         user-info (do (println (get-msg :login-start))
                       (load-user-info
-                        username password endpoint
+                        ((cf/get-user-data access_token) "user_name")
+                        endpoint
+                        access_token
                         (merge state
                                (when-not prev-username? {:org-space {}}))))
         selections (get-selections state (and prev-endpoint? prev-username?))
