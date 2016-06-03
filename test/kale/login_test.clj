@@ -60,7 +60,7 @@
   (t/is (= (str "WARNING: The parameter 'PASSWORD' doesn't appear to "
                 "be an endpoint." new-line
                 "         Arguments to login are in the form "
-                "'kale login <username> <endpoint>'" new-line
+                "'kale login <endpoint> <username>'" new-line
                 "Using endpoint 'PASSWORD'" new-line)
            (with-out-str
              (t/is (= "PASSWORD"

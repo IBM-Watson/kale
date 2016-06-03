@@ -90,14 +90,18 @@ center to manage services on. By default the endpoint is set to
 https://api.ng.bluemix.net. Using the 'login' command without
 arguments will prompt all three parameters.
 
-To log in without prompting username:
-    kale login <username>
+To log in without prompting endpoint:
+    kale login <endpoint>
 
-To log in without prompting username or endpoint:
-    kale login <username> <endpoint>
+To log in without prompting endpoint or username:
+    kale login <endpoint> <username>
 
 The password prompt can be bypassed by setting the environment
 variable 'KALE_PASSWORD' to the user's password.
+
+There is option for the 'login' command:
+  --sso   Log in using a one-time password. The user will be provided
+          a URL where they can acquire the password.
 "
 
      :logout
@@ -408,7 +412,7 @@ these services will be provisioned using the 'standard' plan.
      :invalid-endpoint
      (str "WARNING: The parameter '%s' doesn't appear to be an endpoint."
           new-line "         Arguments to login are in the form "
-          "'kale login <username> <endpoint>'")
+          "'kale login <endpoint> <username>'")
      :using-endpoint "Using endpoint '%s'"
      :prompt-endpoint-default "Endpoint (default: %s)? "
      :using-password "Using password from environment variable 'KALE_PASSWORD'"
