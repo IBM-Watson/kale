@@ -137,12 +137,12 @@
 (defn login
   "Allow the user to login.  Pulls in some access credentials
    and other information from Bluemix, which runs on Cloud Foundry."
-  [state [cmd username-arg endpoint-arg password-arg & args] flags]
+  [state [cmd endpoint-arg username-arg password-arg & args] flags]
   (reject-extra-args args cmd)
   (let [options (get-options flags login-options)
+        endpoint (get-endpoint state endpoint-arg)
         username (when (nil? (options :sso))
                    (get-username state username-arg))
-        endpoint (get-endpoint state endpoint-arg)
         password (when (nil? (options :sso))
                    (get-password))
         prev-endpoint? (= endpoint (-> state :login :endpoint))
