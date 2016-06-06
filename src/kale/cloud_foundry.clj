@@ -7,7 +7,7 @@
             [cheshire.core :as json]
             [kale.common :refer [fail trace-enabled set-trace
                                  new-line get-command-msg
-                                 prompt-user-hidden]]
+                                 prompt-user]]
             [clojure.string :refer [split]]
             [clojure.data.codec.base64 :as b64]
             [cheshire.core :as json]
@@ -75,7 +75,7 @@
         login-url (endpoint-info :authorization_endpoint)
         login-info (cf-json :get {:url login-url} "/login")
         prompt (str (-> login-info :prompts :passcode second) "? ")
-        passcode (prompt-user-hidden prompt false)
+        passcode (prompt-user prompt false)
         tracing? @trace-enabled]
     ;; Don't trace an API call using user credentials!
     (set-trace false)

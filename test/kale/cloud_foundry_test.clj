@@ -5,7 +5,7 @@
 (ns kale.cloud-foundry-test
   (:require [kale.cloud-foundry :as cf]
             [kale.cloud-foundry-constants :refer :all]
-            [kale.common :refer [set-language prompt-user-hidden]]
+            [kale.common :refer [set-language prompt-user]]
             [clj-http.fake :refer [with-fake-routes-in-isolation]]
             [cheshire.core :as json]
             [clojure.test :as t :refer [deftest is]]
@@ -81,11 +81,10 @@
      "https://login.ng.bluemix.net/UAALoginServerWAR/oauth/token"
      (respond {:body (json/encode {:access_token "ACCESS_TOKEN"
                                    :refresh_token "REFRESH_TOKEN"})})}
-    (with-redefs [prompt-user-hidden (fn [prompt _]
-                                         (is (= (str "One Time Code "
-                                                     "(Get one at URL)? ")
-                                                prompt)
-                                         "CODE"))]
+    (with-redefs [prompt-user (fn [prompt _]
+                                (is (= (str "One Time Code (Get one at URL)? ")
+                                       prompt)
+                                "CODE"))]
       (is (= {:access_token "ACCESS_TOKEN"
               :refresh_token "REFRESH_TOKEN"}
              (cf/get-oauth-tokens-sso (cf-auth :url)))))))
