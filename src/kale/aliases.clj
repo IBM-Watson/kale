@@ -8,8 +8,8 @@
 ;; Define sets of aliases for various keywords we'll be looking for in
 ;; our command lines.
 
-(def select
-  #{"select" "sel"})
+(def assemble
+  #{"assemble" "a"})
 
 (def convert
   #{"convert" "conv"})
@@ -41,6 +41,9 @@
 (def search
   #{"search" "se"})
 
+(def select
+  #{"select" "sel"})
+
 (defn- aliases-to-keyword
   "Returns a hashmap of each alias for a keyword,
    mapped to that keyword."
@@ -50,7 +53,7 @@
           (eval (symbol (name kw)))))
 
 (def commands
-  (apply conj (map aliases-to-keyword [:select
+  (apply conj (map aliases-to-keyword [:assemble
                                        :convert
                                        :create
                                        :delete
@@ -60,7 +63,8 @@
                                        :login
                                        :logout
                                        :refresh
-                                       :search])))
+                                       :search
+                                       :select])))
 
 (def service
   #{"service" "serv"})
@@ -127,6 +131,9 @@
 
 (def enterprise-option
   #{"--enterprise" "-enterprise" "-etp"})
+
+(def wait-option
+  #{"--wait" "-wait" "-w"})
 
 (def yes-option
   #{"--yes" "-yes" "--y" "-y"})

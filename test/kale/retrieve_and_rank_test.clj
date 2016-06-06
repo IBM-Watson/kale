@@ -18,7 +18,7 @@
   (map (fn [solr-name]
          (is (thrown+-with-msg?
               [:type :kale.common/fail]
-              #"Invalid object name."
+              #"Invalid object name"
               (rnr/validate-solr-name solr-name))))
         ["my-obj#",
          "my@obj",
@@ -88,6 +88,12 @@
     {(rnr-url "/v1/solr_clusters")
      (respond {:body (json/encode {:clusters [cluster-1 cluster-2]})})}
     (is (= [cluster-1 cluster-2] (rnr/list-clusters endpoint)))))
+
+(deftest get-cluster
+  (with-fake-routes-in-isolation
+    {(rnr-url "/v1/solr_clusters/CLUSTER_ID")
+     (respond {:body (json/encode cluster-1)})}
+    (is (= cluster-1 (rnr/get-cluster endpoint "CLUSTER_ID")))))
 
 (deftest list-no-configs
   (with-fake-routes-in-isolation

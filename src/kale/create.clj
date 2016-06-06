@@ -4,6 +4,7 @@
 
 (ns kale.create
   (:require [cheshire.core :as json]
+            [clj-time.core :as t]
             [kale.aliases :as aliases]
             [kale.cloud-foundry :as cf]
             [kale.common :refer [fail readable-files? new-line
@@ -141,33 +142,65 @@
                              service-name
                              (some? (options :enterprise)))))
 
+(defn wait-for-cluster
+  "Wait for the cluster to become ready"
+  [endpoint cluster-id]
+  (let [start-time (t/now)
+        update-time (atom (t/now))
+        wait-time (fn [target] (t/in-minutes (t/interval target (t/now))))]
+    (while (and (= "NOT_AVAILABLE"
+                   (:solr_cluster_status (rnr/get-cluster endpoint
+                                                          cluster-id)))
+                (< (wait-time start-time) 30))
+      (print ".")
+      (when (>= (wait-time @update-time) 5)
+        ;; Inform the user that we're still waiting
+        (println (str new-line (get-msg :still-waiting-on-cluster)))
+        (reset! update-time (t/now)))
+      (flush))
+    (when (>= (wait-time start-time) 30)
+      (fail (get-msg :cluster-timed-out)))
+    ;; Sadly there is a small delay between when a cluster saying that it
+    ;; is ready and when it is *actually* ready.
+    (Thread/sleep 8000)
+    (println)))
+
+(def create-cluster-options {
+  :wait aliases/wait-option})
+
 (defmethod create :cluster
   [state [cmd what cluster-name cluster-size & args] flags]
   (reject-extra-args args cmd what)
-  (get-options flags {})
-  (when-not cluster-name
-    (fail (get-msg :missing-cluster-name)))
-  (rnr/validate-solr-name cluster-name)
-  (when cluster-size
-    (try (let [i (Integer. cluster-size)]
-           (when-not (< 0 i 8)
-             (fail (get-msg :cluster-size))))
-         (catch NumberFormatException e
-           (fail (get-msg :cluster-size)))))
-  (let [[service-key service-details] (my/rnr-service state)]
-    (when-not service-key
-      (fail (get-msg :unknown-rnr-service)))
-    (when (some #(= cluster-name (:cluster_name %))
-                (rnr/list-clusters (:credentials service-details)))
-      (fail (get-msg :existing-cluster cluster-name)))
-    (println (get-msg :creating-cluster cluster-name (name service-key)))
-    (let [cluster (rnr/create-cluster (:credentials service-details)
-                                      cluster-name cluster-size)]
-      (update-user-selection state
-                             :cluster
-                             (merge {:service-key (name service-key)}
-                                    cluster)))
-    (str new-line (get-msg :cluster-created cluster-name) new-line)))
+  (let [options (get-options flags create-cluster-options)]
+    (when-not cluster-name
+      (fail (get-msg :missing-cluster-name)))
+    (rnr/validate-solr-name cluster-name)
+    (when cluster-size
+      (try (let [i (Integer. cluster-size)]
+             (when-not (< 0 i 8)
+               (fail (get-msg :cluster-size))))
+           (catch NumberFormatException e
+             (fail (get-msg :cluster-size)))))
+    (let [[service-key service-details] (my/rnr-service state)]
+      (when-not service-key
+        (fail (get-msg :unknown-rnr-service)))
+      (when (some #(= cluster-name (:cluster_name %))
+                  (rnr/list-clusters (:credentials service-details)))
+        (fail (get-msg :existing-cluster cluster-name)))
+      (println (get-msg :creating-cluster cluster-name (name service-key)))
+      (let [credentials (:credentials service-details)
+            cluster (rnr/create-cluster credentials cluster-name cluster-size)]
+        (update-user-selection state
+                               :cluster
+                               (merge {:service-key (name service-key)}
+                                      cluster))
+        (if (some? (options :wait))
+          (do (println (get-msg :waiting-on-cluster))
+              (wait-for-cluster credentials (:solr_cluster_id cluster))
+              (str new-line (get-msg :cluster-created cluster-name)
+                   new-line))
+          (str new-line (get-msg :cluster-created-soon cluster-name)
+               new-line))))))
 
 (defmethod create :solr-configuration
   [state [cmd what config-name config-zip & args] flags]

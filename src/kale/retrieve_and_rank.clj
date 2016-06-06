@@ -41,7 +41,7 @@
   "Check if the solr object name contains valid characters"
   [solr-name]
   (when-not (re-matches #"^[-._a-zA-Z0-9]*$" solr-name)
-    (fail (get-msg :invalid-solr-name))))
+    (fail (get-msg :invalid-solr-name solr-name))))
 
 (defn rnr-request
   "Make a HTTP request using the given function, but first check
@@ -65,6 +65,11 @@
   "List of Solr clusters."
   [endpoint]
   (:clusters (rnr-json :get endpoint "/v1/solr_clusters")))
+
+(defn get-cluster
+  "Get a specific Solr cluster."
+  [endpoint cluster-id]
+  (rnr-json :get endpoint (str "/v1/solr_clusters/" cluster-id)))
 
 (defn list-configs
   "List of Solr configurations"

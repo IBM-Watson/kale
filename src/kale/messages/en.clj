@@ -62,6 +62,7 @@ Commands:
     kale list services
 
     kale refresh
+    kale assemble <name> english|german|spanish
     kale get solr-configuration <name>
     kale convert <file>
     kale search <query>
@@ -130,6 +131,7 @@ the services. By default services are provisioned using the 'standard'
 plan. The 'enterprise' plan provides improved resources than the
 typical 'standard' plan. Services are created using this plan by
 setting the enterprise option when creating the service, eg:
+
     kale create <service-type> <name> --enterprise
 
 Note that this plan is only available on orgs that allow for enterprise
@@ -157,14 +159,19 @@ Cluster sizes are in the range of 1 to 8.
     kale create cluster <name>
     kale create cluster <name> <cluster-size>
 
+Cluster creation typically takes some time.  Kale by default will just start
+the cluster creation process without waiting for the creation to complete.
+By setting the '--wait' option the tool wait until the cluster is READY
+before returning control back to the user.
+
 Kale includes default Solr configurations for the following languages:
 arabic, brazilian, german, english, spanish, french, italian, and japanese.
 When creating a Solr configuration, one can either specify one of these
 configurations or please specify the zip file containing the details of
 the configuration being created.
 
-    kale create config <langauge>
-    kale create config <name> <solr-config.zip>
+    kale create configuration <langauge>
+    kale create configuration <name> <solr-config.zip>
 
     kale create collection <name>
 
@@ -334,19 +341,48 @@ clusters.
 By running the above command, a zip file containing the Solr
 configuration will saved to your current working directory.
 "
+
+     :assemble
+"The 'assemble' command is useful for running all the commands for
+creating the two services and Solr collection for an Enhanced
+Information Retrieval instance in a single operation:
+
+    kale assemble <base-name> <langauge>
+    kale assemble <base-name> <langauge> <cluster-size>
+    kale assemble <base-name> <config-name> <solr-config.zip>
+    kale assemble <base-name> <config-name> <solr-config.zip> <cluster-size>
+
+The user provides a base name to determine the name of the components
+being created. The values <language>, <config-name> and <solr-config.zip>
+are the same parameters used to create a Solr configuration on a Solr
+cluster. When <cluster-size> is not specified the command will use the
+'free' size when creating a Solr cluster. A new space will be created to
+store the components.
+
+Services can be provisioned using the 'enterprise' plan by setting the
+enterprise flag:
+
+    kale assemble <base-name> <language> --enterprise
+
+Note that 'enterprise' provisioning is not currently available for
+Retrieve and Rank services.  Regardless of setting the enterprise flag,
+these services will be provisioned using the 'standard' plan.
+"
+
      :no-help-msg "I'm sorry. I don't have any help for '%s'."}
 
   :main-messages
     {:not-implemented "'%s' is not implemented yet."
+     :please-login "Please login to use the '%s' command."}
+
+  :common-messages
+    {:unknown-language "Language '%s' is not available."
      :http-call "A call to: %s"
      :http-exception "triggered an unexpected exception:"
      :http-error-status "returned an unexpected error status code %s"
      :other-exception (str "Something unexpected failed while trying to "
                            "process your command. This exception was thrown:")
-     :please-login "Please login to use the '%s' command."}
 
-  :common-messages
-    {:unknown-language "Language '%s' is not available."
      :unknown-option "Unknown option: %s"
      :too-many-args
      "Too many arguments provided to '%s'. Please omit '%s'."
@@ -407,7 +443,12 @@ configuration will saved to your current working directory.
           "an existing one.")
      :existing-cluster "A cluster named '%s' already exists."
      :creating-cluster "Creating cluster '%s' in '%s'."
+     :waiting-on-cluster "Waiting for cluster to become ready."
+     :still-waiting-on-cluster "Still waiting on cluster to become ready."
+     :cluster-timed-out "Timed out waiting for cluster to become available."
      :cluster-created
+     "Cluster '%s' has been created and selected for future actions."
+     :cluster-created-soon
      (str "Cluster '%s' has been created and selected for future actions."
           new-line "It will take a few minutes to become available.")
 
@@ -453,6 +494,36 @@ configuration will saved to your current working directory.
           " service connection information."  new-line
           "    'orchestration_service_config.json' contains"
           " configurations sent to the 'index_document' API call.")}
+
+  :assemble-messages
+    {:missing-base-name
+     "Please specify the base name to use for the components."
+     :missing-config-name
+     "Please specify the name of the Solr configuration to create."
+     :unknown-packaged-config
+     (str "'%s' is not a prepackaged Solr configuration." new-line
+          "Please select one of the prepackaged configurations, "
+          "or specify" new-line
+          "the name of a zip file containing the Solr configuration."
+          new-line new-line
+          "Available packages can be found by running 'kale help create'.")
+     :unknown-cluster-config
+     (str "Couldn't determine which cluster to create the configuration in."
+          new-line "Please create a Solr cluster or select "
+                   "an existing one.")
+     :cluster-size "Cluster size must be an integer in the range of 1 to 7."
+
+     :no-rnr-enterprise
+     (str "Warning: The 'enterprise' plan is currently not available for"
+          new-line
+          "retrieve_and_rank services. Using the 'standard' plan instead.")
+     :running-cmd "[Running command 'kale %s%s']"
+     :failure
+     (str "Unable to create Enhanced Information Retrieval instance '%s'"
+          " due to errors.")
+     :starting-rollback "[An error occurred, starting rollback]"
+     :success
+     "Enhanced Information Retrieval instance '%s' creation successful!"}
 
   :delete-messages
     {:missing-space-name "Please specify the name of the space to delete."
@@ -639,7 +710,7 @@ configuration will saved to your current working directory.
                         "is either invalid or expired." new-line
                         "Please run 'kale login' to acquire a new one.")
      :invalid-solr-name
-     (str "Invalid object name." new-line
+     (str "Invalid object name '%s'." new-line
           "Solr object names should only contain "
           "alphanumeric characters, periods, hyphens and underscores.")
      :user-id-fail "Unable to determine user ID."

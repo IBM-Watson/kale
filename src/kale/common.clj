@@ -6,7 +6,7 @@
   (:require [clojure.set :as set]
             [clojure.string :as str]
             [clojure.java.io :as io]
-            [slingshot.slingshot :refer [throw+]]
+            [slingshot.slingshot :refer [try+ throw+]]
             [kale.messages.en :as en]
             [kale.messages.es :as es]
             [kale.messages.fr :as fr]))
@@ -53,6 +53,42 @@
     (fail (get-msg :unknown-language (name lang-key)))))
 
 (def ^:const new-line (System/getProperty "line.separator"))
+
+(def ^:const byte-array-class (class (byte-array 0)))
+
+(defn handle-fail
+  "kale.common/fail exception handling"
+  [{:keys [message]} exit-func]
+  (println message)
+  (exit-func))
+
+(defn handle-http
+  "HTTP exception handling"
+  [{:keys [status body trace-redirects]} exit-func]
+  (println (get-msg :http-call (first trace-redirects)))
+    (if (neg? status)
+      (println (get-msg :http-exception))
+      (println (get-msg :http-error-status status)))
+    (if (= byte-array-class (class body))
+      (println (String. body))
+      (println body))
+    (exit-func))
+
+(defn handle-other
+  "Generic exception handling"
+  [e exit-func]
+  (println (get-msg :other-exception))
+  (println (str e))
+  (exit-func))
+
+(defn try-function
+  "Try running the function, and run error-func on failure"
+  [func args exit-func]
+  (try+
+    (apply func args)
+    (catch [:type :kale.common/fail] e (handle-fail e exit-func))
+    (catch (number? (:status %)) e (handle-http e exit-func))
+    (catch Exception e (handle-other e exit-func))))
 
 ;; The value for cli-options should be in the following format:
 ;; {:opt1 #{"-opt1" "--opt1"}

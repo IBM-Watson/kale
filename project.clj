@@ -11,6 +11,7 @@
                  [org.clojure/data.codec "0.1.0"]
                  [cheshire "5.5.0"]
                  [clj-http "2.1.0"]
+                 [clj-time "0.11.0"]
                  [slingshot "0.12.2"]
                  ;; Not a direct dependency.
                  ;; This is here to lock in a specific version.
