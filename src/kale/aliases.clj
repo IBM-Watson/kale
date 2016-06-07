@@ -138,8 +138,8 @@
 (def sso-option
   #{"--sso" "-sso" "-s"})
 
-(def enterprise-option
-  #{"--enterprise" "-enterprise" "-etp"})
+(def premium-option
+  #{"--premium" "-premium" "-prem"})
 
 (def wait-option
   #{"--wait" "-wait" "-w"})

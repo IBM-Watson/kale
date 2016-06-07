@@ -111,14 +111,14 @@
                     (sut/assemble {} ["assemble" "turtle"
                                       "my-conf" "test-config.zip"] []))))))))
 
-(deftest assemble-enterprise
+(deftest assemble-premium
   (with-redefs [create test-command]
-    (is (= (str "Warning: The 'enterprise' plan is currently not available for"
+    (is (= (str "Warning: The 'premium' plan is currently not available for"
                  new-line "retrieve_and_rank services. "
                 "Using the 'standard' plan instead." new-line
-                (assemble-output "turtle-dc --enterprise" "english"))
+                (assemble-output "turtle-dc --premium" "english"))
            (with-out-str
              (is (= (str "Enhanced Information Retrieval instance 'turtle'"
                          " creation successful!")
                          (sut/assemble {} ["assemble" "turtle" "english"]
-                                          ["-etp"]))))))))
+                                          ["-prem"]))))))))

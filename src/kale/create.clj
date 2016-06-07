@@ -93,18 +93,18 @@
 
 (defn create-service-with-key
   "Create an instance of a service with credentials"
-  [state service-type service-name enterprise?]
+  [state service-type service-name premium?]
   (when (empty? service-name)
     (fail (get-msg :missing-service-name)))
   (let [cf-auth (cf/generate-auth state)
         space-guid (-> state :org-space :guid :space)
         ; Create the service
-        service-plan (if enterprise? "enterprise" "standard")
+        service-plan (if premium? "premium" "standard")
         service (create-service-with-plan
                    cf-auth space-guid service-type service-name service-plan)
         service-guid (-> service :metadata :guid)
         ; Wait for service creation to complete
-        _ (when enterprise? (wait-for-service cf-auth service-guid))
+        _ (when premium? (wait-for-service cf-auth service-guid))
 
         ; Create the service-key
         service-key (create-key-for-service cf-auth service-name service-guid)
@@ -122,7 +122,7 @@
     (str new-line (get-msg :service-created service-name) new-line))
 
 (def create-service-options {
-  :enterprise aliases/enterprise-option})
+  :premium aliases/premium-option})
 
 (defmethod create :document-conversion
   [state [cmd what service-name & args] flags]
@@ -131,7 +131,7 @@
     (create-service-with-key state
                              "document_conversion"
                              service-name
-                             (some? (options :enterprise)))))
+                             (some? (options :premium)))))
 
 (defmethod create :retrieve-and-rank
   [state [cmd what service-name & args] flags]
@@ -140,7 +140,7 @@
     (create-service-with-key state
                              "retrieve_and_rank"
                              service-name
-                             (some? (options :enterprise)))))
+                             (some? (options :premium)))))
 
 (defn wait-for-cluster
   "Wait for the cluster to become ready"
