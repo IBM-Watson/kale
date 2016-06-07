@@ -11,8 +11,8 @@
 (def assemble
   #{"assemble" "a"})
 
-(def convert
-  #{"convert" "conv"})
+(def dry-run
+  #{"dry_run" "dry-run" "dryrun" "dr"})
 
 (def create
   #{"create" "cr"})
@@ -54,7 +54,7 @@
 
 (def commands
   (apply conj (map aliases-to-keyword [:assemble
-                                       :convert
+                                       :dry-run
                                        :create
                                        :delete
                                        :get-command
@@ -78,15 +78,19 @@
 ;; The next two are both used for "select":
 ;; need to avoid collisions or even potential confusions.
 (def document-conversion
-  #{"document-conversion" "document_conversion" "doc" "dc" "d"})
+  #{"document-conversion" "document_conversion"
+    "doc" "dc" "d"})
 
 (def conversion-configuration
-  #{"conversion-configuration" "conversion-config"
-    "converter-configuration" "converter-config"
-    "convert-config"})
+  #{"conversion-configuration" "conversion_configuration"
+    "conversion-config" "conversion_config"
+    "converter-configuration" "converter_configuration"
+    "converter-config" "converter_config"
+    "convert-config" "convert_config"})
 
 (def retrieve-and-rank
-  #{"retrieve-and-rank" "retrieve_and_rank" "retrieve" "ret" "rnr" "r"})
+  #{"retrieve-and-rank" "retrieve_and_rank"
+    "retrieve" "ret" "rnr" "r"})
 
 (def guid-option
   #{"--guid" "-guid"})
@@ -98,13 +102,15 @@
   #{"clu" "clus" "clust" "cluster"})
 
 (def solr-configuration
-  #{"solr-configuration" "solr-config" "configuration" "config" "conf"})
+  #{"solr-configuration" "solr_configuration"
+    "solr-config" "solr_config"
+    "configuration" "config" "conf"})
 
 (def crawler-configuration
-  #{"crawler-configuration"
-    "crawler-config"
-    "crawl-configuration"
-    "crawl-config"
+  #{"crawler-configuration" "crawler_configuration"
+    "crawler-config" "crawler_config"
+    "crawl-configuration" "crawl_configuration"
+    "crawl-config" "crawl_config"
     "cc"})
 
 (def conversion

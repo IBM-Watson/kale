@@ -2,13 +2,13 @@
 ;; (C) Copyright IBM Corp. 2016 All Rights Reserved.
 ;;
 
-(ns kale.convert-test
+(ns kale.dry-run-test
   (:require [clojure.test :refer [deftest is]]
             [kale.common :refer [new-line set-language]]
             [kale.document-conversion :as dc]
             [slingshot.test :refer :all]
             [clj-http.fake :refer [with-fake-routes-in-isolation]]
-            [kale.convert :as sut]))
+            [kale.dry-run :as sut]))
 
 (set-language :en)
 
@@ -36,66 +36,68 @@
     \"body\" : \"Text before conversion.\",
     \"title\" : \"no-title\"
   }
-}")
+  }")
 
 (spit test-file (str "Text before conversion." new-line))
 
-(deftest convert-no-files
+(deftest dry-run-no-files
   (is (thrown+-with-msg?
        [:type :kale.common/fail]
        #"Please specify one or more file names."
-       (sut/convert {} ["conv"] []))))
+       (sut/dry-run {} ["dry-run"] []))))
 
-(deftest convert-missing-config-file
+(deftest dry-run-missing-config-file
   (is (thrown+-with-msg?
        [:type :kale.common/fail]
        (re-pattern (str "Couldn't read conversion configuration file '"
                         missing-file "'."))
-       (sut/convert {:user-selections
+       (sut/dry-run {:user-selections
                      {:conversion-configuration-file missing-file}}
-                    ["conv" test-file] []))))
+                    ["dry-run" test-file] []))))
 
-(deftest convert-invalid-config-file
+(deftest dry-run-invalid-config-file
   (spit config-file "{ \"convert_document\" : \"unclosed quote }")
   (is (thrown+-with-msg?
        [:type :kale.common/fail]
        (re-pattern (str "'" config-file "' is not valid JSON"))
-       (sut/convert {:user-selections
+       (sut/dry-run {:user-selections
                      {:conversion-configuration-file config-file}}
-                    ["conv" test-file] []))))
+                    ["dry-run" test-file] []))))
 
-(deftest convert-missing-file
+(deftest dry-run-missing-file
   (is (thrown+-with-msg?
        [:type :kale.common/fail]
        (re-pattern (str "Cannot read the file named '" missing-file "'."))
-       (sut/convert {} ["conv" missing-file] []))))
+       (sut/dry-run {} ["dry-run" missing-file] []))))
 
 ;; Should have tests for service errors, such as: invalid configuration
 
-(deftest convert-happy-path
+(deftest dry-run-happy-path
   (spit config-file "{\"conversion_target\":\"NORMALIZED_TEXT\"}")
   (with-redefs [dc/convert (fn [_ _ _ _] converted-text)]
     (is (= (str "Converting 'test-file.html' ... completed." new-line)
            (with-out-str
              (is (= converted-text
-                    (do (sut/convert
+                    (do (sut/dry-run
                          {:user-selections
                           {:conversion-configuration-file config-file}}
-                         ["conv" "test-file.html"] [])
+                         ["dry-run" "test-file.html"] [])
                         (slurp "converted/test-file.html.json")))))))))
 
-(deftest convert-no-config
+(deftest dry-run-no-config
   (with-redefs [dc/convert (fn [_ _ _ _] converted-text)]
-    (is (= (str "Warning: Using an empty configuration: \"{}\"." new-line
-            "Converting 'test-file.html' ... completed." new-line)
+    (is (= (str "Note: Using the default conversion configuration: \"{}\"."
+                new-line
+                "Converting 'test-file.html' ... completed." new-line)
            (with-out-str
              (is (= converted-text
-                    (do (sut/convert {}
-                         ["conv" "test-file.html"] [])
+                    (do (sut/dry-run {}
+                                     ["dry-run" "test-file.html"] [])
                         (slurp "converted/test-file.html.json")))))))))
 
-(deftest convert-failure
-  (is (= (str "Warning: Using an empty configuration: \"{}\"." new-line
+(deftest dry-run-failure
+  (is (= (str "Note: Using the default conversion configuration: \"{}\"."
+              new-line
               "Converting 'test-file.html' ..." new-line
               "Conversion failed for 'test-file.html':"
               new-line
@@ -106,7 +108,7 @@
            (is (= (str new-line "Conversion completed."
                        " Please find the converted output"
                        " in the directory 'converted'." new-line)
-                  (sut/convert {:services {:dc {:type "document_conversion"
+                  (sut/dry-run {:services {:dc {:type "document_conversion"
                                                 :credentials {}}}}
-                               ["conv" "test-file.html"]
+                               ["dry-run" "test-file.html"]
                                [])))))))

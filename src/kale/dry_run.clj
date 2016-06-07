@@ -2,7 +2,7 @@
 ;; (C) Copyright IBM Corp. 2016 All Rights Reserved.
 ;;
 
-(ns kale.convert
+(ns kale.dry-run
   (:require [clojure.java.io :as io]
             [kale.common :refer [fail new-line readable-files?
                                  get-command-msg get-options
@@ -15,7 +15,7 @@
 (defn get-msg
   "Return the corresponding convert message"
    [msg-key & args]
-   (apply get-command-msg :convert-messages msg-key args))
+   (apply get-command-msg :dry-run-messages msg-key args))
 
 (defn get-dry-run-config
   "Get the configuration for conversion.
@@ -53,8 +53,8 @@
              (catch Exception e
                  (println (get-msg :invalid-json))))))))
 
-(defn convert
-  "The 'convert' command."
+(defn dry-run
+  "The 'dry_run' command."
   [state [_ & filenames] flags]
   (get-options flags {})
   (if (readable-files? filenames)
