@@ -17,7 +17,7 @@
 ██╔═██╗ ██╔══██║██║     ██╔══╝
 ██║  ██╗██║  ██║███████╗███████╗
 ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝
-" (kale-version) "
+Version " (kale-version) "
 
 The command line administration tool for Enhanced Information
 Retrieval.
