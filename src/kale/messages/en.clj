@@ -721,7 +721,9 @@ these services will be provisioned using the 'standard' plan.
           "press ENTER to automatically open a browser to the URL: ")
      :prompt-passcode "Passcode? "
      :opening-url "Opening browser to URL..."
-     :browser-fail "Unable to open browser."
+     :browser-fail
+     (str "Unable to open browser. You'll need to open the URL yourself,"
+          new-line "either on this machine or a seperate one.")
 
      :invalid-solr-name
      (str "Invalid object name '%s'." new-line
