@@ -2,22 +2,22 @@
 ;; (C) Copyright IBM Corp. 2016 All Rights Reserved.
 ;;
 
-(ns kale.messages.en)
+(ns kale.messages.en
+  (:require [kale.version :refer [kale-version]]))
 
 (def ^:const new-line (System/getProperty "line.separator"))
 
 (def messages
   "English output text, keyed by area."
   {:help-messages
-    {:help
-"
+   {:help (str "
 ██╗  ██╗ █████╗ ██╗     ███████╗
 ██║ ██╔╝██╔══██╗██║     ██╔════╝
 █████╔╝ ███████║██║     █████╗
 ██╔═██╗ ██╔══██║██║     ██╔══╝
 ██║  ██╗██║  ██║███████╗███████╗
 ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝
-Version 1.5.0-SNAPSHOT
+" (kale-version) "
 
 The command line administration tool for Enhanced Information
 Retrieval.
@@ -74,7 +74,7 @@ There are two global options for each command:
   --trace   Output logging for any API calls made to Bluemix and
             Watson services.
   --help    Retrieve help information on the specified command.
-"
+")
 
      :login
 "The 'login' command connects the user to Bluemix and starts a
