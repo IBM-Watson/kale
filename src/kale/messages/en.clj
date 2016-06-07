@@ -90,14 +90,18 @@ center to manage services on. By default the endpoint is set to
 https://api.ng.bluemix.net. Using the 'login' command without
 arguments will prompt all three parameters.
 
-To log in without prompting username:
-    kale login <username>
+To log in without prompting endpoint:
+    kale login <endpoint>
 
-To log in without prompting username or endpoint:
-    kale login <username> <endpoint>
+To log in without prompting endpoint or username:
+    kale login <endpoint> <username>
 
 The password prompt can be bypassed by setting the environment
 variable 'KALE_PASSWORD' to the user's password.
+
+There is option for the 'login' command:
+  --sso   Log in using a one-time password. The user will be provided
+          a URL where they can acquire the password.
 "
 
      :logout
@@ -387,7 +391,7 @@ these services will be provisioned using the 'standard' plan.
      :unknown-option "Unknown option: %s"
      :too-many-args
      "Too many arguments provided to '%s'. Please omit '%s'."
-     :invalid-input "Invalid input"
+     :invalid-input "Invalid input."
      :missing-filenames "Please specify one or more file names."
      :unreadable-file "Cannot %s the file named '%s'."
      :unreadable-files "Cannot %s these files: %s"
@@ -408,7 +412,7 @@ these services will be provisioned using the 'standard' plan.
      :invalid-endpoint
      (str "WARNING: The parameter '%s' doesn't appear to be an endpoint."
           new-line "         Arguments to login are in the form "
-          "'kale login <username> <endpoint>'")
+          "'kale login <endpoint> <username>'")
      :using-endpoint "Using endpoint '%s'"
      :prompt-endpoint-default "Endpoint (default: %s)? "
      :using-password "Using password from environment variable 'KALE_PASSWORD'"
@@ -710,6 +714,17 @@ these services will be provisioned using the 'standard' plan.
      :bad-cf-token (str "The authentication token for this session "
                         "is either invalid or expired." new-line
                         "Please run 'kale login' to acquire a new one.")
+     :passcode-msg
+     (str new-line "To log in, you will need to provide a passcode from:"
+          new-line "%s" new-line new-line
+          "If you already have a passcode, type it in now; otherwise " new-line
+          "press ENTER to automatically open a browser to the URL: ")
+     :prompt-passcode "Passcode? "
+     :opening-url "Opening browser to URL..."
+     :browser-fail
+     (str "Unable to open browser. You'll need to open the URL yourself,"
+          new-line "either on this machine or a seperate one.")
+
      :invalid-solr-name
      (str "Invalid object name '%s'." new-line
           "Solr object names should only contain "

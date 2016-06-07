@@ -135,6 +135,9 @@
 (def organizations
   (clojure.set/union #{"organizations" "orgs"} organization))
 
+(def sso-option
+  #{"--sso" "-sso" "-s"})
+
 (def enterprise-option
   #{"--enterprise" "-enterprise" "-etp"})
 
