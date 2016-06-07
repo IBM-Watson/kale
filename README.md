@@ -43,9 +43,9 @@ running `kale`.
 ```
 $ alias 'kale=java -jar /Users/ba/Downloads/kale-1.4.0-standalone.jar'
 $ kale login
-Username? ba@us.ibm.com
 Endpoint (default: https://api.ng.bluemix.net)?
 Using endpoint 'https://api.ng.bluemix.net'
+Username? ba@us.ibm.com
 Password?
 Logging in...
 Using org 'ba@us.ibm.com'
