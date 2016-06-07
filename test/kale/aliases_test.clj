@@ -8,7 +8,7 @@
 
 (def alias-count-for-commands
   (apply + (map count [sut/assemble
-                       sut/convert
+                       sut/dry-run
                        sut/create
                        sut/delete
                        sut/get-command

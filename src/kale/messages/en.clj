@@ -64,7 +64,7 @@ Commands:
     kale refresh
     kale assemble <name> english|german|spanish
     kale get solr-configuration <name>
-    kale convert <file>
+    kale dry_run <file>
     kale search <query>
 
 Help on individual commands can be found by running:
@@ -247,22 +247,23 @@ can also be selected.
     kale select conversion-configuration <file.json>
 "
 
-     :convert
-"Convert one or more files through the Document Conversion service.
-The conversion is done via the 'dry_run' option to the 'index_document'
-API of the Document Conversion service.  This meant to test how files
-will be converted before running the Data Crawler.
+     :dry-run
+"Dry run of conversion for one or more files through the Document
+Conversion service. The conversion is done via the 'dry_run' option to
+the 'index_document' API of the Document Conversion service. 'dry_run'
+is used to test how files will be converted before running the Data
+Crawler to upload, convert and index large volumes of documents.
 
 The converted files will be placed in the 'converted' directory
 under your current working directory.
 
-    kale convert reliability-study.doc
+    kale dry_run reliability-study.doc
 
 Will create a converted file: 'converted/reliability-study.doc.json'
 
 Multiple files can be converted via:
 
-    kale convert fileA.doc fileB.doc ...
+    kale dry_run fileA.doc fileB.doc ...
 "
 
      :refresh
@@ -683,8 +684,8 @@ these services will be provisioned using the 'standard' plan.
      :unknown-config "A Solr configuration named '%s' does not exist."
      :saved-config "Configuration saved into '%s.zip'."}
 
-  :convert-messages
-    {:empty-config "Warning: Using an empty configuration: \"{}\"."
+  :dry-run-messages
+    {:empty-config "Note: Using the default conversion configuration: \"{}\"."
      :converting "Converting '%s' ..."
      :conversion-failed "Conversion failed for '%s':"
      :completed " completed."

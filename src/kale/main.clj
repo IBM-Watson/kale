@@ -8,7 +8,7 @@
             [kale.common :refer [fail try-function get-command-msg
                                  set-trace set-language]]
             [kale.assemble]
-            [kale.convert]
+            [kale.dry-run]
             [kale.create]
             [kale.delete]
             [kale.persistence]
@@ -63,7 +63,7 @@
 (def verbs
   "Our supported verbs and the functions implementing each"
   {:assemble       kale.assemble/assemble
-   :convert        kale.convert/convert
+   :dry-run        kale.dry-run/dry-run
    :create         kale.create/create
    :delete         kale.delete/delete
    :get-command    kale.get-command/get-command
