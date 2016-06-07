@@ -5,7 +5,7 @@
 (ns kale.cloud-foundry-test
   (:require [kale.cloud-foundry :as cf]
             [kale.cloud-foundry-constants :refer :all]
-            [kale.common :refer [set-language prompt-user]]
+            [kale.common :refer [set-language prompt-user new-line]]
             [clj-http.fake :refer [with-fake-routes-in-isolation]]
             [cheshire.core :as json]
             [clojure.test :as t :refer [deftest is]]
@@ -67,6 +67,14 @@
             :refresh_token "REFRESH_TOKEN"}
            (cf/get-oauth-tokens "redshirt" "scotty" (cf-auth :url))))))
 
+(def sso-prompt-output
+  (str new-line
+       "To log in, you will need to provide a passcode from:"
+       new-line "https://login.ng.bluemix.net/UAALoginServerWAR/passcode"
+       new-line new-line
+       "If you already have a passcode, type it in now; otherwise " new-line
+       "press ENTER to automatically open a browser to the URL: "))
+
 (deftest get-oauth-tokens-sso
   (with-fake-routes-in-isolation
     {(cf-url "/v2/info")
@@ -77,14 +85,16 @@
      (respond {:body (json/encode
                        {:prompts {:passcode
                          ["password"
-                          "One Time Code (Get one at URL)"]}})})
+                          (str "One Time Code (Get one at "
+                               "https://login.ng.bluemix.net/"
+                               "UAALoginServerWAR/passcode)")]}})})
      "https://login.ng.bluemix.net/UAALoginServerWAR/oauth/token"
      (respond {:body (json/encode {:access_token "ACCESS_TOKEN"
                                    :refresh_token "REFRESH_TOKEN"})})}
     (with-redefs [prompt-user (fn [prompt _]
-                                (is (= (str "One Time Code (Get one at URL)? ")
-                                       prompt)
-                                "CODE"))]
+                                (is (= sso-prompt-output
+                                       prompt))
+                                "CODE")]
       (is (= {:access_token "ACCESS_TOKEN"
               :refresh_token "REFRESH_TOKEN"}
              (cf/get-oauth-tokens-sso (cf-auth :url)))))))

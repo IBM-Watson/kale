@@ -391,7 +391,7 @@ these services will be provisioned using the 'standard' plan.
      :unknown-option "Unknown option: %s"
      :too-many-args
      "Too many arguments provided to '%s'. Please omit '%s'."
-     :invalid-input "Invalid input"
+     :invalid-input "Invalid input."
      :missing-filenames "Please specify one or more file names."
      :unreadable-file "Cannot %s the file named '%s'."
      :unreadable-files "Cannot %s these files: %s"
@@ -714,6 +714,15 @@ these services will be provisioned using the 'standard' plan.
      :bad-cf-token (str "The authentication token for this session "
                         "is either invalid or expired." new-line
                         "Please run 'kale login' to acquire a new one.")
+     :passcode-msg
+     (str new-line "To log in, you will need to provide a passcode from:"
+          new-line "%s" new-line new-line
+          "If you already have a passcode, type it in now; otherwise " new-line
+          "press ENTER to automatically open a browser to the URL: ")
+     :prompt-passcode "Passcode? "
+     :opening-url "Opening browser to URL..."
+     :browser-fail "Unable to open browser."
+
      :invalid-solr-name
      (str "Invalid object name '%s'." new-line
           "Solr object names should only contain "

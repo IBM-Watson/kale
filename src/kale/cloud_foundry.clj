@@ -69,13 +69,25 @@
       (set-trace tracing?)
       tokens)))
 
+(defn get-passcode
+  [passcode-msg]
+  (let [url (re-find #"https.*(?=\))" passcode-msg)
+        prompt (get-msg :passcode-msg url)
+        response (prompt-user prompt true)]
+    (if (empty? response)
+      (do (try (println (get-msg :opening-url))
+               (.browse (java.awt.Desktop/getDesktop)
+                        (java.net.URI/create url))
+               (catch Exception _ (println (get-msg :browser-fail))))
+          (prompt-user (get-msg :prompt-passcode) false))
+      response)))
+
 (defn get-oauth-tokens-sso
   [url]
   (let [endpoint-info (cf-json :get {:url url} "/v2/info")
         login-url (endpoint-info :authorization_endpoint)
         login-info (cf-json :get {:url login-url} "/login")
-        prompt (str (-> login-info :prompts :passcode second) "? ")
-        passcode (prompt-user prompt false)
+        passcode (get-passcode (-> login-info :prompts :passcode second))
         tracing? @trace-enabled]
     ;; Don't trace an API call using user credentials!
     (set-trace false)
