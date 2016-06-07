@@ -132,13 +132,13 @@ Example of creating a service:
 Services are provisioned under different service plans, which determine
 how the user is charged for traffic and the resources available to
 the services. By default services are provisioned using the 'standard'
-plan. The 'enterprise' plan provides improved resources than the
+plan. The 'premium' plan provides improved resources than the
 typical 'standard' plan. Services are created using this plan by
-setting the enterprise option when creating the service, eg:
+setting the premium option when creating the service, eg:
 
-    kale create <service-type> <name> --enterprise
+    kale create <service-type> <name> --premium
 
-Note that this plan is only available on orgs that allow for enterprise
+Note that this plan is only available on orgs that allow for premium
 provisioning.
 
 The 'create' command can create clusters, Solr configurations and
@@ -364,13 +364,13 @@ cluster. When <cluster-size> is not specified the command will use the
 'free' size when creating a Solr cluster. A new space will be created to
 store the components.
 
-Services can be provisioned using the 'enterprise' plan by setting the
-enterprise flag:
+Services can be provisioned using the 'premium' plan by setting the
+premium flag:
 
-    kale assemble <base-name> <language> --enterprise
+    kale assemble <base-name> <language> --premium
 
-Note that 'enterprise' provisioning is not currently available for
-Retrieve and Rank services.  Regardless of setting the enterprise flag,
+Note that 'premium' provisioning is not currently available for
+Retrieve and Rank services.  Regardless of setting the premium flag,
 these services will be provisioned using the 'standard' plan.
 "
 
@@ -518,8 +518,8 @@ these services will be provisioned using the 'standard' plan.
                    "an existing one.")
      :cluster-size "Cluster size must be an integer in the range of 1 to 7."
 
-     :no-rnr-enterprise
-     (str "Warning: The 'enterprise' plan is currently not available for"
+     :no-rnr-premium
+     (str "Warning: The 'premium' plan is currently not available for"
           new-line
           "retrieve_and_rank services. Using the 'standard' plan instead.")
      :running-cmd "[Running command 'kale %s%s']"

@@ -63,7 +63,7 @@
     (fail (get-msg :cluster-size))))
 
 (def assemble-options {
-  :enterprise aliases/enterprise-option})
+  :premium aliases/premium-option})
 
 (defn assemble
   "Run the series of commands for creating the two services and
@@ -76,8 +76,8 @@
         options (get-options flags assemble-options)
         starting-space (-> state :org-space :space)]
     (check-assemble-args base-name config-name config-zip cluster-size)
-    (when (some? (options :enterprise))
-      (println (get-msg :no-rnr-enterprise)))
+    (when (some? (options :premium))
+      (println (get-msg :no-rnr-premium)))
 
     ;; Create the space to put the instance in
     (wizard-command
@@ -86,7 +86,7 @@
     ;; Create the individual components in the newly made space
     (run-wizard
       [[create ["create" "document_conversion" (str base-name "-dc")]
-               (if (some? (options :enterprise)) ["--enterprise"] [])]
+               (if (some? (options :premium)) ["--premium"] [])]
        [create ["create" "retrieve_and_rank" (str base-name "-rnr")]
                []]
        [create ["create" "cluster" (str base-name "-cluster") cluster-size]

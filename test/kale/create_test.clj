@@ -122,12 +122,12 @@
   (with-redefs [cf/get-service-plan-guid (fn [_ _ _ _] nil)]
     (is (thrown+-with-msg?
       [:type :kale.common/fail]
-      (re-pattern (str "Plan 'enterprise' is not available "
+      (re-pattern (str "Plan 'premium' is not available "
                        "for service type 'retrieve_and_rank' "
                        "in this organization."))
       (sut/create-service-with-plan
         c/cf-auth "SPACE_GUID" "retrieve_and_rank"
-                  "new-service" "enterprise")))))
+                  "new-service" "premium")))))
 
 (deftest create-key-for-service
   (with-fake-routes-in-isolation
@@ -175,10 +175,10 @@
                                    "new-service"
                                    false)))
 
-(deftest create-service-instance-enterprise
+(deftest create-service-instance-premium
   (with-redefs [sut/create-service-with-plan (fn [_ _ _ _ service-plan]
                                                (is (= service-plan
-                                                      "enterprise"))
+                                                      "premium"))
                                                service-instance)
                 sut/create-key-for-service (fn [_ _ _] service-key)
                 sut/wait-for-service (fn [_ _])
