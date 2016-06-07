@@ -3,11 +3,29 @@
 ;;
 
 (ns kale.watson-service
-    (:require [kale.common :refer [trace-enabled get-command-msg]]
-              [clojure.pprint :refer [pprint]]
-              [cheshire.core :as json]
-              [clj-http.client :as client]
-              [slingshot.slingshot :refer [throw+ try+]]))
+  (:require [kale.common :refer [trace-enabled get-command-msg]]
+            [kale.version :refer [kale-version]]
+            [clojure.pprint :refer [pprint]]
+            [cheshire.core :as json]
+            [clj-http.client :as client]
+            [slingshot.slingshot :refer [throw+ try+]]
+            [clojure.string :as str]))
+
+(def props #{"java.vendor"
+             "java.version"
+             "os.arch"
+             "os.name"
+             "os.version"})
+
+(def user-agent-string
+  (str "ibm-watson-kale/" (kale-version)
+       " ("
+       (str/join "; " (map #(.toString %)
+                           (filter (fn [[k v]] (props k))
+                                   (System/getProperties))))
+       ")"))
+
+(def user-agent-header {:user-agent user-agent-string})
 
 (defn get-msg
   "Return the corresponding service message"
@@ -49,7 +67,9 @@
   ([method endpoint path] (raw method endpoint path {}))
   ([method {:keys [url username password token]} path options]
    (try+ (let [url (str url path)
-               request (merge {:method method :url url} options)
+               request (merge {:method method
+                               :headers user-agent-header
+                               :url url} options)
                authorization (generate-auth username password token)
                response (client/request (merge request authorization))]
 
