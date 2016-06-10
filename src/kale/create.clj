@@ -5,22 +5,27 @@
 (ns kale.create
   (:require [cheshire.core :as json]
             [clj-time.core :as t]
+            [clojure.java.io :as io]
+            [clojure.string :as str]
             [kale.aliases :as aliases]
             [kale.cloud-foundry :as cf]
-            [kale.common :refer [fail readable-files? new-line
-                                get-options reject-extra-args
-                                unknown-action get-command-msg]]
+            [kale.common :refer [fail
+                                 get-command-msg
+                                 get-options
+                                 new-line
+                                 readable-files?
+                                 reject-extra-args
+                                 unknown-action]]
             [kale.getter :as my]
             [kale.persistence :as persist]
             [kale.retrieve-and-rank :as rnr]
             [kale.update :refer [update-user-selection]]
-            [clojure.java.io :as io]
-            [clojure.string :as str]))
+            [slingshot.slingshot :refer [try+]]))
 
 (defn get-msg
   "Return the corresponding create message"
-   [msg-key & args]
-   (apply get-command-msg :create-messages msg-key args))
+  [msg-key & args]
+  (apply get-command-msg :create-messages msg-key args))
 
 (def create-items
   {:cluster aliases/cluster
@@ -38,9 +43,9 @@
 (defmethod create :unknown
   [state [cmd what & args] flags]
   (unknown-action what cmd
-                 ["space" "document_conversion" "retrieve_and_rank"
-                  "cluster" "solr-configuration" "collection"
-                  "crawler-configuration"]))
+                  ["space" "document_conversion" "retrieve_and_rank"
+                   "cluster" "solr-configuration" "collection"
+                   "crawler-configuration"]))
 
 (defmethod create :space
   [state [cmd what space-name & args] flags]
@@ -56,18 +61,18 @@
     (persist/write-state (merge state
                                 {:services {}
                                  :org-space
-                                  {:org (-> state :org-space :org)
-                                   :space space-name
-                                   :guid
-                                    {:org org-guid
-                                     :space space-guid}}}))
+                                 {:org (-> state :org-space :org)
+                                  :space space-name
+                                  :guid
+                                  {:org org-guid
+                                   :space space-guid}}}))
     (str new-line (get-msg :space-created space-name) new-line)))
 
 (defn create-service-with-plan
   "Create an instance of a service using the specified plan"
   [cf-auth space-guid service-type service-name plan-name]
   (if-let [plan-guid (cf/get-service-plan-guid
-                   cf-auth space-guid service-type plan-name)]
+                      cf-auth space-guid service-type plan-name)]
     (do (println (get-msg :creating-service
                           service-type service-name plan-name))
         (cf/create-service cf-auth service-name space-guid plan-guid))
@@ -87,9 +92,9 @@
 
 (defn create-key-for-service
   "Create a service-key for the given service guid"
-   [cf-auth service-name service-guid]
-   (println (get-msg :creating-key service-name))
-   (cf/create-service-key cf-auth service-name service-guid))
+  [cf-auth service-name service-guid]
+  (println (get-msg :creating-key service-name))
+  (cf/create-service-key cf-auth service-name service-guid))
 
 (defn create-service-with-key
   "Create an instance of a service with credentials"
@@ -98,19 +103,19 @@
     (fail (get-msg :missing-service-name)))
   (let [cf-auth (cf/generate-auth state)
         space-guid (-> state :org-space :guid :space)
-        ; Create the service
+        ;; Create the service
         service-plan (if premium? "premium" "standard")
         service (create-service-with-plan
-                   cf-auth space-guid service-type service-name service-plan)
+                 cf-auth space-guid service-type service-name service-plan)
         service-guid (-> service :metadata :guid)
-        ; Wait for service creation to complete
+        ;; Wait for service creation to complete
         _ (when premium? (wait-for-service cf-auth service-guid))
 
-        ; Create the service-key
+        ;; Create the service-key
         service-key (create-key-for-service cf-auth service-name service-guid)
         key-guid (-> service-key :metadata :guid)
         credentials (-> service-key :entity :credentials)
-        ; Create the new service entry and write it
+        ;; Create the new service entry and write it
         service-entry {(keyword service-name) {:guid service-guid
                                                :type service-type
                                                :plan service-plan
@@ -119,10 +124,9 @@
     (update-user-selection (update-in state [:services] merge service-entry)
                            (keyword service-type)
                            service-name))
-    (str new-line (get-msg :service-created service-name) new-line))
+  (str new-line (get-msg :service-created service-name) new-line))
 
-(def create-service-options {
-  :premium aliases/premium-option})
+(def create-service-options {:premium aliases/premium-option})
 
 (defmethod create :document-conversion
   [state [cmd what service-name & args] flags]
@@ -163,13 +167,9 @@
       (flush))
     (when (>= (wait-time start-time) 30)
       (fail (get-msg :cluster-timed-out)))
-    ;; Sadly there is a small delay between when a cluster saying that it
-    ;; is ready and when it is *actually* ready.
-    (Thread/sleep 8000)
     (println)))
 
-(def create-cluster-options {
-  :wait aliases/wait-option})
+(def create-cluster-options {:wait aliases/wait-option})
 
 (defmethod create :cluster
   [state [cmd what cluster-name cluster-size & args] flags]
@@ -208,57 +208,82 @@
 (defmethod create :solr-configuration
   [state [cmd what config-name config-zip & args] flags]
   (reject-extra-args args cmd what)
-  (get-options flags {})
-  (when-not config-name
-    (fail (get-msg :missing-config-name)))
-  (rnr/validate-solr-name config-name)
-  (let [the-zip (if config-zip
-                  (do (readable-files? [config-zip])
-                      (io/file config-zip))
-                  (let [resource (io/resource (str config-name ".zip"))]
-                    (when-not resource
-                      (fail (get-msg :unknown-packaged-config config-name)))
-                    (io/input-stream resource)))
-        {:keys [service-key solr_cluster_id cluster_name]} (my/cluster state)]
-    (when-not service-key
-      (fail (get-msg :unknown-cluster-config)))
-    (println (get-msg :creating-config
-                      config-name (name service-key) cluster_name))
-    (rnr/upload-config (my/creds-for-service state (keyword service-key))
-                       solr_cluster_id
-                       config-name
-                       the-zip)
-    (update-user-selection state
-                           :config
-                           {:service-key (name service-key)
-                            :cluster-id solr_cluster_id
-                            :config-name config-name}))
+  (let [options (get-options flags {:retry aliases/retry-option})]
+    (when-not config-name
+      (fail (get-msg :missing-config-name)))
+    (rnr/validate-solr-name config-name)
+    (let [max-tries (if (:retry options) 10 0)
+          the-zip (if config-zip
+                    (do (readable-files? [config-zip])
+                        (io/file config-zip))
+                    (let [resource (io/resource (str config-name ".zip"))]
+                      (when-not resource
+                        (fail (get-msg :unknown-packaged-config config-name)))
+                      (io/input-stream resource)))
+          {:keys [service-key solr_cluster_id cluster_name]} (my/cluster state)]
+      (when-not service-key
+        (fail (get-msg :unknown-cluster-config)))
+
+      (loop [try-count 0]
+        (println (get-msg :creating-config
+                          config-name (name service-key) cluster_name))
+        (when (try+
+               (rnr/upload-config
+                (my/creds-for-service state (keyword service-key))
+                solr_cluster_id
+                config-name
+                the-zip)
+               false
+               (catch (and (< try-count max-tries) (= 404 (:status %))) ex
+                 true))
+          (println (get-msg :retry-config))
+          (Thread/sleep 2000)
+          (recur (inc try-count))))
+
+      (update-user-selection state
+                             :config
+                             {:service-key (name service-key)
+                              :cluster-id solr_cluster_id
+                              :config-name config-name})))
   (str new-line (get-msg :config-created config-name) new-line))
 
 (defmethod create :collection
   [state [cmd what collection-name & args] flags]
   (reject-extra-args args cmd what)
-  (get-options flags {})
-  (when-not collection-name
-    (fail (get-msg :missing-collection-name)))
-  (let [{:keys [service-key cluster_name solr_cluster_id]} (my/cluster state)
-        {:keys [config-name]} (my/solr-configuration state)]
-    (when-not service-key
-      (fail (get-msg :unknown-cluster-collection)))
-    (when-not config-name
-      (fail (get-msg :unknown-config)))
-    (println (get-msg :creating-collection
-                      collection-name (name service-key)
-                      cluster_name config-name))
-    (rnr/create-collection
-      (my/creds-for-service state (keyword service-key))
-      solr_cluster_id config-name collection-name)
-    (update-user-selection state
-                           :collection
-                           {:service-key service-key
-                            :cluster-id solr_cluster_id
-                            :cluster-name cluster_name
-                            :collection-name collection-name})
+  (let [options (get-options flags {:retry aliases/retry-option})]
+    (when-not collection-name
+      (fail (get-msg :missing-collection-name)))
+    (let [max-tries (if (:retry options) 10 0)
+          {:keys [service-key cluster_name solr_cluster_id]} (my/cluster state)
+          {:keys [config-name]} (my/solr-configuration state)]
+      (when-not service-key
+        (fail (get-msg :unknown-cluster-collection)))
+      (when-not config-name
+        (fail (get-msg :unknown-config)))
+
+      (loop [try-count 0]
+        (println (get-msg :creating-collection
+                          collection-name (name service-key)
+                          cluster_name config-name))
+        (when (try+
+               (rnr/create-collection
+                (my/creds-for-service state (keyword service-key))
+                solr_cluster_id
+                config-name
+                collection-name)
+               false
+               (catch (and (< try-count max-tries) (= 404 (:status %))) ex
+                 true))
+          (println (get-msg :retry-config))
+          (Thread/sleep 2000)
+          (recur (inc try-count))))
+
+      (update-user-selection state
+                             :collection
+                             {:service-key service-key
+                              :cluster-id solr_cluster_id
+                              :cluster-name cluster_name
+                              :collection-name collection-name}))
     (str new-line (get-msg :collection-created collection-name) new-line)))
 
 (defn fail-missing-item

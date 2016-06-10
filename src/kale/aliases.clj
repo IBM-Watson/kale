@@ -144,6 +144,9 @@
 (def wait-option
   #{"--wait" "-wait" "-w"})
 
+(def retry-option
+  #{"--retry" "-retry" "-r"})
+
 (def yes-option
   #{"--yes" "-yes" "--y" "-y"})
 

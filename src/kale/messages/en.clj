@@ -474,6 +474,8 @@ these services will be provisioned using the 'standard' plan.
           new-line "Please create a Solr cluster or select "
                    "an existing one.")
      :creating-config "Creating configuration '%s' in '%s/%s'."
+     :retry-config
+     "Creating configuration failed with a 'not found' error. Retrying..."
      :config-created  (str "Solr configuration named '%s' has been created "
                            "and selected for future actions.")
 
@@ -488,6 +490,8 @@ these services will be provisioned using the 'standard' plan.
           "Please upload a Solr configuration or select an existing one.")
      :creating-collection
      "Creating collection '%s' in '%s/%s' using config '%s'."
+     :retry-collection
+     "Creating collection failed with a 'not found' error. Retrying..."
      :collection-created (str "Collection '%s' has been created"
                               " and selected for future actions.")
 

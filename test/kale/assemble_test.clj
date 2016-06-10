@@ -85,8 +85,8 @@
        "[Running command 'kale create retrieve_and_rank turtle-rnr']" new-line
        "[Running command 'kale create cluster turtle-cluster --wait']" new-line
        "[Running command 'kale create solr-configuration " create-config-args
-       "']" new-line
-       "[Running command 'kale create collection turtle-collection']"
+       " --retry']" new-line
+       "[Running command 'kale create collection turtle-collection --retry']"
        new-line))
 
 (deftest assemble-prepackaged-config
