@@ -28,7 +28,8 @@
                     (str/join " " (remove nil? args))
                     (str (when (seq flags) " ")
                          (str/join " " flags))))
-  (println (try-function command [state args flags] rollback)))
+  (if-let [out (try-function command [state args flags] rollback)]
+    (println out)))
 
 (defn run-wizard
   "Run a list of commands and rollback if any of the commands fail"

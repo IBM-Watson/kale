@@ -22,14 +22,14 @@
   (common/fail "Something bad happened."))
 
 (deftest run-assemble-success
-  (is (= (str "[Running command 'kale foo bar']" new-line "nil" new-line
-              "[Running command 'kale bar foo -a']" new-line "nil" new-line)
+  (is (= (str "[Running command 'kale foo bar']" new-line
+              "[Running command 'kale bar foo -a']" new-line)
          (with-out-str (sut/run-wizard [[test-command ["foo" "bar"] []]
                                         [test-command ["bar" "foo"] ["-a"]]]
                                        (fn [] "rollback"))))))
 
 (deftest run-wizard-rollback
-  (is (= (str "[Running command 'kale foo bar']" new-line "nil" new-line
+  (is (= (str "[Running command 'kale foo bar']" new-line
               "[Running command 'kale bar foo -a']" new-line
               "Something bad happened." new-line
               "rollback" new-line)
@@ -80,17 +80,14 @@
 (defn assemble-output
   [create-dc-args create-config-args]
   (str "[Running command 'kale create space turtle']" new-line
-       "nil" new-line
        "[Running command 'kale create document_conversion " create-dc-args
-       "']" new-line "nil" new-line
+       "']" new-line
        "[Running command 'kale create retrieve_and_rank turtle-rnr']" new-line
-       "nil" new-line
        "[Running command 'kale create cluster turtle-cluster --wait']" new-line
-       "nil" new-line
        "[Running command 'kale create solr-configuration " create-config-args
-       "']" new-line "nil" new-line
+       "']" new-line
        "[Running command 'kale create collection turtle-collection']"
-       new-line "nil" new-line))
+       new-line))
 
 (deftest assemble-prepackaged-config
   (with-redefs [create test-command]
