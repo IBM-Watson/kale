@@ -49,7 +49,7 @@
   (is (= "list" (sut/get-cmd-name :list-info))))
 
 (deftest set-trace-flag
-  (with-out-str (sut/-main "action" "--trace"))
+  (with-out-str (sut/-main "help" "--trace"))
   (is @common/trace-enabled)
   (common/set-trace false))
 
@@ -60,7 +60,7 @@
                                                   {:language "jk"}})
                   common/set-language (fn [new-key]
                                         (reset! lang-key new-key))]
-    (with-out-str (sut/-main "action"))
+    (with-out-str (sut/-main "help"))
     (is (= @lang-key :jk)))))
 
 (deftest set-help-flag

@@ -4,7 +4,7 @@
 
 (ns kale.help
   (:require [kale.aliases :refer [commands]]
-            [kale.common :refer [my-language get-options
+            [kale.common :refer [my-language fail get-options
                                  get-command-msg]]))
 
 (defn get-msg
@@ -20,4 +20,4 @@
                   :help)]
     (do (get-options flags {})
         (get-msg what))
-    (get-msg :no-help-msg what-str)))
+    (fail (get-msg :no-help-msg what-str))))
