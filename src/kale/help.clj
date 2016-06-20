@@ -4,7 +4,7 @@
 
 (ns kale.help
   (:require [kale.aliases :refer [commands]]
-            [kale.common :refer [my-language get-options
+            [kale.common :refer [my-language fail get-options
                                  get-command-msg]]))
 
 (defn get-msg
@@ -15,9 +15,9 @@
 (defn help
   "The help action. Defaults to English."
   [state [cmd what-str & args] flags]
-  (get-options flags {})
   (if-let [what (if (some? what-str)
                   (commands what-str)
                   :help)]
-    (get-msg what)
-    (get-msg :no-help-msg what-str)))
+    (do (get-options flags {})
+        (get-msg what))
+    (fail (get-msg :no-help-msg what-str))))
