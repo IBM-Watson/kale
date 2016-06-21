@@ -101,7 +101,12 @@
        (str/join
         (str new-line new-line)
         (map (fn [[key {:keys [type plan guid credentials] :as service}]]
-               (str (get-msg :service-info plan type (name key))
+               (str (get-msg :service-info
+                             (if plan
+                               (str "[" plan "] ")
+                               "")
+                             (or type "user-provided")
+                             (name key))
                     (when guids? (str new-line (get-msg :service-guid guid)))
                     (when (and creds? (some? credentials))
                       (str new-line (get-msg :service-cred) new-line
