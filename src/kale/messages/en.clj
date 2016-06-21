@@ -653,7 +653,7 @@ these services will be provisioned using the 'standard' plan.
      :cluster-configs "         configs: "
      :cluster-collections "         collections: "
      :available-services "Available services in the '%s' space:"
-     :service-info "   [%s] %s service named: %s"
+     :service-info "   %s%s service named: %s"
      :service-guid "      Service GUID: %s"
      :service-cred "      Service credentials:"
      :service-no-cred "      WARNING: This service has no access credentials."

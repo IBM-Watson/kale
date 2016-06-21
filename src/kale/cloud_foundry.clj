@@ -122,7 +122,7 @@
   [{:keys [guid name service_plan]} service-keys]
   (let [service-type (-> service_plan :service :label)
         service-key (find-key service-keys guid)
-        plan-name (service_plan :name)
+        plan-name (:name service_plan)
         key-guid (-> service-key :metadata :guid)
         credentials (-> service-key :entity :credentials)]
     {(keyword name) {:guid guid
@@ -215,7 +215,7 @@
   (let [service-url (str "/v2/service_instances/" service-guid)
         service (cf-json :get cf-auth service-url)
         last-operation (-> service :entity :last_operation)]
-    (str (last-operation :type) " " (last-operation :state))))
+    (str (:type last-operation) " " (:state last-operation))))
 
 (defn delete-service-key
   "Delete a specific service key from a service instance"
