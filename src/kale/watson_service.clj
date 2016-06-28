@@ -20,9 +20,8 @@
 (def user-agent-string
   (str "ibm-watson-kale/" (kale-version)
        " ("
-       (str/join "; " (map #(.toString %)
-                           (filter (fn [[k v]] (props k))
-                                   (System/getProperties))))
+       (str/join "; " (map str (filter (fn [[k v]] (props k))
+                                       (System/getProperties))))
        ")"))
 
 (def user-agent-header {:user-agent user-agent-string})
