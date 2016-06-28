@@ -12,6 +12,7 @@
                                 unknown-action get-command-msg
                                 try-function]]
             [kale.persistence :as persist]
+            [kale.platform :refer [parse-int]]
             [kale.retrieve-and-rank :as rnr]
             [clojure.java.io :as io]
             [clojure.string :as str]))
@@ -42,7 +43,7 @@
   "If the string is an integer, return the numerical value. Otherwise
   return nil."
   [x]
-  (try (Integer. x) (catch Exception _)))
+  (try (parse-int x) (catch Exception _)))
 
 (defn check-assemble-args
   "Check if there will be any errors when running the 'assemble' commands"

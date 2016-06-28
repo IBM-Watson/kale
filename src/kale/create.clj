@@ -12,6 +12,7 @@
                                 unknown-action get-command-msg]]
             [kale.getter :as my]
             [kale.persistence :as persist]
+            [kale.platform :refer [parse-int]]
             [kale.retrieve-and-rank :as rnr]
             [kale.update :refer [update-user-selection]]
             [clojure.java.io :as io]
@@ -176,7 +177,7 @@
       (fail (get-msg :missing-cluster-name)))
     (rnr/validate-solr-name cluster-name)
     (when cluster-size
-      (try (let [i (Integer. cluster-size)]
+      (try (let [i (parse-int cluster-size)]
              (when-not (< 0 i 8)
                (fail (get-msg :cluster-size))))
            (catch NumberFormatException e
