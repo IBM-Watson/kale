@@ -6,7 +6,6 @@
   (:require [kale.assemble :as sut]
             [kale.create :refer [create]]
             [kale.select :refer [select]]
-            [kale.delete :refer [delete]]
             [clj-time.core :refer [in-minutes]]
             [kale.common :refer [new-line] :as common]
             [clojure.test :refer [deftest is]]

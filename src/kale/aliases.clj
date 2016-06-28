@@ -17,7 +17,7 @@
 (def create
   #{"create" "cr"})
 
-(def delete
+(def delete-command
   #{"delete" "del"})
 
 (def get-command
@@ -56,7 +56,7 @@
   (apply conj (map aliases-to-keyword [:assemble
                                        :dry-run
                                        :create
-                                       :delete
+                                       :delete-command
                                        :get-command
                                        :help
                                        :list-info

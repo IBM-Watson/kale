@@ -10,7 +10,7 @@
             [kale.assemble]
             [kale.dry-run]
             [kale.create]
-            [kale.delete]
+            [kale.delete-command]
             [kale.persistence]
             [kale.get-command]
             [kale.help]
@@ -65,7 +65,7 @@
   {:assemble       kale.assemble/assemble
    :dry-run        kale.dry-run/dry-run
    :create         kale.create/create
-   :delete         kale.delete/delete
+   :delete-command kale.delete-command/delete-command
    :get-command    kale.get-command/get-command
    :help           kale.help/help
    :list-info      kale.list/list-info

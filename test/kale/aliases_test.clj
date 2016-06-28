@@ -10,7 +10,7 @@
   (apply + (map count [sut/assemble
                        sut/dry-run
                        sut/create
-                       sut/delete
+                       sut/delete-command
                        sut/get-command
                        sut/help
                        sut/list-info

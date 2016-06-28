@@ -2,7 +2,7 @@
 ;; (C) Copyright IBM Corp. 2016 All Rights Reserved.
 ;;
 
-(ns kale.delete
+(ns kale.delete-command
   (:require [kale.common :refer [fail new-line get-command-msg
                                  prompt-user-yn get-options
                                  reject-extra-args unknown-action]]
@@ -26,11 +26,11 @@
    :solr-configuration aliases/solr-configuration
    :collection aliases/collection})
 
-(defmulti delete (fn [_ [_ what & _] _]
+(defmulti delete-command (fn [_ [_ what & _] _]
                    (or (some (fn [[k a]] (when (a what) k)) delete-items)
                        :unknown)))
 
-(defmethod delete :unknown
+(defmethod delete-command :unknown
   [state [cmd what & args] flags]
   (unknown-action what cmd ["space" "retrieve_and_rank"
                             "document_conversion" "cluster"
@@ -39,7 +39,7 @@
 (def delete-options
   {:yes aliases/yes-option})
 
-(defmethod delete :space
+(defmethod delete-command :space
   [state [cmd what space-name & args] flags]
   (reject-extra-args args cmd what)
   (let [options (get-options flags delete-options)]
@@ -67,7 +67,7 @@
       (cf/delete-space cf-auth space-guid)
       (str new-line (get-msg :space-deleted space-name) new-line))))
 
-(defmethod delete :retrieve-and-rank
+(defmethod delete-command :retrieve-and-rank
   [state [cmd what service-name & args] flags]
   (reject-extra-args args cmd what)
   (let [options (get-options flags delete-options)]
@@ -101,7 +101,7 @@
                              (keyword type) (fn [_] true))
       (str new-line (get-msg :rnr-deleted service-name) new-line))))
 
-(defmethod delete :document-conversion
+(defmethod delete-command :document-conversion
   [state [cmd what service-name & args] flags]
   (reject-extra-args args cmd what)
   (let [options (get-options flags delete-options)]
@@ -127,7 +127,7 @@
                              (keyword type) (fn [_] true))
       (str new-line (get-msg :dc-deleted service-name) new-line))))
 
-(defmethod delete :cluster
+(defmethod delete-command :cluster
   ;; Delete a Solr cluster given its name.
 
   ;; The unfortunate thing here is that the retrieve_and_rank service
@@ -170,7 +170,7 @@
              (get-msg :cluster-deleted cluster-name (name service-key))
              new-line)))))
 
-(defmethod delete :solr-configuration
+(defmethod delete-command :solr-configuration
   [state [cmd what config-name & args] flags]
   (reject-extra-args args cmd what)
   (get-options flags {})
@@ -188,7 +188,7 @@
         (get-msg :config-deleted config-name (name service-key) cluster_name)
         new-line)))
 
-(defmethod delete :collection
+(defmethod delete-command :collection
   [state [cmd what collection-name & args] flags]
   (reject-extra-args args cmd what)
   (get-options flags {})

@@ -5,7 +5,7 @@
 (ns kale.assemble
   (:require [kale.create :refer [create]]
             [kale.select :refer [select]]
-            [kale.delete :refer [delete]]
+            [kale.delete-command :refer [delete-command]]
             [kale.aliases :as aliases]
             [kale.common :refer [fail readable-files? new-line
                                 get-options reject-extra-args
@@ -100,7 +100,7 @@
       ;; Rollback
       (fn [] (println (str new-line (get-msg :starting-rollback)))
              (run-wizard [[select ["select" "space" starting-space] []]
-                          [delete ["delete" "space" base-name] ["--y"]]]
+                          [delete-command ["delete" "space" base-name] ["--y"]]]
                          (fn [] nil))
              (fail (get-msg :failure base-name))))
     (get-msg :success base-name)))
