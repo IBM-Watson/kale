@@ -6,6 +6,9 @@ Service](http://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/retriev
 and the [IBM Watson Document Conversion
 Service](http://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/document-conversion.html).
 
+We expect `kale` to run on any modern Java, Java 6 or newer.
+We test `kale` on Ubuntu Linux, Red Hat Linux, Windows and MacOS.
+
 ## Use: download and run
 
 ### Download
@@ -130,6 +133,10 @@ can be dropped, unmodified, into a Data Crawler configuration to point
 the crawler run at the services we just created.
 
 ## Development
+
+### Automated testing
+
+We automatically run the unit tests on [Travis-CI](https://travis-ci.org/IBM-Watson/kale) (on Ubuntu Linux) and on [AppVeyor](https://ci.appveyor.com/project/bruceadams/kale) (on Windows). Our developers typically run tests on MacOS.
 
 ### Preparation for build, test and run
 
