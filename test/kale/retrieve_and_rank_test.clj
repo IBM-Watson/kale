@@ -14,16 +14,31 @@
 
 (set-language :en)
 
+(deftest process-json-exception-invalid-json
+  (is (thrown+-with-msg?
+       [:type :kale.common/fail]
+       #"This in invalid JSON"
+       (rnr/process-json-exception
+        "{ \"invalid\" : [ \"This in invalid JSON.\" "))))
+
+(deftest process-json-exception-unknown-json
+  (is (thrown+-with-msg?
+       [:type :kale.common/fail]
+       #"Some vaguely human readable message"
+       (rnr/process-json-exception
+        "{\"unexpected\" : \"Some vaguely human readable message.\"}"))))
+
 (deftest validate-solr-name-bad-chars
-  (map (fn [solr-name]
-         (is (thrown+-with-msg?
-              [:type :kale.common/fail]
-              #"Invalid object name"
-              (rnr/validate-solr-name solr-name))))
-        ["my-obj#",
-         "my@obj",
-         "my%obj()",
-         "my obj"]))
+  (doseq [solr-name ["my-obj#"
+                     "my@obj"
+                     "my/obj"
+                     "my%obj"
+                     "my_obj()"
+                     "my obj"]]
+    (is (thrown+-with-msg?
+         [:type :kale.common/fail]
+         #"Invalid object name"
+         (rnr/validate-solr-name solr-name)))))
 
 (deftest validate-solr-name-ok
   (is (= nil
@@ -211,12 +226,19 @@
 (deftest upload-config-success
   (with-fake-routes-in-isolation
     {(rnr-url "/v1/solr_clusters/CLUSTER_ID/config/good-config")
-     (respond {:status 200
-               :body (json/encode (config-upload-success
+     (respond {:body (json/encode (config-upload-success
                                    "good-config" "CLUSTER_ID"))})}
     (is (= (config-upload-success "good-config" "CLUSTER_ID")
            (rnr/upload-config endpoint "CLUSTER_ID" "good-config"
                               "file.zip")))))
+
+(deftest download-config-success
+  (with-fake-routes-in-isolation
+    {(rnr-url "/v1/solr_clusters/CLUSTER_ID/config/good-config")
+     (respond {:headers {"Content-Type" "application/zip"}
+               :body "stub-response"})}
+    (is (= (map byte "stub-response")
+           (vec (rnr/download-config endpoint "CLUSTER_ID" "good-config"))))))
 
 (defn config-delete-in-use
   [config-name collection-name]
@@ -248,26 +270,22 @@
 (deftest delete-config-success
   (with-fake-routes-in-isolation
     {(rnr-url "/v1/solr_clusters/CLUSTER_ID/config/some-config")
-     (respond {:status 200
-               :body (json/encode (config-delete-success
+     (respond {:body (json/encode (config-delete-success
                                    "some-config" "CLUSTER_ID"))})}
     (is (= (config-delete-success "some-config" "CLUSTER_ID")
            (rnr/delete-config endpoint "CLUSTER_ID" "some-config")))))
 
 (defn exception-response
   [message]
-  {"responseHeader" {
-     "status" 400
-     "QTime" 100}
+  {:responseHeader {:status 400
+                    :QTime 100}
    "Operation create caused exception:" "org.apache.solr.common.SolrException"
-   "exception" {
-     "msg" message
-     "rspCode" 400}})
+   :exception {:msg message
+               :rspCode 400}})
 
 (defn solr-error-response
   [message]
-  {"solrErrorMessage" {
-    "message" message}})
+  {:solrErrorMessage {:message message}})
 
 (defn existing-collection
   [collection-name]

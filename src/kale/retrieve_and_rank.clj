@@ -17,20 +17,20 @@
 (defn exception-response-msg
   "Parse exception response message sent from R&R service"
   [response]
-  (if-let [exception (response "exception")]
-    (exception "msg")))
+  (if-let [exception (response :exception)]
+    (exception :msg)))
 
 (defn solr-error-msg
   "Parse Solr error message sent from R&R service"
   [response]
-  (if-let [exception (response "solrErrorMessage")]
-    (exception "message")))
+  (if-let [exception (response :solrErrorMessage)]
+    (exception :message)))
 
 (defn process-json-exception
   "Try to interpret the exception json returned by R&R"
   [exception]
   (try+
-    (let [decoded (json/decode exception)]
+    (let [decoded (json/decode exception true)]
       (if-let [message (or (exception-response-msg decoded)
                            (solr-error-msg decoded))]
         (fail message)
