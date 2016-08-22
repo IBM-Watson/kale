@@ -147,11 +147,14 @@
   [endpoint cluster-id]
   (let [start-time (t/now)
         update-time (atom (t/now))
-        wait-time (fn [target] (t/in-minutes (t/interval target (t/now))))]
-    (while (and (= "NOT_AVAILABLE"
-                   (:solr_cluster_status (rnr/get-cluster endpoint
-                                                          cluster-id)))
+        wait-time (fn [target] (t/in-minutes (t/interval target (t/now))))
+        available-count (atom 0)]
+    (while (and (< @available-count 5)
                 (< (wait-time start-time) 30))
+      (if (= "READY"
+             (:solr_cluster_status (rnr/get-cluster endpoint cluster-id)))
+        (swap! available-count inc)
+        (reset! available-count 0))
       (print ".")
       (when (>= (wait-time @update-time) 5)
         ;; Inform the user that we're still waiting
