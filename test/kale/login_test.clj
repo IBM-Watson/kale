@@ -146,6 +146,13 @@
                                                 "bad-org"
                                                 "redshirt"))))))))
 
+(t/deftest no-available-orgs
+  (with-redefs [cf/get-organizations (fn [_] [])]
+    (t/is (thrown+-with-msg?
+         [:type :kale.common/fail]
+         #"Unable to find any available orgs for the given endpoint."
+         (sut/attempt-to-get-org cf-auth "bad-org" "redshirt")))))
+
 (t/deftest get-existing-space
   (with-fake-routes-in-isolation
     {(cf-url "/v2/organizations/ORG_GUID/spaces")
@@ -173,6 +180,13 @@
                (t/is (= (space-entity "SPACE_GUID1" "space1")
                         (sut/attempt-to-get-space
                          cf-auth "ORG_GUID" "bad-space"))))))))
+
+(t/deftest no-available-spaces
+  (with-redefs [cf/get-spaces (fn [_ _] [])]
+    (t/is (thrown+-with-msg?
+         [:type :kale.common/fail]
+         #"Unable to find any available spaces for the org."
+         (sut/attempt-to-get-space cf-auth "ORG_GUID" "bad-space")))))
 
 (t/deftest get-org-space
   (with-redefs [sut/attempt-to-get-org
@@ -256,6 +270,39 @@
                         :endpoint "https://api.endpoint.net"}
                 :org-space {:org "org-name"
                             :space "space-name"}})))))
+
+(t/deftest preserve-org-space-with-same-username
+  (let [prev-state {:login {:username "redshirt"
+                            :endpoint "https://api.endpoint.net"}
+                    :org-space {:org "org-name"
+                                :space "space-name"}}]
+    (with-redefs [sut/get-username (fn [_ _] "redshirt")
+                  sut/get-endpoint (fn [_ _] "https://api.endpoint.net")
+                  sut/get-password (fn [] "scotty")
+                  sut/load-user-info (fn [_ _ _ state]
+                                       (t/is (= state prev-state))
+                                       user-info)
+                  cf/get-oauth-tokens (fn [_ _ _] {:access_token "TOKEN"})
+                  cf/get-user-data (fn [_] {"user_name" "redshirt"})
+                  write-state (fn [_])]
+      (with-out-str (sut/login prev-state ["login"] [])))))
+
+(t/deftest clear-org-space-with-new-username
+  (let [prev-state {:login {:username "redshirt"
+                            :endpoint "https://api.endpoint.net"}
+                    :org-space {:org "org-name"
+                                :space "space-name"}}]
+    (with-redefs [sut/get-username (fn [_ _] "blueshirt")
+                  sut/get-endpoint (fn [_ _] "https://api.endpoint.net")
+                  sut/get-password (fn [] "scotty")
+                  sut/load-user-info (fn [_ _ _ state]
+                                       (t/is (= (:org-space state)
+                                                {}))
+                                       user-info)
+                  cf/get-oauth-tokens (fn [_ _ _] {:access_token "TOKEN"})
+                  cf/get-user-data (fn [_] {"user_name" "redshirt"})
+                  write-state (fn [_])]
+      (with-out-str (sut/login prev-state ["login"] [])))))
 
 (t/deftest logout
   (with-redefs [write-state (fn [_])]

@@ -82,6 +82,8 @@
         ;; This assumes the user hasn't changed the name of their local org
         default (or (cf/find-entity orgs username)
                     (first orgs))]
+    (when (nil? default)
+      (fail (get-msg :no-orgs-in-region)))
     (or attempt
         (do (if org-name
               (println (get-msg :alternative-org
@@ -97,6 +99,8 @@
   (let [spaces (cf/get-spaces cf-auth org-guid)
         attempt (cf/find-entity spaces space-name)
         default (first spaces)]
+    (when (nil? default)
+      (fail (get-msg :no-spaces-in-org)))
     (or attempt
         (do (if space-name
               (println (get-msg :alternative-space
@@ -147,8 +151,8 @@
                    (get-password))
         prev-endpoint? (= endpoint (-> state :login :endpoint))
         prev-username? (if (nil? (options :sso))
-                         (= username (-> state :login :username)
-                         true))
+                         (= username (-> state :login :username))
+                         true)
 
         {:keys [access_token]} (if (some? (options :sso))
                                  (cf/get-oauth-tokens-sso endpoint)
