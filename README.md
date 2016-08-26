@@ -22,11 +22,11 @@ Recommendation: create a short alias to setup a command named `kale`.
 
 On Linux, OSX and other Unix-style systems, the `alias` command can be used like this:
 
-    alias kale="java -jar /full/path/to/kale-1.6.0-standalone.jar"
+    alias kale="java -jar /full/path/to/kale-1.7.0-standalone.jar"
 
 And on Windows, the `doskey` command can be used like this:
 
-    doskey kale=java -jar C:\full\path\to\kale-1.6.0-standalone.jar $*
+    doskey kale=java -jar C:\full\path\to\kale-1.7.0-standalone.jar $*
 
 Now the `kale` command should be available. Try:
 
@@ -44,7 +44,7 @@ shown on the lines starting with `$`. All other text is output from
 running `kale`.
 
 ```
-$ alias 'kale=java -jar /Users/ba/Downloads/kale-1.6.0-standalone.jar'
+$ alias 'kale=java -jar /Users/ba/Downloads/kale-1.7.0-standalone.jar'
 $ kale login
 Endpoint (default: https://api.ng.bluemix.net)?
 Using endpoint 'https://api.ng.bluemix.net'
@@ -169,14 +169,14 @@ $ lein run <command>
 $ lein uberjar
 Compiling ...
 ...
-Created .../kale/target/uberjar/kale-1.7.0-SNAPSHOT.jar
-Created .../kale/target/uberjar/kale-1.7.0-SNAPSHOT-standalone.jar
+Created .../kale/target/uberjar/kale-1.8.0-SNAPSHOT.jar
+Created .../kale/target/uberjar/kale-1.8.0-SNAPSHOT-standalone.jar
 ```
 
 Now you can run the tool with a simple `java` command line:
 
 ```bash
-$ java -jar target/uberjar/kale-1.7.0-SNAPSHOT-standalone.jar
+$ java -jar target/uberjar/kale-1.8.0-SNAPSHOT-standalone.jar
 ```
 
 To make running `kale` easier, it's recommended that you create an alias (see
