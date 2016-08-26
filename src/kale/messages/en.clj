@@ -418,6 +418,10 @@ these services will be provisioned using the 'standard' plan.
      :using-password "Using password from environment variable 'KALE_PASSWORD'"
      :prompt-password "Password? "
 
+     :no-orgs-in-region
+     "Unable to find any available orgs for the given endpoint."
+     :no-spaces-in-org
+     "Unable to find any available spaces for the org."
      :alternative-org "Unable to find org '%s', using org '%s' instead"
      :using-org "Using org '%s'"
      :alternative-space "Unable to find space '%s', using space '%s' instead"

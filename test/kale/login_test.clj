@@ -146,6 +146,13 @@
                                                 "bad-org"
                                                 "redshirt"))))))))
 
+(t/deftest no-available-orgs
+  (with-redefs [cf/get-organizations (fn [_] [])]
+    (t/is (thrown+-with-msg?
+         [:type :kale.common/fail]
+         #"Unable to find any available orgs for the given endpoint."
+         (sut/attempt-to-get-org cf-auth "bad-org" "redshirt")))))
+
 (t/deftest get-existing-space
   (with-fake-routes-in-isolation
     {(cf-url "/v2/organizations/ORG_GUID/spaces")
@@ -173,6 +180,13 @@
                (t/is (= (space-entity "SPACE_GUID1" "space1")
                         (sut/attempt-to-get-space
                          cf-auth "ORG_GUID" "bad-space"))))))))
+
+(t/deftest no-available-spaces
+  (with-redefs [cf/get-spaces (fn [_ _] [])]
+    (t/is (thrown+-with-msg?
+         [:type :kale.common/fail]
+         #"Unable to find any available spaces for the org."
+         (sut/attempt-to-get-space cf-auth "ORG_GUID" "bad-space")))))
 
 (t/deftest get-org-space
   (with-redefs [sut/attempt-to-get-org
