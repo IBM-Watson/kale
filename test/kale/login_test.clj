@@ -257,6 +257,39 @@
                 :org-space {:org "org-name"
                             :space "space-name"}})))))
 
+(t/deftest preserve-org-space-with-same-username
+  (let [prev-state {:login {:username "redshirt"
+                            :endpoint "https://api.endpoint.net"}
+                    :org-space {:org "org-name"
+                                :space "space-name"}}]
+    (with-redefs [sut/get-username (fn [_ _] "redshirt")
+                  sut/get-endpoint (fn [_ _] "https://api.endpoint.net")
+                  sut/get-password (fn [] "scotty")
+                  sut/load-user-info (fn [_ _ _ state]
+                                       (t/is (= state prev-state))
+                                       user-info)
+                  cf/get-oauth-tokens (fn [_ _ _] {:access_token "TOKEN"})
+                  cf/get-user-data (fn [_] {"user_name" "redshirt"})
+                  write-state (fn [_])]
+      (with-out-str (sut/login prev-state ["login"] [])))))
+
+(t/deftest clear-org-space-with-new-username
+  (let [prev-state {:login {:username "redshirt"
+                            :endpoint "https://api.endpoint.net"}
+                    :org-space {:org "org-name"
+                                :space "space-name"}}]
+    (with-redefs [sut/get-username (fn [_ _] "blueshirt")
+                  sut/get-endpoint (fn [_ _] "https://api.endpoint.net")
+                  sut/get-password (fn [] "scotty")
+                  sut/load-user-info (fn [_ _ _ state]
+                                       (t/is (= (:org-space state)
+                                                {}))
+                                       user-info)
+                  cf/get-oauth-tokens (fn [_ _ _] {:access_token "TOKEN"})
+                  cf/get-user-data (fn [_] {"user_name" "redshirt"})
+                  write-state (fn [_])]
+      (with-out-str (sut/login prev-state ["login"] [])))))
+
 (t/deftest logout
   (with-redefs [write-state (fn [_])]
     (t/is (= (str "Logging out..." new-line)

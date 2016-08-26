@@ -147,8 +147,8 @@
                    (get-password))
         prev-endpoint? (= endpoint (-> state :login :endpoint))
         prev-username? (if (nil? (options :sso))
-                         (= username (-> state :login :username)
-                         true))
+                         (= username (-> state :login :username))
+                         true)
 
         {:keys [access_token]} (if (some? (options :sso))
                                  (cf/get-oauth-tokens-sso endpoint)
