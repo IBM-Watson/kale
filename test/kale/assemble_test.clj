@@ -58,8 +58,8 @@
 (deftest assemble-prepackaged-bad-cluster-size
   (is (thrown+-with-msg?
        [:type :kale.common/fail]
-       #"Cluster size must be an integer in the range of 1 to 7."
-       (sut/assemble {} ["assemble" "turtle" "english" "10"] []))))
+       #"Cluster size must be an integer in the range of 1 to 99."
+       (sut/assemble {} ["assemble" "turtle" "english" "100"] []))))
 
 (deftest assemble-missing-zip-file
   (is (thrown+-with-msg?
@@ -73,9 +73,9 @@
                 rnr/upload-config (fn [_ _ _ _] nil)]
     (is (thrown+-with-msg?
          [:type :kale.common/fail]
-         #"Cluster size must be an integer in the range of 1 to 7."
+         #"Cluster size must be an integer in the range of 1 to 99."
          (sut/assemble {} ["assemble" "turtle"
-                           "my-conf" "test-config.zip" "10"] [])))))
+                           "my-conf" "test-config.zip" "100"] [])))))
 
 (defn assemble-output
   [create-dc-args create-config-args]

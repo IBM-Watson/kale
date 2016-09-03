@@ -158,7 +158,6 @@ where the user is not charged for its usage.  Users only receive
 one 'free' cluster per Retrieve and Rank instance.  By specifying a
 cluster size, non-free clusters are created, where the number
 corresponds to the amount of resources available to the cluster.
-Cluster sizes are in the range of 1 to 8.
 
     kale create cluster <name>
     kale create cluster <name> <cluster-size>
@@ -445,7 +444,7 @@ these services will be provisioned using the 'standard' plan.
      "Service '%s' has been created and selected for future actions."
 
      :missing-cluster-name "Please specify the name of the cluster to create."
-     :cluster-size "Cluster size must be an integer in the range of 1 to 7."
+     :cluster-size "Cluster size must be an integer in the range of 1 to 99."
      :unknown-rnr-service
      (str "Couldn't determine which service to create the cluster in." new-line
           "Please create a retrieve_and_rank service or select "
@@ -520,7 +519,7 @@ these services will be provisioned using the 'standard' plan.
      (str "Couldn't determine which cluster to create the configuration in."
           new-line "Please create a Solr cluster or select "
                    "an existing one.")
-     :cluster-size "Cluster size must be an integer in the range of 1 to 7."
+     :cluster-size "Cluster size must be an integer in the range of 1 to 99."
 
      :no-rnr-premium
      (str "Warning: The 'premium' plan is currently not available for"

@@ -60,7 +60,7 @@
       (when-not resource
         (fail (get-msg :unknown-packaged-config config-name)))
         (io/input-stream resource)))
-  (when (and cluster-size (not (< 0 cluster-size 8)))
+  (when (and cluster-size (not (< 0 cluster-size 100)))
     (fail (get-msg :cluster-size))))
 
 (def assemble-options {
