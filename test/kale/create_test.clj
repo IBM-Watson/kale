@@ -518,7 +518,7 @@
 
   (is (= (str "{" new-line
               "  \"base_url\" : null," new-line
-              "  \"concurrent_upload_connection_limit\" : 100," new-line
+              "  \"concurrent_upload_connection_limit\" : 14," new-line
               "  \"config_file\" : \"orchestration_service_config.json\","
               new-line
               "  \"credentials\" : {" new-line
