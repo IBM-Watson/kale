@@ -299,7 +299,7 @@
         {:keys [url username password]}
         (get-in conversion-service [1 :credentials])]
     {:base_url url
-     :concurrent_upload_connection_limit 100
+     :concurrent_upload_connection_limit 14
      :config_file "orchestration_service_config.json"
      :credentials {:username username :password password}
      :endpoint (str "/v1/index_document?version=" version)
