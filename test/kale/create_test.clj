@@ -197,7 +197,7 @@
 (deftest create-cluster-bad-size
   (is (thrown+-with-msg?
        [:type :kale.common/fail]
-       #"Cluster size must be an integer in the range of 1 to 7."
+       #"Cluster size must be an integer in the range of 1 to 99."
        (sut/create {}
                    ["create" "cluster" "cluster-name" "not-an-integer"]
                    []))))
@@ -205,14 +205,14 @@
 (deftest create-cluster-too-small
   (is (thrown+-with-msg?
        [:type :kale.common/fail]
-       #"Cluster size must be an integer in the range of 1 to 7."
+       #"Cluster size must be an integer in the range of 1 to 99."
        (sut/create {} ["create" "cluster" "cluster-name" "0"] []))))
 
 (deftest create-cluster-too-large
   (is (thrown+-with-msg?
        [:type :kale.common/fail]
-       #"Cluster size must be an integer in the range of 1 to 7."
-       (sut/create {} ["create" "cluster" "cluster-name" "8"] []))))
+       #"Cluster size must be an integer in the range of 1 to 99."
+       (sut/create {} ["create" "cluster" "cluster-name" "100"] []))))
 
 (deftest create-cluster-no-service
   (is (thrown+-with-msg?

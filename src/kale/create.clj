@@ -180,7 +180,7 @@
     (rnr/validate-solr-name cluster-name)
     (when cluster-size
       (try (let [i (Integer. cluster-size)]
-             (when-not (< 0 i 8)
+             (when-not (< 0 i 100)
                (fail (get-msg :cluster-size))))
            (catch NumberFormatException e
              (fail (get-msg :cluster-size)))))
