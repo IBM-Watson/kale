@@ -33,7 +33,7 @@
 
 (defn get-command-msg
   "Return the corresponding command message string based on the
-   user's langauge"
+   user's language"
   [command-key msg-key & args]
   (let [messages (@my-language languages)]
     (if-let [msg (-> messages command-key msg-key)]

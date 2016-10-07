@@ -173,7 +173,7 @@ When creating a Solr configuration, one can either specify one of these
 configurations or please specify the zip file containing the details of
 the configuration being created.
 
-    kale create configuration <langauge>
+    kale create configuration <language>
     kale create configuration <name> <solr-config.zip>
 
     kale create collection <name>
@@ -351,8 +351,8 @@ configuration will saved to your current working directory.
 creating the two services and Solr collection for an Enhanced
 Information Retrieval instance in a single operation:
 
-    kale assemble <base-name> <langauge>
-    kale assemble <base-name> <langauge> <cluster-size>
+    kale assemble <base-name> <language>
+    kale assemble <base-name> <language> <cluster-size>
     kale assemble <base-name> <config-name> <solr-config.zip>
     kale assemble <base-name> <config-name> <solr-config.zip> <cluster-size>
 
