@@ -22,14 +22,16 @@
    (apply get-command-msg :assemble-messages msg-key args))
 
 (defn wizard-command
-  "Run the specified command and rollback if it fails"
+  "Run the specified command and rollback if it fails.
+  Returns nil for success or :failure for failure and rollback."
   [state command args flags rollback]
   (println (get-msg :running-cmd
                     (str/join " " (remove nil? args))
                     (str (when (seq flags) " ")
                          (str/join " " flags))))
   (if-let [out (try-function command [state args flags] rollback)]
-    (println out)))
+    (println out)
+    :failure))
 
 (defn run-wizard
   "Run a list of commands and rollback if any of the commands fail"
@@ -66,6 +68,26 @@
 (def assemble-options {
   :premium aliases/premium-option})
 
+(defn rollback-with-space
+  [initial-space new-name]
+  (println (str new-line (get-msg :starting-rollback)))
+  (run-wizard [[select ["select" "space" initial-space]
+                       []]
+               [delete ["delete" "space" new-name]
+                       ["--y"]]]
+              (fn [] nil))
+  (fail (get-msg :failure new-name)))
+
+(defn rollback-services
+  [new-name]
+  (println (str new-line (get-msg :starting-rollback)))
+  (run-wizard [[delete ["delete" "document_conversion" (str new-name "-dc")]
+                       ["--y"]]
+               [delete ["delete" "retrieve_and_rank" (str new-name "-rnr")]
+                       ["--y"]]]
+              (fn [] nil))
+  (fail (get-msg :failure new-name)))
+
 (defn assemble
   "Run the series of commands for creating the two services and
   Solr collection"
@@ -80,26 +102,28 @@
     (when (some? (options :premium))
       (println (get-msg :no-rnr-premium)))
 
-    ;; Create the space to put the instance in
-    (wizard-command
-      state create ["create" "space" base-name] []
-      (fn [] (fail (get-msg :failure base-name))))
-    ;; Create the individual components in the newly made space
-    (run-wizard
-      [[create ["create" "document_conversion" (str base-name "-dc")]
-               (if (some? (options :premium)) ["--premium"] [])]
-       [create ["create" "retrieve_and_rank" (str base-name "-rnr")]
-               []]
-       [create ["create" "cluster" (str base-name "-cluster") cluster-size]
-               ["--wait"]]
-       [create ["create" "solr-configuration" config-name config-zip]
-               []]
-       [create ["create" "collection" (str base-name "-collection")]
-               []]]
-      ;; Rollback
-      (fn [] (println (str new-line (get-msg :starting-rollback)))
-             (run-wizard [[select ["select" "space" starting-space] []]
-                          [delete ["delete" "space" base-name] ["--y"]]]
-                         (fn [] nil))
-             (fail (get-msg :failure base-name))))
+    ;; Try to create a space to put the instance in
+    (let [space? (wizard-command
+                  state create ["create" "space" base-name] []
+                  (fn [] (println (get-msg :same-space
+                                           base-name
+                                           starting-space))))
+          ;; Different rollback for new space or not
+          rollback (if (= :failure space?)
+                     (fn [] (rollback-services base-name))
+                     (fn [] (rollback-with-space starting-space base-name)))]
+
+      ;; Create the individual components
+      (run-wizard
+       [[create ["create" "document_conversion" (str base-name "-dc")]
+                (if (some? (options :premium)) ["--premium"] [])]
+        [create ["create" "retrieve_and_rank" (str base-name "-rnr")]
+                []]
+        [create ["create" "cluster" (str base-name "-cluster") cluster-size]
+                ["--wait"]]
+        [create ["create" "solr-configuration" config-name config-zip]
+                []]
+        [create ["create" "collection" (str base-name "-collection")]
+                []]]
+       rollback))
     (get-msg :success base-name)))

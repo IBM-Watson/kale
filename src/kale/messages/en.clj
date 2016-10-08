@@ -526,6 +526,8 @@ these services will be provisioned using the 'standard' plan.
           new-line
           "retrieve_and_rank services. Using the 'standard' plan instead.")
      :running-cmd "[Running command 'kale %s%s']"
+     :same-space
+     (str "Couldn't create space '%s', continuing in the current space '%s'.")
      :failure
      (str "Unable to create Enhanced Information Retrieval instance '%s'"
           " due to errors.")
