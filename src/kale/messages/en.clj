@@ -381,8 +381,8 @@ these services will be provisioned using the 'standard' plan.
 
   :common-messages
     {:unknown-language "Language '%s' is not available."
-     :http-call "A call to: %s"
-     :http-exception "triggered an unexpected exception:"
+     :http-call "A %s to: %s"
+     :http-exception "triggered an unexpected exception: %s"
      :http-error-status "returned an unexpected error status code %s"
      :other-exception (str "Something unexpected failed while trying to "
                            "process your command. This exception was thrown:")

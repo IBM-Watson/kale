@@ -56,13 +56,13 @@
               " :url \"https://example.com/api\"}" new-line
               "RESPONSE:" new-line
               "{:status 200," new-line
-              " :headers {\"Content-Type\" \"application/json\"}," new-line
+              " :headers {:content-type \"application/json\"}," new-line
               " :body {:key \"value\"}}" new-line)
          (with-out-str
            (sut/trace-api {:method :get
-                             :url "https://example.com/api"}
+                           :url "https://example.com/api"}
                           {:status 200
-                           :headers {"Content-Type" "application/json"}
+                           :headers {:content-type "application/json"}
                            :body "{\"key\" : \"value\"}"})))))
 
 (deftest trace-api-text-body
@@ -71,13 +71,13 @@
               " :url \"https://example.com/api\"}" new-line
               "RESPONSE:" new-line
               "{:status 200," new-line
-              " :headers {\"Content-Type\" \"application/text\"}," new-line
+              " :headers {:content-type \"application/text\"}," new-line
               " :body \"Body text.\"}" new-line)
          (with-out-str
            (sut/trace-api {:method :get
-                             :url "https://example.com/api"}
+                           :url "https://example.com/api"}
                           {:status 200
-                           :headers {"Content-Type" "application/text"}
+                           :headers {:content-type "application/text"}
                            :body "Body text."})))))
 
 (deftest trace-api-zip-body
@@ -86,13 +86,13 @@
               " :url \"https://example.com/api\"}" new-line
               "RESPONSE:" new-line
               "{:status 200," new-line
-              " :headers {\"Content-Type\" \"application/zip\"}," new-line
+              " :headers {:content-type \"application/zip\"}," new-line
               " :body \"[ZIP CONTENT]\"}" new-line)
          (with-out-str
            (sut/trace-api {:method :get
-                             :url "https://example.com/api"}
+                           :url "https://example.com/api"}
                           {:status 200
-                           :headers {"Content-Type" "application/zip"}
+                           :headers {:content-type "application/zip"}
                            :body "ZIP_BINARY"})))))
 
 (deftest trace-api-no-body
@@ -103,5 +103,5 @@
               "{:status 200}" new-line)
          (with-out-str
            (sut/trace-api {:method :get
-                             :url "https://example.com/api"}
+                           :url "https://example.com/api"}
                           {:status 200})))))
