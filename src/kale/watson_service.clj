@@ -71,9 +71,14 @@
                                :user-agent user-agent-string
                                :url url} options)
                authorization (generate-auth username password token)
-               response @(client/request (merge request authorization))]
-
+               {:keys [error status] :as response} @(client/request
+                                              (merge request authorization))]
            (when @trace-enabled (trace-api request response))
+           (when (or error
+                     (not (#{200 201 202 203 204 205 206 207
+                             300 301 302 303 307}
+                           status)))
+             (throw+ response))
            response)
          ;; Only intercept unexpected exceptions here
          (catch (not (number? (:status %))) e

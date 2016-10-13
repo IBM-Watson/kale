@@ -7,7 +7,6 @@
             [kale.common :refer [new-line set-language]]
             [kale.document-conversion :as dc]
             [slingshot.test :refer :all]
-            [clj-http.fake :refer [with-fake-routes-in-isolation]]
             [kale.dry-run :as sut]))
 
 (set-language :en)
@@ -94,21 +93,3 @@
                     (do (sut/dry-run {}
                                      ["dry-run" "test-file.html"] [])
                         (slurp "converted/test-file.html.json")))))))))
-
-(deftest dry-run-failure
-  (is (= (str "Note: Using the default conversion configuration: \"{}\"."
-              new-line
-              "Converting 'test-file.html' ..." new-line
-              "Conversion failed for 'test-file.html':"
-              new-line
-              "java.net.MalformedURLException:"
-              " no protocol: /v1/index_document?version=2016-03-18"
-              new-line)
-         (with-out-str
-           (is (= (str new-line "Conversion completed."
-                       " Please find the converted output"
-                       " in the directory 'converted'." new-line)
-                  (sut/dry-run {:services {:dc {:type "document_conversion"
-                                                :credentials {}}}}
-                               ["dry-run" "test-file.html"]
-                               [])))))))

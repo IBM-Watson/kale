@@ -9,7 +9,7 @@
             [kale.common :refer [new-line] :as common]
             [kale.cloud-foundry-constants :refer :all]
             [clojure.test :as t]
-            [clj-http.fake :refer [with-fake-routes-in-isolation]]
+            [org.httpkit.fake :refer [with-fake-http]]
             [cheshire.core :as json]
             [slingshot.test :refer :all]))
 
@@ -110,34 +110,34 @@
     (t/is (= "scotty" (sut/get-password)))))
 
 (t/deftest get-existing-org
-  (with-fake-routes-in-isolation
-    {(cf-url "/v2/organizations")
-     (respond {:body (json/encode orgs-response)})}
+  (with-fake-http
+    [(cf-url "/v2/organizations")
+     (respond {:body (json/encode orgs-response)})]
     (t/is (= (org-entity "ORG_GUID1" "org1")
              (sut/attempt-to-get-org cf-auth "org1" "redshirt")))))
 
 (t/deftest get-local-org
-  (with-fake-routes-in-isolation
-    {(cf-url "/v2/organizations")
-     (respond {:body (json/encode orgs-response)})}
+  (with-fake-http
+    [(cf-url "/v2/organizations")
+     (respond {:body (json/encode orgs-response)})]
     (t/is (= (str "Using org 'org2'" new-line)
              (with-out-str
                (t/is (= (org-entity "ORG_GUID2" "org2")
                         (sut/attempt-to-get-org cf-auth nil "org2"))))))))
 
 (t/deftest attempt-nil-org
-  (with-fake-routes-in-isolation
-    {(cf-url "/v2/organizations")
-     (respond {:body (json/encode orgs-response)})}
+  (with-fake-http
+    [(cf-url "/v2/organizations")
+     (respond {:body (json/encode orgs-response)})]
     (t/is (= (str "Using org 'org1'" new-line)
              (with-out-str
                (t/is (= (org-entity "ORG_GUID1" "org1")
                         (sut/attempt-to-get-org cf-auth nil "redshirt"))))))))
 
 (t/deftest attempt-bad-org
-  (with-fake-routes-in-isolation
-    {(cf-url "/v2/organizations")
-     (respond {:body (json/encode orgs-response)})}
+  (with-fake-http
+    [(cf-url "/v2/organizations")
+     (respond {:body (json/encode orgs-response)})]
     (t/is (= (str "Unable to find org 'bad-org', using org 'org1' instead"
                   new-line)
              (with-out-str
@@ -154,25 +154,25 @@
          (sut/attempt-to-get-org cf-auth "bad-org" "redshirt")))))
 
 (t/deftest get-existing-space
-  (with-fake-routes-in-isolation
-    {(cf-url "/v2/organizations/ORG_GUID/spaces")
-     (respond {:body (json/encode spaces-response)})}
+  (with-fake-http
+    [(cf-url "/v2/organizations/ORG_GUID/spaces")
+     (respond {:body (json/encode spaces-response)})]
     (t/is (= (space-entity "SPACE_GUID1" "space1")
              (sut/attempt-to-get-space cf-auth "ORG_GUID" "space1")))))
 
 (t/deftest attempt-nil-space
-  (with-fake-routes-in-isolation
-    {(cf-url "/v2/organizations/ORG_GUID/spaces")
-     (respond {:body (json/encode spaces-response)})}
+  (with-fake-http
+    [(cf-url "/v2/organizations/ORG_GUID/spaces")
+     (respond {:body (json/encode spaces-response)})]
     (t/is (= (str "Using space 'space1'" new-line)
              (with-out-str
                (t/is (= (space-entity "SPACE_GUID1" "space1")
                         (sut/attempt-to-get-space cf-auth "ORG_GUID" nil))))))))
 
 (t/deftest attempt-bad-space
-  (with-fake-routes-in-isolation
-    {(cf-url "/v2/organizations/ORG_GUID/spaces")
-     (respond {:body (json/encode spaces-response)})}
+  (with-fake-http
+    [(cf-url "/v2/organizations/ORG_GUID/spaces")
+     (respond {:body (json/encode spaces-response)})]
     (t/is (= (str
               "Unable to find space 'bad-space', using space 'space1' instead"
               new-line)

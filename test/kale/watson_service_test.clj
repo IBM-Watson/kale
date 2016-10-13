@@ -5,7 +5,7 @@
 (ns kale.watson-service-test
   (:require [kale.watson-service :as sut]
             [kale.common :refer [new-line set-language]]
-            [clj-http.fake :refer [with-fake-routes-in-isolation]]
+            [org.httpkit.fake :refer [with-fake-http]]
             [slingshot.test :refer :all]
             [clojure.test :refer [deftest is]]))
 
@@ -18,34 +18,34 @@
                                :key2 "value2"}))))
 
 (deftest raw-http-error-status
-  (with-fake-routes-in-isolation
-    {"http://example.com/raw-http-error-status"
-     (fn [_] {:status 400 :body "No good"})}
+  (with-fake-http
+    ["http://example.com/raw-http-error-status"
+     {:status 400 :body "No good"}]
     (is (thrown+?
          [:status 400]
          (sut/raw :get {:url "http://example.com/raw-http-error-status"})))))
 
 (deftest text-timeout
-  (with-fake-routes-in-isolation
-    {"http://example.com/text-timeout"
-     (fn [_] (throw (java.net.ConnectException. "Operation timed out")))}
+  (with-fake-http
+    ["http://example.com/text-timeout"
+     (fn [_ _ _] (throw (java.net.ConnectException. "Operation timed out")))]
     (is (thrown+?
          [:status -1]
          (sut/text :get {:url "http://example.com/text-timeout"})))))
 
 (deftest text-success
-  (with-fake-routes-in-isolation
-    {"http://example.com/text-success/with/path"
-     (fn [_] {:status 200 :body "Body text."})}
+  (with-fake-http
+    ["http://example.com/text-success/with/path"
+     {:status 200 :body "Body text."}]
     (is (= "Body text."
            (sut/text :get
                      {:url "http://example.com/text-success"}
                      "/with/path")))))
 
 (deftest json-success
-  (with-fake-routes-in-isolation
-    {"http://example.com/json-success"
-     (fn [_] {:status 200 :body "{\"key\" : \"value\"}"})}
+  (with-fake-http
+    ["http://example.com/json-success"
+     {:status 200 :body "{\"key\" : \"value\"}"}]
     (is (= {:key "value"}
            (sut/json :get
                      {:url "http://example.com/json-success"})))))

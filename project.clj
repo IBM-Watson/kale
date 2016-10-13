@@ -20,7 +20,7 @@
   :target-path "target/%s"
   :prep-tasks [["exec" "solr/package.clj"]
                "compile"]
-  :profiles {:dev {:dependencies [[http-kit.fake "0.2.1"]]
+  :profiles {:dev {:dependencies [[http-kit.fake "0.2.2"]]
                    :plugins [[jonase/eastwood "0.2.3"
                               :exclusions [org.clojure/clojure]]
                              [lein-bikeshed "0.3.0"
