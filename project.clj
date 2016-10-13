@@ -10,8 +10,8 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/data.codec "0.1.0"]
                  [cheshire "5.5.0"]
-                 [clj-http "2.1.0"]
                  [clj-time "0.11.0"]
+                 [http-kit "2.2.0"]
                  [slingshot "0.12.2"]
                  ;; Not a direct dependency.
                  ;; This is here to lock in a specific version.
@@ -20,7 +20,7 @@
   :target-path "target/%s"
   :prep-tasks [["exec" "solr/package.clj"]
                "compile"]
-  :profiles {:dev {:dependencies [[clj-http-fake "1.0.2"]]
+  :profiles {:dev {:dependencies [[http-kit.fake "0.2.1"]]
                    :plugins [[jonase/eastwood "0.2.3"
                               :exclusions [org.clojure/clojure]]
                              [lein-bikeshed "0.3.0"

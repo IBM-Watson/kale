@@ -7,7 +7,7 @@
             [kale.version :refer [kale-version]]
             [clojure.pprint :refer [pprint]]
             [cheshire.core :as json]
-            [clj-http.client :as client]
+            [org.httpkit.client :as client]
             [slingshot.slingshot :refer [throw+ try+]]
             [clojure.string :as str]))
 
@@ -68,10 +68,10 @@
   ([method {:keys [url username password token]} path options]
    (try+ (let [url (str url path)
                request (merge {:method method
-                               :headers user-agent-header
+                               :user-agent user-agent-string
                                :url url} options)
                authorization (generate-auth username password token)
-               response (client/request (merge request authorization))]
+               response @(client/request (merge request authorization))]
 
            (when @trace-enabled (trace-api request response))
            response)
