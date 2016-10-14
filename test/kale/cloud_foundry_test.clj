@@ -6,7 +6,7 @@
   (:require [kale.cloud-foundry :as cf]
             [kale.cloud-foundry-constants :refer :all]
             [kale.common :refer [set-language prompt-user new-line]]
-            [clj-http.fake :refer [with-fake-routes-in-isolation]]
+            [org.httpkit.fake :refer [with-fake-http]]
             [cheshire.core :as json]
             [clojure.test :as t :refer [deftest is]]
             [slingshot.slingshot :refer [try+ throw+]]
@@ -43,26 +43,26 @@
            (catch Exception e (.getMessage e))))))
 
 (deftest cf-request-multiple-pages
-  (with-fake-routes-in-isolation
-    {(cf-url "/v2/info")
+  (with-fake-http
+    [(cf-url "/v2/info")
      (respond {:body (json/encode
-                       (assoc (results-response ["data1" "data2"])
-                              :next_url
-                              "/v2/info?page=2"))})
+                      (assoc (results-response ["data1" "data2"])
+                             :next_url
+                             "/v2/info?page=2"))})
      (cf-url "/v2/info?page=2")
-     (respond {:body (json/encode (results-response ["data3"]))})}
+     (respond {:body (json/encode (results-response ["data3"]))})]
     (is (= ["data1" "data2" "data3"]
            (cf/cf-paged-json :get cf-auth "/v2/info")))))
 
 (deftest get-oauth-tokens
-  (with-fake-routes-in-isolation
-    {(cf-url "/v2/info")
+  (with-fake-http
+    [(cf-url "/v2/info")
      (respond {:body (json/encode
-                       {:authorization_endpoint
-                          "https://login.ng.bluemix.net/UAALoginServerWAR"})})
+                      {:authorization_endpoint
+                       "https://login.ng.bluemix.net/UAALoginServerWAR"})})
      "https://login.ng.bluemix.net/UAALoginServerWAR/oauth/token"
      (respond {:body (json/encode {:access_token "ACCESS_TOKEN"
-                                   :refresh_token "REFRESH_TOKEN"})})}
+                                   :refresh_token "REFRESH_TOKEN"})})]
     (is (= {:access_token "ACCESS_TOKEN"
             :refresh_token "REFRESH_TOKEN"}
            (cf/get-oauth-tokens "redshirt" "scotty" (cf-auth :url))))))
@@ -76,21 +76,21 @@
        "press ENTER to automatically open a browser to the URL: "))
 
 (deftest get-oauth-tokens-sso
-  (with-fake-routes-in-isolation
-    {(cf-url "/v2/info")
+  (with-fake-http
+    [(cf-url "/v2/info")
      (respond {:body (json/encode
-                       {:authorization_endpoint
-                          "https://login.ng.bluemix.net/UAALoginServerWAR"})})
+                      {:authorization_endpoint
+                       "https://login.ng.bluemix.net/UAALoginServerWAR"})})
      "https://login.ng.bluemix.net/UAALoginServerWAR/login"
      (respond {:body (json/encode
-                       {:prompts {:passcode
-                         ["password"
-                          (str "One Time Code (Get one at "
-                               "https://login.ng.bluemix.net/"
-                               "UAALoginServerWAR/passcode)")]}})})
+                      {:prompts {:passcode
+                                 ["password"
+                                  (str "One Time Code (Get one at "
+                                       "https://login.ng.bluemix.net/"
+                                       "UAALoginServerWAR/passcode)")]}})})
      "https://login.ng.bluemix.net/UAALoginServerWAR/oauth/token"
      (respond {:body (json/encode {:access_token "ACCESS_TOKEN"
-                                   :refresh_token "REFRESH_TOKEN"})})}
+                                   :refresh_token "REFRESH_TOKEN"})})]
     (with-redefs [prompt-user (fn [prompt _]
                                 (is (= sso-prompt-output
                                        prompt))
@@ -112,9 +112,9 @@
          "user_id"))))
 
 (deftest create-space
-  (with-fake-routes-in-isolation
-    {(cf-url "/v2/spaces?async=true")
-     (respond {:body (json/encode (space-entity "SPACE_GUID" "space"))})}
+  (with-fake-http
+    [(cf-url "/v2/spaces?async=true")
+     (respond {:body (json/encode (space-entity "SPACE_GUID" "space"))})]
     (is (= (space-entity "SPACE_GUID" "space")
            (cf/create-space cf-auth "ORG_GUID" "USER_GUID" "space")))))
 
@@ -134,11 +134,11 @@
                (cf/service-entry entity (service-keys-response :resources))))))
 
 (deftest get-service-information
-  (with-fake-routes-in-isolation
-    {(cf-url "/v2/spaces/SPACE_GUID/summary")
+  (with-fake-http
+    [(cf-url "/v2/spaces/SPACE_GUID/summary")
      (respond {:body (json/encode space-summary-response)})
      (cf-url "/v2/service_keys")
-     (respond {:body (json/encode service-keys-response)})}
+     (respond {:body (json/encode service-keys-response)})]
     (with-redefs [cf/service-entry (fn [{:keys [guid]} _]
                     (cond
                       (= guid "RNR_GUID") entry1
@@ -147,30 +147,31 @@
       (is (= (merge entry1 entry2) (cf/get-services cf-auth "SPACE_GUID"))))))
 
 (deftest get-service-plan-guid
-  (with-fake-routes-in-isolation
-    {(cf-url "/v2/spaces/SPACE_GUID/services?q=label%3Aservice-type")
+  (with-fake-http
+    [(cf-url "/v2/spaces/SPACE_GUID/services?q=label%3Aservice-type")
      (respond {:body (json/encode service-type-response)})
      (cf-url "/v2/service_plans?q=service_guid%3ATYPE_GUID")
-     (respond {:body (json/encode service-plan-response)})}
+     (respond {:body (json/encode service-plan-response)})]
     (is (= "PLAN_GUID"
            (cf/get-service-plan-guid
               cf-auth "SPACE_GUID" "service-type" "standard")))))
 
 (deftest get-service-status
-  (with-fake-routes-in-isolation
-    {(cf-url "/v2/service_instances/SERVICE_GUID")
+  (with-fake-http
+    [(cf-url "/v2/service_instances/SERVICE_GUID")
      (respond {:body (json/encode
-                       (service-instance-entity "GUID" "service-name"))})}
+                      (service-instance-entity "GUID" "service-name"))})]
     (is (= "create succeeded"
            (cf/get-service-status cf-auth "SERVICE_GUID")))))
 
 (deftest delete-service-key
-  (with-fake-routes-in-isolation
-    {(cf-url "/v2/service_keys/KEY_GUID?async=true") (respond nil)}
+  (with-fake-http
+    [(cf-url "/v2/service_keys/KEY_GUID?async=true")
+     (respond nil)]
     (is (empty? (cf/delete-service-key cf-auth "KEY_GUID")))))
 
 (deftest delete-service-service
-  (with-fake-routes-in-isolation
-    {(cf-url "/v2/service_instances/GUID?accepts_incomplete=true&async=true")
-     (respond nil)}
+  (with-fake-http
+    [(cf-url "/v2/service_instances/GUID?accepts_incomplete=true&async=true")
+     (respond nil)]
     (is (empty? (cf/delete-service cf-auth "GUID")))))

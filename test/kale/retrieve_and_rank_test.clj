@@ -5,7 +5,7 @@
 (ns kale.retrieve-and-rank-test
   (:require [kale.retrieve-and-rank :as rnr]
             [kale.common :refer [fail new-line set-language]]
-            [clj-http.fake :refer [with-fake-routes-in-isolation]]
+            [org.httpkit.fake :refer [with-fake-http]]
             [slingshot.test :refer :all]
             [slingshot.slingshot :refer [try+]]
             [cheshire.core :as json]
@@ -84,56 +84,56 @@
 
 (defn respond
   [partial-response]
-  (fn [request] (merge template-response partial-response)))
+  (merge template-response partial-response))
 
 (deftest list-no-clusters
-  (with-fake-routes-in-isolation
-    {(rnr-url "/v1/solr_clusters")
-     (respond {:body (json/encode {:clusters []})})}
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters")
+     (respond {:body (json/encode {:clusters []})})]
     (is (= [] (rnr/list-clusters endpoint)))))
 
 (deftest list-one-cluster
-  (with-fake-routes-in-isolation
-    {(rnr-url "/v1/solr_clusters")
-     (respond {:body (json/encode {:clusters [cluster-1]})})}
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters")
+     (respond {:body (json/encode {:clusters [cluster-1]})})]
     (is (= [cluster-1] (rnr/list-clusters endpoint)))))
 
 (deftest list-two-clusters
-  (with-fake-routes-in-isolation
-    {(rnr-url "/v1/solr_clusters")
-     (respond {:body (json/encode {:clusters [cluster-1 cluster-2]})})}
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters")
+     (respond {:body (json/encode {:clusters [cluster-1 cluster-2]})})]
     (is (= [cluster-1 cluster-2] (rnr/list-clusters endpoint)))))
 
 (deftest get-cluster
-  (with-fake-routes-in-isolation
-    {(rnr-url "/v1/solr_clusters/CLUSTER_ID")
-     (respond {:body (json/encode cluster-1)})}
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters/CLUSTER_ID")
+     (respond {:body (json/encode cluster-1)})]
     (is (= cluster-1 (rnr/get-cluster endpoint "CLUSTER_ID")))))
 
 (deftest list-no-configs
-  (with-fake-routes-in-isolation
-    {(rnr-url "/v1/solr_clusters/CLUSTER_ID/config")
-     (respond {:body (json/encode {:solr_configs []})})}
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters/CLUSTER_ID/config")
+     (respond {:body (json/encode {:solr_configs []})})]
     (is (= [] (rnr/list-configs endpoint "CLUSTER_ID")))))
 
 (deftest list-two-configs
-  (with-fake-routes-in-isolation
-    {(rnr-url "/v1/solr_clusters/CLUSTER_ID/config")
-     (respond {:body (json/encode {:solr_configs ["abcd" "wxyz"]})})}
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters/CLUSTER_ID/config")
+     (respond {:body (json/encode {:solr_configs ["abcd" "wxyz"]})})]
     (is (= ["abcd" "wxyz"] (rnr/list-configs endpoint "CLUSTER_ID")))))
 
 (deftest list-no-collections
-  (with-fake-routes-in-isolation
-    {(rnr-url (str  "/v1/solr_clusters/CLUSTER_ID/solr"
+  (with-fake-http
+    [(rnr-url (str  "/v1/solr_clusters/CLUSTER_ID/solr"
                     "/admin/collections?action=LIST&wt=json"))
-     (respond {:body (json/encode {:collections []})})}
+     (respond {:body (json/encode {:collections []})})]
     (is (= [] (rnr/list-collections endpoint "CLUSTER_ID")))))
 
 (deftest list-two-collections
-  (with-fake-routes-in-isolation
-    {(rnr-url (str "/v1/solr_clusters/CLUSTER_ID/solr"
+  (with-fake-http
+    [(rnr-url (str "/v1/solr_clusters/CLUSTER_ID/solr"
                    "/admin/collections?action=LIST&wt=json"))
-     (respond {:body (json/encode {:collections ["fred" "mary"]})})}
+     (respond {:body (json/encode {:collections ["fred" "mary"]})})]
     (is (= ["fred" "mary"] (rnr/list-collections endpoint "CLUSTER_ID")))))
 
 (defn create-cluster-response
@@ -144,16 +144,16 @@
    :solr_cluster_status "NOT_AVAILABLE"})
 
 (deftest create-cluster-default-size
-  (with-fake-routes-in-isolation
-    {(rnr-url "/v1/solr_clusters")
-     (respond {:body (json/encode (create-cluster-response ""))})}
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters")
+     (respond {:body (json/encode (create-cluster-response ""))})]
     (is (= (create-cluster-response "")
            (rnr/create-cluster endpoint "cluster-2" nil)))))
 
 (deftest create-cluster-given-size
-  (with-fake-routes-in-isolation
-    {(rnr-url "/v1/solr_clusters")
-     (respond {:body (json/encode (create-cluster-response "2"))})}
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters")
+     (respond {:body (json/encode (create-cluster-response "2"))})]
     (is (= (create-cluster-response "2")
            (rnr/create-cluster endpoint "cluster-2" 2)))))
 
@@ -162,9 +162,9 @@
        "create any more free Solr clusters (current limit: 1)."))
 
 (deftest create-cluster-no-free-catch
-  (with-fake-routes-in-isolation
-    {(rnr-url "/v1/solr_clusters")
-     (respond {:status 409 :body create-cluster-no-free})}
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters")
+     (respond {:status 409 :body create-cluster-no-free})]
     (try+
       (rnr/create-cluster endpoint "cluster-2" nil)
       (fail "Should have thrown exception.")
@@ -182,12 +182,12 @@
    :code 404})
 
 (deftest delete-cluster-nonexistent
-  (with-fake-routes-in-isolation
-    {(rnr-url "/v1/solr_clusters/CLUSTER_ID")
-     (respond {:status 404 :body (json/encode delete-cluster-missing)})}
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters/CLUSTER_ID")
+     (respond {:status 404 :body (json/encode delete-cluster-missing)})]
     (is (thrown+-with-msg?
          [:status 404]
-         #"clj-http: status 404"
+         #"WRRCSS030: Solr cluster ID .* does not exist"
          (rnr/delete-cluster endpoint "CLUSTER_ID")))))
 
 (def delete-cluster-response
@@ -195,9 +195,9 @@
    :statusCode 200})
 
 (deftest delete-cluster-good
-  (with-fake-routes-in-isolation
-    {(rnr-url "/v1/solr_clusters/CLUSTER_ID")
-     (respond {:body (json/encode delete-cluster-response)})}
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters/CLUSTER_ID")
+     (respond {:body (json/encode delete-cluster-response)})]
     (is (= delete-cluster-response
            (rnr/delete-cluster endpoint "CLUSTER_ID")))))
 
@@ -207,12 +207,12 @@
    :code 409})
 
 (deftest upload-config-duplicate
-  (with-fake-routes-in-isolation
-    {(rnr-url "/v1/solr_clusters/CLUSTER_ID/config/duplicate-config")
-     (respond {:status 409 :body (json/encode config-already-exists)})}
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters/CLUSTER_ID/config/duplicate-config")
+     (respond {:status 409 :body (json/encode config-already-exists)})]
     (is (thrown+-with-msg?
          [:status 409]
-         #"clj-http: status 409"
+         #"WRRCSS002: Solr config .* already exists"
          (rnr/upload-config endpoint "CLUSTER_ID" "duplicate-config"
                             "file.zip")))))
 
@@ -224,20 +224,20 @@
    :statusCode 200})
 
 (deftest upload-config-success
-  (with-fake-routes-in-isolation
-    {(rnr-url "/v1/solr_clusters/CLUSTER_ID/config/good-config")
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters/CLUSTER_ID/config/good-config")
      (respond {:body (json/encode (config-upload-success
-                                   "good-config" "CLUSTER_ID"))})}
+                                   "good-config" "CLUSTER_ID"))})]
     (is (= (config-upload-success "good-config" "CLUSTER_ID")
            (rnr/upload-config endpoint "CLUSTER_ID" "good-config"
                               "file.zip")))))
 
 (deftest download-config-success
-  (with-fake-routes-in-isolation
-    {(rnr-url "/v1/solr_clusters/CLUSTER_ID/config/good-config")
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters/CLUSTER_ID/config/good-config")
      (respond {:headers {"Content-Type" "application/zip"}
-               :body "stub-response"})}
-    (is (= (map byte "stub-response")
+               :body "stub-response"})]
+    (is (= (map char "stub-response")
            (vec (rnr/download-config endpoint "CLUSTER_ID" "good-config"))))))
 
 (defn config-delete-in-use
@@ -250,14 +250,14 @@
    :code 400})
 
 (deftest delete-config-in-use
-  (with-fake-routes-in-isolation
-    {(rnr-url "/v1/solr_clusters/CLUSTER_ID/config/in-use-config")
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters/CLUSTER_ID/config/in-use-config")
      (respond {:status 400 :body (json/encode (config-delete-in-use
                                                "in-use-config"
-                                               "live-collection"))})}
+                                               "live-collection"))})]
     (is (thrown+-with-msg?
          [:status 400]
-         #"clj-http: status 400"
+         #"WRRCSS006: Configuration .* is currently in use by collection "
          (rnr/delete-config endpoint "CLUSTER_ID" "in-use-config")))))
 
 (defn config-delete-success
@@ -268,10 +268,10 @@
    :statusCode 200})
 
 (deftest delete-config-success
-  (with-fake-routes-in-isolation
-    {(rnr-url "/v1/solr_clusters/CLUSTER_ID/config/some-config")
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters/CLUSTER_ID/config/some-config")
      (respond {:body (json/encode (config-delete-success
-                                   "some-config" "CLUSTER_ID"))})}
+                                   "some-config" "CLUSTER_ID"))})]
     (is (= (config-delete-success "some-config" "CLUSTER_ID")
            (rnr/delete-config endpoint "CLUSTER_ID" "some-config")))))
 
@@ -307,12 +307,10 @@
                               :QTime 100}}})
 
 (deftest create-collection-existing-name
-  (with-fake-routes-in-isolation
-    {(rnr-url (str "/v1/solr_clusters/CLUSTER_ID/solr/admin/collections?"
-                   "action=CREATE&name=new-collection"
-                   "&collection.configName=config&wt=json"))
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters/CLUSTER_ID/solr/admin/collections")
      (respond {:status 400
-               :body (json/encode (existing-collection "new-collection"))})}
+               :body (json/encode (existing-collection "new-collection"))})]
     (is (thrown+-with-msg?
          [:type :kale.common/fail]
          #"collection already exists: new-collection"
@@ -320,12 +318,10 @@
                                 "config" "new-collection")))))
 
 (deftest create-collection-bad-name
-  (with-fake-routes-in-isolation
-    {(rnr-url (str "/v1/solr_clusters/CLUSTER_ID/solr/admin/collections?"
-                   "action=CREATE&name=new-collection"
-                   "&collection.configName=config&wt=json"))
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters/CLUSTER_ID/solr/admin/collections")
      (respond {:status 400
-               :body (json/encode (bad-collection-name "new-collection"))})}
+               :body (json/encode (bad-collection-name "new-collection"))})]
     (is (thrown+-with-msg?
          [:type :kale.common/fail]
          #"WRRCSR046: Invalid \[name\] identifier provided: \[new-collection\]."
@@ -333,31 +329,27 @@
                                 "config" "new-collection")))))
 
 (deftest create-collection-success
-  (with-fake-routes-in-isolation
-    {(rnr-url (str "/v1/solr_clusters/CLUSTER_ID/solr/admin/collections?"
-                   "action=CREATE&name=new-collection"
-                   "&collection.configName=config&wt=json"))
-     (respond {:body (json/encode collection-success)})}
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters/CLUSTER_ID/solr/admin/collections")
+     (respond {:body (json/encode collection-success)})]
     (is (= collection-success
            (rnr/create-collection endpoint "CLUSTER_ID"
                                   "config" "new-collection")))))
 
 (deftest delete-collection-bad-name
-  (with-fake-routes-in-isolation
-    {(rnr-url (str "/v1/solr_clusters/CLUSTER_ID/solr/admin/collections?"
-                   "action=DELETE&name=doomed-collection&wt=json"))
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters/CLUSTER_ID/solr/admin/collections")
      (respond {:status 400
-               :body (json/encode (missing-collection "doomed-collection"))})}
+               :body (json/encode (missing-collection "doomed-collection"))})]
     (is (thrown+-with-msg?
          [:type :kale.common/fail]
          #"Could not find collection : doomed-collection"
          (rnr/delete-collection endpoint "CLUSTER_ID" "doomed-collection")))))
 
 (deftest delete-collection-success
-  (with-fake-routes-in-isolation
-    {(rnr-url (str "/v1/solr_clusters/CLUSTER_ID/solr/admin/collections?"
-                   "action=DELETE&name=doomed-collection&wt=json"))
-     (respond {:body (json/encode collection-success)})}
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters/CLUSTER_ID/solr/admin/collections")
+     (respond {:body (json/encode collection-success)})]
     (is (= collection-success
            (rnr/delete-collection endpoint "CLUSTER_ID" "doomed-collection")))))
 
@@ -372,14 +364,8 @@
               :docs docs}})
 
 (deftest query-no-results
-  (with-fake-routes-in-isolation
-    {(rnr-url (str "/v1/solr_clusters/CLUSTER_ID/solr"
-                   "/COLLECTION/select?q=sasquadch"
-                   "&wt=json"
-                   "&fl=id%2Ctitle"
-                   "&hl=true"
-                   "&hl.fl=body"
-                   "&hl.fragsize=100"))
-     (respond {:body (json/encode (query-response []))})}
+  (with-fake-http
+    [(rnr-url "/v1/solr_clusters/CLUSTER_ID/solr/COLLECTION/select")
+     (respond {:body (json/encode (query-response []))})]
     (is (= (query-response [])
            (rnr/query endpoint "CLUSTER_ID" "COLLECTION" "sasquadch")))))

@@ -7,7 +7,7 @@
             [kale.version :refer [kale-version]]
             [clojure.pprint :refer [pprint]]
             [cheshire.core :as json]
-            [clj-http.client :as client]
+            [org.httpkit.client :as client]
             [slingshot.slingshot :refer [throw+ try+]]
             [clojure.string :as str]))
 
@@ -29,8 +29,8 @@
 
 (defn get-msg
   "Return the corresponding service message"
-   [msg-key & args]
-   (apply get-command-msg :service-messages msg-key args))
+  [msg-key & args]
+  (apply get-command-msg :service-messages msg-key args))
 
 (defn setup-multipart
   "Expands a simple hashmap of name:value pairs into
@@ -51,13 +51,13 @@
   (println (get-msg :trace-request))
   (pprint request)
   (println (get-msg :trace-response))
-  (if (some? (response :body))
-    (let [content-type ((response :headers) "Content-Type")]
+  (if (some? (:body response))
+    (if-let [content-type (:content-type (:headers response))]
       (cond
         (some? (re-find #"zip" content-type))
-          (pprint (assoc response :body (get-msg :trace-zip-content)))
+        (pprint (assoc response :body (get-msg :trace-zip-content)))
         (some? (re-find #"json" content-type))
-          (pprint (update-in response [:body] json/decode true))
+        (pprint (update-in response [:body] json/decode true))
         :else (pprint response)))
     (pprint response)))
 
@@ -65,15 +65,29 @@
   "Raw HTTP request."
   ([method endpoint] (raw method endpoint "" {}))
   ([method endpoint path] (raw method endpoint path {}))
-  ([method {:keys [url username password token]} path options]
+  ([method
+    {:keys [url username password token]}
+    path
+    {:keys [content-type] :as options}]
    (try+ (let [url (str url path)
-               request (merge {:method method
-                               :headers user-agent-header
-                               :url url} options)
+               request (merge
+                        {:method method
+                         :user-agent user-agent-string
+                         :url url}
+                        options
+                        (and
+                         content-type
+                         {:headers {"Content-Type"
+                                    (str "application/" (name content-type))}}))
                authorization (generate-auth username password token)
-               response (client/request (merge request authorization))]
-
+               {:keys [error status]
+                :as response} @(client/request
+                                (merge request authorization))]
            (when @trace-enabled (trace-api request response))
+           (when (not (#{200 201 202 203 204 205 206 207
+                         300 301 302 303 307}
+                       status))
+             (throw+ (merge {:status -2} response)))
            response)
          ;; Only intercept unexpected exceptions here
          (catch (not (number? (:status %))) e
@@ -82,7 +96,8 @@
            ;; message to the end user.
            (throw+ {:body (str e)
                     :status -1
-                    :trace-redirects [url]})))))
+                    :opts {:method method
+                           :url url}})))))
 
 (defn text
   "HTTP request, returning just the body of the response as a string."

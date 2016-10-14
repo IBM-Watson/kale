@@ -9,7 +9,7 @@
             [kale.cloud-foundry-constants :as c]
             [cheshire.core :as json]
             [clj-time.core :refer [in-minutes]]
-            [clj-http.fake :refer [with-fake-routes-in-isolation]]
+            [org.httpkit.fake :refer [with-fake-http]]
             [kale.common :refer [new-line] :as common]
             [clojure.test :refer [deftest is]]
             [slingshot.test :refer :all]
@@ -106,9 +106,9 @@
   (c/service-key-entity "GUID" "retrieve_and_rank"))
 
 (deftest create-service-with-existing-plan
-  (with-fake-routes-in-isolation
-    {(c/cf-url "/v2/service_instances?accepts_incomplete=true")
-     (c/respond {:body (json/encode service-instance)})}
+  (with-fake-http
+    [(c/cf-url "/v2/service_instances?accepts_incomplete=true")
+     (c/respond {:body (json/encode service-instance)})]
     (with-redefs [cf/get-service-plan-guid (fn [_ _ _ _] "PLAN_GUID")]
       (is (= (str "Creating retrieve_and_rank service 'new-service' "
                   "using the 'standard' plan." new-line)
@@ -130,9 +130,9 @@
                   "new-service" "premium")))))
 
 (deftest create-key-for-service
-  (with-fake-routes-in-isolation
-    {(c/cf-url "/v2/service_keys")
-     (c/respond {:body (json/encode service-key)})}
+  (with-fake-http
+    [(c/cf-url "/v2/service_keys")
+     (c/respond {:body (json/encode service-key)})]
     (is (= (str "Creating key for service 'some-service'." new-line)
            (with-out-str
              (is (= service-key

@@ -5,8 +5,9 @@
 (ns kale.document-conversion-test
   (:require [kale.document-conversion :as dc]
             [kale.common :refer [set-language]]
-            [clj-http.fake :refer [with-fake-routes-in-isolation]]
-            [clojure.test :refer :all]))
+            [org.httpkit.fake :refer [with-fake-http]]
+            [clojure.test :refer :all]
+            [slingshot.test :refer :all]))
 
 (set-language :en)
 
@@ -41,12 +42,12 @@
 
 (defn respond
   [partial-response]
-  (fn [request] (merge template-response partial-response)))
+  (merge template-response partial-response))
 
 (deftest happy-path
-  (with-fake-routes-in-isolation
-    {(dc-url "2016-03-15")
-     (respond {:body "Converted document"})}
+  (with-fake-http
+    [(dc-url "2016-03-15")
+     (respond {:body "Converted document"})]
     (is (= "Converted document"
            (dc/convert endpoint
                        "2016-03-15"

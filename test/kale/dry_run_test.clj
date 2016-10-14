@@ -7,7 +7,6 @@
             [kale.common :refer [new-line set-language]]
             [kale.document-conversion :as dc]
             [slingshot.test :refer :all]
-            [clj-http.fake :refer [with-fake-routes-in-isolation]]
             [kale.dry-run :as sut]))
 
 (set-language :en)
@@ -101,8 +100,8 @@
               "Converting 'test-file.html' ..." new-line
               "Conversion failed for 'test-file.html':"
               new-line
-              "java.net.MalformedURLException:"
-              " no protocol: /v1/index_document?version=2016-03-18"
+              "java.lang.IllegalArgumentException:"
+              " host is null: /v1/index_document?version=2016-03-18"
               new-line)
          (with-out-str
            (is (= (str new-line "Conversion completed."

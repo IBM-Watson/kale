@@ -191,7 +191,7 @@
 
 (defn respond
   [partial-response]
-  (fn [request] (merge template-response partial-response)))
+  (merge template-response partial-response))
 
 (def cf-auth
   {:url "https://api.ng.bluemix.net"

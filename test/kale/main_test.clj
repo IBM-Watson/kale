@@ -14,8 +14,8 @@
 (common/set-language :en)
 
 (defn get-help-msg
-   [msg-key & vals]
-   (apply common/get-command-msg :help-messages msg-key vals))
+  [msg-key & vals]
+  (apply common/get-command-msg :help-messages msg-key vals))
 
 (deftest read-flags-empty
   (is (= {:args (empty '())
@@ -57,11 +57,11 @@
   (let [lang-key (atom :en)]
     (with-redefs [kale.persistence/read-state (fn []
                                                 {:user-selections
-                                                  {:language "jk"}})
+                                                 {:language "jk"}})
                   common/set-language (fn [new-key]
                                         (reset! lang-key new-key))]
-    (with-out-str (sut/-main "help"))
-    (is (= @lang-key :jk)))))
+      (with-out-str (sut/-main "help"))
+      (is (= @lang-key :jk)))))
 
 (deftest set-help-flag
   (is (= (str (get-help-msg :create) new-line)
@@ -98,13 +98,14 @@
   (with-redefs [commands (fn [_] :nothing)
                 read-state (fn [] {:services {}})
                 verbs {:nothing
-                       (fn [_ _ _] (throw+
-                                  {:status 401
-                                   :body "something broke"
-                                   :trace-redirects
-                                   ["https://api.endpoint.net/v1/info"]}))}
+                       (fn [_ _ _]
+                         (throw+
+                          {:status 401
+                           :body "something broke"
+                           :opts {:method :head
+                                  :url "https://api.endpoint.net/v1/info"}}))}
                 error-exit (fn [])]
-    (is (= (str "A call to: https://api.endpoint.net/v1/info" new-line
+    (is (= (str "A HEAD to: https://api.endpoint.net/v1/info" new-line
                 "returned an unexpected error status code 401" new-line
                 "something broke" new-line)
            (with-out-str (sut/-main "action"))))))
@@ -115,13 +116,14 @@
     (with-redefs [commands (fn [_] :nothing)
                   read-state (fn [] {:services {}})
                   verbs {:nothing
-                         (fn [_ _ _] (throw+
-                                      {:status 401
-                                       :body byte-body
-                                       :trace-redirects
-                                       ["https://api.endpoint.net/v1/info"]}))}
+                         (fn [_ _ _]
+                           (throw+
+                            {:status 401
+                             :body byte-body
+                             :opts {:method :head
+                                    :url "https://api.endpoint.net/v1/info"}}))}
                   error-exit (fn [])]
-      (is (= (str "A call to: https://api.endpoint.net/v1/info" new-line
+      (is (= (str "A HEAD to: https://api.endpoint.net/v1/info" new-line
                   "returned an unexpected error status code 401" new-line
                   "something broke" new-line)
              (with-out-str (sut/-main "action")))))))

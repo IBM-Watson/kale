@@ -26,10 +26,10 @@
 (def my-language
   "The two letter language code for this user's language."
   (atom
-    (let [locale-key (keyword (.getLanguage (java.util.Locale/getDefault)))]
-      (if (contains? languages locale-key)
-        locale-key
-        :en))))
+   (let [locale-key (keyword (.getLanguage (java.util.Locale/getDefault)))]
+     (if (contains? languages locale-key)
+       locale-key
+       :en))))
 
 (defn get-command-msg
   "Return the corresponding command message string based on the
@@ -42,8 +42,8 @@
 
 (defn get-msg
   "Return the corresponding common message"
-   [msg-key & args]
-   (apply get-command-msg :common-messages msg-key args))
+  [msg-key & args]
+  (apply get-command-msg :common-messages msg-key args))
 
 (defn set-language
   "Set the language key to be used when looking up messages"
@@ -64,15 +64,21 @@
 
 (defn handle-http
   "HTTP exception handling"
-  [{:keys [status body trace-redirects]} exit-func]
-  (println (get-msg :http-call (first trace-redirects)))
+  [{:keys [status body error opts]} exit-func]
+  (println (get-msg :http-call
+                    (str/upper-case (name (:method opts)))
+                    (:url opts)))
+  (if error
+    (println (get-msg :http-exception error))
     (if (neg? status)
-      (println (get-msg :http-exception))
-      (println (get-msg :http-error-status status)))
+      ;; I suspect this branch won't happen with http-kit
+      (println (get-msg :http-exception ""))
+      (println (get-msg :http-error-status status))))
+  (if body
     (if (= byte-array-class (class body))
       (println (String. body))
-      (println body))
-    (exit-func))
+      (println body)))
+  (exit-func))
 
 (defn handle-other
   "Generic exception handling"
@@ -85,10 +91,10 @@
   "Try running the function, and run error-func on failure"
   [func args exit-func]
   (try+
-    (apply func args)
-    (catch [:type :kale.common/fail] e (handle-fail e exit-func))
-    (catch (number? (:status %)) e (handle-http e exit-func))
-    (catch Exception e (handle-other e exit-func))))
+   (apply func args)
+   (catch [:type :kale.common/fail] e (handle-fail e exit-func))
+   (catch (number? (:status %)) e (handle-http e exit-func))
+   (catch Exception e (handle-other e exit-func))))
 
 ;; The value for cli-options should be in the following format:
 ;; {:opt1 #{"-opt1" "--opt1"}
@@ -98,13 +104,14 @@
   "Check if each flag matches any known options and returns an
   option entry for that flag"
   [flags cli-options]
-  (let [map-function (fn [flag]
-            (let [match-flag (fn [info] (contains? (second info) flag))
-                  match (first (filter match-flag cli-options))]
-              (if (nil? match)
-                (fail (get-msg :unknown-option flag))
-                {(first match) true})))]
-    (into {} (map map-function flags))))
+  (into {} (map
+            (fn [flag]
+              (let [match-flag (fn [info] (contains? (second info) flag))
+                    match (first (filter match-flag cli-options))]
+                (if (nil? match)
+                  (fail (get-msg :unknown-option flag))
+                  {(first match) true})))
+            flags)))
 
 (defn reject-extra-args
   "Throws error when there extra arguments provided to the command"
@@ -119,8 +126,8 @@
   (flush)
   (let [input (read-line)]
     (if (and (not allow-blank?) (str/blank? input))
-       (fail (get-msg :invalid-input))
-       input)))
+      (fail (get-msg :invalid-input))
+      input)))
 
 (defn prompt-user-hidden
   "Prompts the user without echoing the characters"
@@ -167,7 +174,7 @@
   [filenames]
   (check-files filenames
                (fn [file] (.canWrite (io/file file)))
-                (get-msg :write-to)))
+               (get-msg :write-to)))
 
 (def trace-enabled (atom false))
 
@@ -180,8 +187,8 @@
   "Fail the command because the action isn't recognized."
   [what command actions]
   (fail (str
-      (if (empty? what)
-        (get-msg :missing-action command)
-        (get-msg :unknown-action command what))
-      new-line (get-msg :available-actions command)
-      new-line "   " (str/join (str new-line "   ") actions))))
+         (if (empty? what)
+           (get-msg :missing-action command)
+           (get-msg :unknown-action command what))
+         new-line (get-msg :available-actions command)
+         new-line "   " (str/join (str new-line "   ") actions))))
