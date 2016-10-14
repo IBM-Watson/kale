@@ -2,7 +2,7 @@
 ;; (C) Copyright IBM Corp. 2016 All Rights Reserved.
 ;;
 
-(defproject kale "1.8.0-SNAPSHOT"
+(defproject kale "1.8.0"
   :description "A command line tool for provisioning and configuring the Retrieve and Rank Service and the Document Conversion Service"
   :url "https://github.com/IBM-Watson/kale"
   :min-lein-version "2.5.0"
