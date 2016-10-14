@@ -40,9 +40,10 @@
                       (dc/convert endpoint version config (io/file in-file))
                       (catch Exception e
                         ;; Notice that we continue processing after this
-                        (println (str new-line
-                                      (get-msg :conversion-failed in-file)
-                                      new-line (:body (ex-data e))))))]
+                        (let [{:keys [error body]} (ex-data e)]
+                          (println (str new-line
+                                        (get-msg :conversion-failed in-file)
+                                        new-line (or error body))))))]
       (when converted
         (spit output-file converted)
         (try (let [{:keys [warnings]} (json/decode converted true)]
