@@ -1,4 +1,4 @@
-FROM alpine
+FROM bruceadams/wdscli
 MAINTAINER Bruce Adams <ba@us.ibm.com>
 
 RUN apk add --no-cache openjdk8-jre
