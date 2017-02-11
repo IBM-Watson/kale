@@ -15,8 +15,8 @@
 
 (defn get-msg
   "Return the corresponding delete message"
-   [msg-key & args]
-   (apply get-command-msg :delete-messages msg-key args))
+  [msg-key & args]
+  (apply get-command-msg :delete-messages msg-key args))
 
 (def delete-items
   {:space aliases/space
@@ -88,7 +88,7 @@
             (println (get-msg :rnr-cluster-num num-clusters))
             (when-not (or (some? (options :yes))
                           (prompt-user-yn (get-msg :service-delete-confirm
-                                               service-name)))
+                                                   service-name)))
               (fail (get-msg :delete-cancel)))))
         ;; Delete the key if it exists
         (println (get-msg :deleting-rnr-key service-name))
@@ -185,8 +185,8 @@
     (delete-user-selection state :config
                            #(= config-name (:config-name %)))
     (str new-line
-        (get-msg :config-deleted config-name (name service-key) cluster_name)
-        new-line)))
+         (get-msg :config-deleted config-name (name service-key) cluster_name)
+         new-line)))
 
 (defmethod delete :collection
   [state [cmd what collection-name & args] flags]

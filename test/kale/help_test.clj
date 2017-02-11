@@ -16,6 +16,6 @@
 
 (t/deftest help-unknown
   (t/is (thrown+-with-msg?
-        [:type :kale.common/fail]
-        #"I'm sorry. I don't have any help for 'action'"
-        (sut/help {} ["help" "action"] []))))
+         [:type :kale.common/fail]
+         #"I'm sorry. I don't have any help for 'action'"
+         (sut/help {} ["help" "action"] []))))

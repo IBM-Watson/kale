@@ -39,8 +39,8 @@
            (common/get-command-msg :help-messages :fake))))
 
 (def cli-options {
-   :opt1 #{"-opt1" "--opt1"}
-   :opt2 #{"-opt2" "--opt2"}})
+                  :opt1 #{"-opt1" "--opt1"}
+                  :opt2 #{"-opt2" "--opt2"}})
 
 (t/deftest read-no-flags
   (t/is (= {}

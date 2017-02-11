@@ -121,13 +121,13 @@
 (deftest create-service-with-unknown-plan
   (with-redefs [cf/get-service-plan-guid (fn [_ _ _ _] nil)]
     (is (thrown+-with-msg?
-      [:type :kale.common/fail]
-      (re-pattern (str "Plan 'premium' is not available "
-                       "for service type 'retrieve_and_rank' "
-                       "in this organization."))
-      (sut/create-service-with-plan
-        c/cf-auth "SPACE_GUID" "retrieve_and_rank"
-                  "new-service" "premium")))))
+         [:type :kale.common/fail]
+         (re-pattern (str "Plan 'premium' is not available "
+                          "for service type 'retrieve_and_rank' "
+                          "in this organization."))
+         (sut/create-service-with-plan
+           c/cf-auth "SPACE_GUID" "retrieve_and_rank"
+                     "new-service" "premium")))))
 
 (deftest create-key-for-service
   (with-fake-http

@@ -102,8 +102,8 @@
 (defn generate-auth
   "Generate map for authenticating Cloud Foundry API calls"
   [state]
-    {:url (-> state :login :endpoint)
-     :token (-> state :login :cf-token)})
+  {:url (-> state :login :endpoint)
+   :token (-> state :login :cf-token)})
 
 (defn find-entity-by-element
   [resources element-name element]
@@ -179,7 +179,7 @@
   [cf-auth space-guid]
   ((cf-raw :delete cf-auth (str "/v2/spaces/" space-guid
                                 "?recursive=true&async=true"))
-     :body))
+   :body))
 
 (defn get-service-plan-guid
   "Looks up service plan guid for a given service type and plan"
@@ -221,11 +221,11 @@
   "Delete a specific service key from a service instance"
   [cf-auth key-guid]
   ((cf-raw :delete cf-auth (str "/v2/service_keys/" key-guid "?async=true"))
-    :body))
+   :body))
 
 (defn delete-service
   "Delete a specific service instance"
   [cf-auth service-guid]
   ((cf-raw :delete cf-auth (str "/v2/service_instances/" service-guid
                                  "?accepts_incomplete=true&async=true"))
-    :body))
+   :body))

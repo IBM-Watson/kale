@@ -19,8 +19,8 @@
                            (= space-guid "SPACE_GUID"))))]
       (is (= "Reloaded services in space 'space-name'."
              (sut/refresh {:org-space {:org "org-name"
-                           :space "space-name"
-                           :guid {:org "ORG_GUID",
-                                  :space "SPACE_GUID"}}}
+                                       :space "space-name"
+                                       :guid {:org "ORG_GUID",
+                                              :space "SPACE_GUID"}}}
                           ["refresh"]
                           [])))))

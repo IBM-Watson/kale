@@ -77,7 +77,7 @@ There are two global options for each command:
 ")
 
      :login
-"The 'login' command connects the user to Bluemix and starts a
+    "The 'login' command connects the user to Bluemix and starts a
 session for creating and managing services. A new user must log
 in before doing anything else with the command line tool.
 
@@ -105,7 +105,7 @@ There is option for the 'login' command:
 "
 
      :logout
-"Logs the user out and clears credentials information from the
+    "Logs the user out and clears credentials information from the
 recent session. The only information that is retained the user
 selections that were made during the session.
 
@@ -114,7 +114,7 @@ the kale-state.json file that is generated for the session.
 "
 
      :create
-"Creates a new space or service, or a new resource within a service.
+    "Creates a new space or service, or a new resource within a service.
 
 Create a new space within Bluemix:
     kale create space <name>
@@ -194,7 +194,7 @@ creates two files that can be copied into the Data Crawler's
 "
 
      :delete
-"Delete a space, service or resource.
+    "Delete a space, service or resource.
 
 Delete a space within Bluemix:
     kale delete space <name>
@@ -223,7 +223,7 @@ There is one option for deletion:
 "
 
      :select
-"The 'select' commands allow you to choose a different organization or space.
+    "The 'select' commands are for choosing a different organization or space.
 
     kale select organization <name>
     kale select space <name>
@@ -251,7 +251,7 @@ can also be selected.
 "
 
      :dry-run
-"Dry run of conversion for one or more files through the Document
+    "Dry run of conversion for one or more files through the Document
 Conversion service. The conversion is done via the 'dry_run' option to
 the 'index_document' API of the Document Conversion service. 'dry_run'
 is used to test how files will be converted before running the Data
@@ -270,12 +270,12 @@ Multiple files can be converted via:
 "
 
      :refresh
-"Reload service information from Bluemix.  This is useful for when
+    "Reload service information from Bluemix.  This is useful for when
 one may suspect that services and resources may have changed outside
 the user's current session."
 
      :search
-"Get results from querying a Retrieve and Rank collection.  This is
+    "Get results from querying a Retrieve and Rank collection.  This is
 useful for testing what data is indexed in the collection.
 
    kale search <query>
@@ -294,7 +294,7 @@ It is also possible to search using multiple terms with this command.
 "
 
      :list-info
-"The 'list' command displays information about the organizations,
+    "The 'list' command displays information about the organizations,
 spaces and services available currently to the user.
 
     kale list organizations
@@ -335,7 +335,7 @@ dialog service named: Dialog-lf
 "
 
      :get-command
-"The 'get' command is used to pull file data from services in the
+    "The 'get' command is used to pull file data from services in the
 cloud to be saved on the user's local machine.  The command can be
 used to download Solr configurations from Retrieve and Rank service
 clusters.
@@ -347,7 +347,7 @@ configuration will saved to your current working directory.
 "
 
      :assemble
-"The 'assemble' command is useful for running all the commands for
+    "The 'assemble' command is useful for running all the commands for
 creating the two services and Solr collection for an Enhanced
 Information Retrieval instance in a single operation:
 
@@ -375,11 +375,11 @@ these services will be provisioned using the 'standard' plan.
 
      :no-help-msg "I'm sorry. I don't have any help for '%s'."}
 
-  :main-messages
+   :main-messages
     {:not-implemented "'%s' is not implemented yet."
      :please-login "Please login to use the '%s' command."}
 
-  :common-messages
+   :common-messages
     {:unknown-language "Language '%s' is not available."
      :http-call "A %s to: %s"
      :http-exception "triggered an unexpected exception: %s"
@@ -400,7 +400,7 @@ these services will be provisioned using the 'standard' plan.
      :unknown-action  "Don't know how to '%s %s'."
      :available-actions "Available actions for %s:"}
 
-  :login-messages
+   :login-messages
     {:login-start "Logging in..."
      :loading-services "Loading services..."
      :login-done "Log in successful!"
@@ -429,7 +429,7 @@ these services will be provisioned using the 'standard' plan.
      :logout-start "Logging out..."
      :logout-done "Log out successful!"}
 
-  :create-messages
+   :create-messages
     {:missing-space-name "Please specify a name for the space."
      :space-created
      "Space '%s' has been created and selected for future actions."
@@ -503,7 +503,7 @@ these services will be provisioned using the 'standard' plan.
           "    'orchestration_service_config.json' contains"
           " configurations sent to the 'index_document' API call.")}
 
-  :assemble-messages
+   :assemble-messages
     {:missing-base-name
      "Please specify the base name to use for the components."
      :missing-config-name
@@ -533,7 +533,7 @@ these services will be provisioned using the 'standard' plan.
      :success
      "Enhanced Information Retrieval instance '%s' creation successful!"}
 
-  :delete-messages
+   :delete-messages
     {:missing-space-name "Please specify the name of the space to delete."
      :no-delete-current-space
      "You cannot delete the space you are currently working in."
@@ -592,7 +592,7 @@ these services will be provisioned using the 'standard' plan.
           "from." new-line "Please select a Solr cluster.")
      :collection-deleted "Collection '%s' has been deleted from '%s/%s'."}
 
-  :select-messages
+   :select-messages
     {:missing-org-name "Please specify an org to change to."
      :unknown-org "Unable to locate org '%s'."
      :switch-org (str "Switched to using org '%s'." new-line
@@ -645,7 +645,7 @@ these services will be provisioned using the 'standard' plan.
      :collection-selected
      "You have selected '%s' as your current Solr collection."}
 
-  :list-messages
+   :list-messages
     {:available-orgs "Available organizations:"
      :current-org "Currently using organization '%s'"
      :available-spaces "Available spaces in the '%s' organization:"
@@ -682,16 +682,16 @@ these services will be provisioned using the 'standard' plan.
                          "   %s" new-line
                          "Or use 'kale %s' to list everything.")}
 
-  :refresh-messages
+   :refresh-messages
     {:reloaded-services "Reloaded services in space '%s'."}
 
-  :get-messages
+   :get-messages
     {:missing-config "Please specify a Solr configuration name to download."
      :missing-cluster "Please select or create a cluster to work with."
      :unknown-config "A Solr configuration named '%s' does not exist."
      :saved-config "Configuration saved into '%s.zip'."}
 
-  :dry-run-messages
+   :dry-run-messages
     {:empty-config "Note: Using the default conversion configuration: \"{}\"."
      :converting "Converting '%s' ..."
      :conversion-failed "Conversion failed for '%s':"
@@ -702,14 +702,14 @@ these services will be provisioned using the 'standard' plan.
      (str "Conversion completed. Please find the converted output in "
           "the directory 'converted'.")}
 
-  :search-messages
+   :search-messages
     {:id-label "     id: "
      :title-label "  title: "
      :snippet-label "snippet: "
      :missing-collection "Please create or select a collection to work with."
      :found-num-results "Found %s results."}
 
-  :service-messages
+   :service-messages
     {:trace-request "REQUEST:"
      :trace-response "RESPONSE:"
      :trace-zip-content "[ZIP CONTENT]"
@@ -742,7 +742,7 @@ these services will be provisioned using the 'standard' plan.
      (str "Target document_conversion service has no access credentials."
           new-line "Please select a service that does have credentials.")}
 
-  :getter-messages
+   :getter-messages
     {:cant-read-file "Couldn't read conversion configuration file '%s'."
      :invalid-json
      "The contents of conversion configuration '%s' is not valid JSON."}})

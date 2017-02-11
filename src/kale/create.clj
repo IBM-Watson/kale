@@ -8,8 +8,8 @@
             [kale.aliases :as aliases]
             [kale.cloud-foundry :as cf]
             [kale.common :refer [fail readable-files? new-line
-                                get-options reject-extra-args
-                                unknown-action get-command-msg]]
+                                 get-options reject-extra-args
+                                 unknown-action get-command-msg]]
             [kale.getter :as my]
             [kale.persistence :as persist]
             [kale.retrieve-and-rank :as rnr]
@@ -67,7 +67,7 @@
   "Create an instance of a service using the specified plan"
   [cf-auth space-guid service-type service-name plan-name]
   (if-let [plan-guid (cf/get-service-plan-guid
-                   cf-auth space-guid service-type plan-name)]
+                      cf-auth space-guid service-type plan-name)]
     (do (println (get-msg :creating-service
                           service-type service-name plan-name))
         (cf/create-service cf-auth service-name space-guid plan-guid))
@@ -119,10 +119,9 @@
     (update-user-selection (update-in state [:services] merge service-entry)
                            (keyword service-type)
                            service-name))
-    (str new-line (get-msg :service-created service-name) new-line))
+  (str new-line (get-msg :service-created service-name) new-line))
 
-(def create-service-options {
-  :premium aliases/premium-option})
+(def create-service-options {:premium aliases/premium-option})
 
 (defmethod create :document-conversion
   [state [cmd what service-name & args] flags]
@@ -168,8 +167,7 @@
     (Thread/sleep 8000)
     (println)))
 
-(def create-cluster-options {
-  :wait aliases/wait-option})
+(def create-cluster-options {:wait aliases/wait-option})
 
 (defmethod create :cluster
   [state [cmd what cluster-name cluster-size & args] flags]

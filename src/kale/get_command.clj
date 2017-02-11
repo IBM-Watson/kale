@@ -4,7 +4,7 @@
 
 (ns kale.get-command
   (:require [kale.common :refer [fail get-options reject-extra-args
-                                unknown-action new-line get-command-msg]]
+                                 unknown-action new-line get-command-msg]]
             [kale.aliases :as aliases]
             [kale.retrieve-and-rank :as rnr]
             [kale.getter :as my]

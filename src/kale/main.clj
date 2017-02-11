@@ -52,9 +52,9 @@
   (let [args (remove isFlag? arguments)
         flags (filter isFlag? arguments)
         {:keys [options cmd-flags]} (extract-global-options flags)]
-  {:args args
-   :flags cmd-flags
-   :options options}))
+   {:args args
+    :flags cmd-flags
+    :options options}))
 
 (defn not-yet-implemented
   [state args]
@@ -80,7 +80,7 @@
   [cmd-key]
   (if-let [cmd-name ({:list-info "list"
                       :get-command "get"}
-                      cmd-key)]
+                     cmd-key)]
     cmd-name
     (name cmd-key)))
 
