@@ -117,5 +117,5 @@
            (with-out-str
              (is (= (str "Enhanced Information Retrieval instance 'turtle'"
                          " creation successful!")
-                         (sut/assemble {} ["assemble" "turtle" "english"]
-                                          ["-prem"]))))))))
+                    (sut/assemble {} ["assemble" "turtle" "english"]
+                                     ["-prem"]))))))))

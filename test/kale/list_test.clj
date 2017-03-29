@@ -26,10 +26,10 @@
 (t/deftest list-orgs
   (with-redefs [cf/get-organizations (fn [_] (orgs-response :resources))]
     (t/is (= (str "Available organizations:"
-             new-line "   org1"
-             new-line "   org2"
-             new-line new-line
-             "Currently using organization 'org1'")
+              new-line "   org1"
+              new-line "   org2"
+              new-line new-line
+              "Currently using organization 'org1'")
            (sut/list-info {:org-space {:org "org1"}}
                           ["list" "org"]
                           [])))))
@@ -237,8 +237,8 @@
                                   :config {:config-name "config"}
                                   :collection
                                     {:collection-name "collection"}}}
-                ["list" "services"]
-                [])))))
+               ["list" "services"]
+               [])))))
 
 (t/deftest list-selections-selections
   (t/is (= (str "Current environment:" new-line
@@ -271,8 +271,8 @@
                                   {:collection-name "collection"}
                                 :conversion-configuration-file "convert.json"
                                 :index-document-version "04-27-2016"}}
-              ["list" "selections"]
-              []))))
+             ["list" "selections"]
+             []))))
 
 (t/deftest list-selections-no-selections
   (t/is (= (str "Current environment:" new-line
@@ -288,8 +288,8 @@
               :org-space {:org "org-name"
                           :space "space-name"}
               :services {}}
-              ["list" "selections"]
-              []))))
+             ["list" "selections"]
+             []))))
 
 (t/deftest list-everything-all
   (with-redefs [sut/list-service-selections (fn [_] "[service_selections]")

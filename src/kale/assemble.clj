@@ -8,9 +8,9 @@
             [kale.delete :refer [delete]]
             [kale.aliases :as aliases]
             [kale.common :refer [fail readable-files? new-line
-                                get-options reject-extra-args
-                                unknown-action get-command-msg
-                                try-function]]
+                                 get-options reject-extra-args
+                                 unknown-action get-command-msg
+                                 try-function]]
             [kale.persistence :as persist]
             [kale.retrieve-and-rank :as rnr]
             [clojure.java.io :as io]
@@ -59,12 +59,11 @@
     (let [resource (io/resource (str config-name ".zip"))]
       (when-not resource
         (fail (get-msg :unknown-packaged-config config-name)))
-        (io/input-stream resource)))
+      (io/input-stream resource)))
   (when (and cluster-size (not (< 0 cluster-size 100)))
     (fail (get-msg :cluster-size))))
 
-(def assemble-options {
-  :premium aliases/premium-option})
+(def assemble-options {:premium aliases/premium-option})
 
 (defn assemble
   "Run the series of commands for creating the two services and

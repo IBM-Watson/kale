@@ -15,8 +15,8 @@
   ([] (read-state state-filename))
   ([filename]
    (json/decode (try (slurp filename)
-                       (catch Exception ex "{}"))
-                  true)))
+                     (catch Exception ex "{}"))
+                true)))
 
 (defn write-state
   "Writes configuration to disk."

@@ -66,9 +66,11 @@
     (is (= (str "This space contains 1 service(s)." new-line)
            (with-out-str
              (is (thrown+-with-msg?
-               [:type :kale.common/fail]
-               #"Deletion cancelled."
-               (sut/delete default-state ["delete" "space" "space1"] []))))))))
+                  [:type :kale.common/fail]
+                  #"Deletion cancelled."
+                  (sut/delete default-state
+                              ["delete" "space" "space1"]
+                              []))))))))
 
 (deftest delete-space-with-services-flag-set
   (with-redefs [cf/get-spaces (fn [_ _] (c/spaces-response :resources))
@@ -143,13 +145,13 @@
                 new-line)
            (with-out-str
              (is (thrown+-with-msg?
-               [:type :kale.common/fail]
-               #"Deletion cancelled."
-               (sut/delete (update-in default-state
-                                      [:services :rnr-service]
-                                      assoc :type "retrieve_and_rank")
-                           ["delete" "rnr" "rnr-service"]
-                           []))))))))
+                  [:type :kale.common/fail]
+                  #"Deletion cancelled."
+                  (sut/delete (update-in default-state
+                                         [:services :rnr-service]
+                                         assoc :type "retrieve_and_rank")
+                              ["delete" "rnr" "rnr-service"]
+                              []))))))))
 
 (deftest delete-rnr-with-clusters-flag-set
   (with-redefs [rnr/list-clusters (fn [_] [{:cluster_name "cluster-name"}])
@@ -299,16 +301,16 @@
                 "1 collection(s)." new-line)
            (with-out-str
              (is (thrown+-with-msg?
-               [:type :kale.common/fail]
-               #"Deletion cancelled."
-               (sut/delete {:services {:rnr {:type "retrieve_and_rank"}}
-                            :user-selections
-                            {:retrieve_and_rank "rnr"
-                             :cluster {:service-key :rnr
-                                       :solr_cluster_id "id"
-                                       :cluster_name "cluster-name"}}}
-                           ["delete" "cluster" "cluster-name"]
-                           []))))))))
+                  [:type :kale.common/fail]
+                  #"Deletion cancelled."
+                  (sut/delete {:services {:rnr {:type "retrieve_and_rank"}}
+                               :user-selections
+                               {:retrieve_and_rank "rnr"
+                                :cluster {:service-key :rnr
+                                          :solr_cluster_id "id"
+                                          :cluster_name "cluster-name"}}}
+                              ["delete" "cluster" "cluster-name"]
+                              []))))))))
 
 (deftest delete-cluster-with-elements-flag-set
   (with-redefs [rnr/list-clusters (fn [_] [{:solr_cluster_id "id"
@@ -501,5 +503,5 @@
                          ["delete" "collection" "doomed-collection"]
                          [])))
       (is (= {:services {:rnr-service {:type "retrieve_and_rank"}}
-                         :user-selections sample-cluster}
+                        :user-selections sample-cluster}
              @output-state)))))

@@ -175,8 +175,8 @@
               (str "/v1/solr_clusters/" cluster-id
                    "/solr/admin/collections")
               {:query-params {:action "DELETE"
-                            :name collection-name
-                            :wt "json"}})
+                              :name collection-name
+                              :wt "json"}})
     (catch (and (number? (:status %)) (< 200 (:status %)))
            {:keys [body]}
            (process-json-exception body))))

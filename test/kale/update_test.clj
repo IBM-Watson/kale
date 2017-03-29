@@ -15,7 +15,7 @@
 
 (deftest child-hierarchy
   (is (= (seq [:retrieve_and_rank :document_conversion
-           :cluster :config :collection])
+               :cluster :config :collection])
          (sut/get-child-elements :services))))
 
 (deftest missing-selection-rnr-not

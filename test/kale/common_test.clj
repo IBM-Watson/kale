@@ -38,9 +38,8 @@
   (t/is (= "[unknown :en message :help-messages :fake]"
            (common/get-command-msg :help-messages :fake))))
 
-(def cli-options {
-   :opt1 #{"-opt1" "--opt1"}
-   :opt2 #{"-opt2" "--opt2"}})
+(def cli-options {:opt1 #{"-opt1" "--opt1"}
+                  :opt2 #{"-opt2" "--opt2"}})
 
 (t/deftest read-no-flags
   (t/is (= {}

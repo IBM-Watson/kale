@@ -15,8 +15,8 @@
 
 (defn get-msg
   "Return the corresponding delete message"
-   [msg-key & args]
-   (apply get-command-msg :delete-messages msg-key args))
+  [msg-key & args]
+  (apply get-command-msg :delete-messages msg-key args))
 
 (def delete-items
   {:space aliases/space
@@ -88,7 +88,7 @@
             (println (get-msg :rnr-cluster-num num-clusters))
             (when-not (or (some? (options :yes))
                           (prompt-user-yn (get-msg :service-delete-confirm
-                                               service-name)))
+                                                   service-name)))
               (fail (get-msg :delete-cancel)))))
         ;; Delete the key if it exists
         (println (get-msg :deleting-rnr-key service-name))
@@ -98,7 +98,8 @@
       (cf/delete-service cf-auth guid)
       ;; Delete service information from the state
       (delete-user-selection (update-in state [:services] dissoc kw)
-                             (keyword type) (fn [_] true))
+                             (keyword type)
+                             (fn [_] true))
       (str new-line (get-msg :rnr-deleted service-name) new-line))))
 
 (defmethod delete :document-conversion
@@ -124,7 +125,8 @@
       (cf/delete-service cf-auth guid)
       ;; Delete service information from the state
       (delete-user-selection (update-in state [:services] dissoc kw)
-                             (keyword type) (fn [_] true))
+                             (keyword type)
+                             (fn [_] true))
       (str new-line (get-msg :dc-deleted service-name) new-line))))
 
 (defmethod delete :cluster
@@ -136,7 +138,7 @@
 
   ;; We could consider enhancing this to fail when multiple matches are found.
   ;; Then we would have to give the user some other way to delete a cluster.
-  ;; This command could accept a solr_cluster_id."
+  ;; This command could accept a solr_cluster_id.
 
   [state [cmd what cluster-name & args] flags]
   (reject-extra-args args cmd what)
@@ -164,7 +166,8 @@
                                                    cluster-name)))
               (fail (get-msg :delete-cancel)))))
         (rnr/delete-cluster credentials (:solr_cluster_id cluster-info))
-        (delete-user-selection state :cluster
+        (delete-user-selection state
+                               :cluster
                                #(= cluster-name (:cluster_name %)))
         (str new-line
              (get-msg :cluster-deleted cluster-name (name service-key))
@@ -182,7 +185,8 @@
     (rnr/delete-config
      (my/creds-for-service state (keyword service-key))
      solr_cluster_id config-name)
-    (delete-user-selection state :config
+    (delete-user-selection state
+                           :config
                            #(= config-name (:config-name %)))
     (str new-line
         (get-msg :config-deleted config-name (name service-key) cluster_name)
@@ -199,7 +203,8 @@
       (fail (get-msg :unknown-collection-cluster)))
     (rnr/delete-collection (my/creds-for-service state (keyword service-key))
                            solr_cluster_id collection-name)
-    (delete-user-selection state :collection
+    (delete-user-selection state
+                           :collection
                            #(= collection-name (:collection-name %)))
     (str new-line
          (get-msg :collection-deleted

@@ -9,9 +9,9 @@
             [kale.list :refer [list-working-environment]]
             [kale.update :refer [get-selections]]
             [kale.common :refer [fail my-language new-line
-                                prompt-user prompt-user-hidden
-                                get-options reject-extra-args
-                                get-command-msg]]
+                                 prompt-user prompt-user-hidden
+                                 get-options reject-extra-args
+                                 get-command-msg]]
             [clojure.string :as str]))
 
 (defn get-msg
@@ -180,8 +180,8 @@
   (get-options flags {})
   (println (get-msg :logout-start))
   (write-state
-  (dissoc (update-in (update-in state
-                                [:org-space] dissoc :guid)
-                     [:login] dissoc :cf-token)
-          :services))
+   (dissoc (update-in (update-in state
+                                 [:org-space] dissoc :guid)
+                      [:login] dissoc :cf-token)
+           :services))
   (str new-line (get-msg :logout-done) new-line))

@@ -16,16 +16,16 @@
 
 (deftest cf-request-invalid-token
   (is (thrown+-with-msg?
-      [:type :kale.common/fail]
-      (re-pattern (str "The authentication token for this session "
-                       "is either invalid or expired.*"
-                       "Please run 'kale login' to acquire a new one."))
-      (cf/cf-request
-        (fn [] (throw+ {:status 401
-                        :body (json/encode
-                                {"code" 1000
-                                 "error_code" "CF-InvalidAuthToken"})}))
-        nil))))
+       [:type :kale.common/fail]
+       (re-pattern (str "The authentication token for this session "
+                        "is either invalid or expired.*"
+                        "Please run 'kale login' to acquire a new one."))
+       (cf/cf-request
+         (fn [] (throw+ {:status 401
+                         :body (json/encode
+                                 {"code" 1000
+                                  "error_code" "CF-InvalidAuthToken"})}))
+         nil))))
 
 (deftest cf-request-other-cf-error
   (let [body (json/encode {"code" 1000 "error_code" "CF-Error"})]
@@ -108,8 +108,8 @@
 (def get-user-data-indeed
   (is (= "3-3-2222"
          ((cf/get-user-data
-         "WlXnkhdzWge0.eyJ1c2VyX2lkIjoiMy0zLTIyMjIifQo=.WlXnkhdzWge0")
-         "user_id"))))
+           "WlXnkhdzWge0.eyJ1c2VyX2lkIjoiMy0zLTIyMjIifQo=.WlXnkhdzWge0")
+          "user_id"))))
 
 (deftest create-space
   (with-fake-http
@@ -125,13 +125,12 @@
 
 (deftest create-service-entry-with-no-credentials
   (let [entity (service-entity "SERVICE_GUID3" "service-name3" "service-type3")]
-      (is (= {:service-name3 {
-                 :key-guid nil
-                 :credentials nil
-                :plan "standard"
-                 :guid "SERVICE_GUID3"
-                 :type "service-type3"}}
-               (cf/service-entry entity (service-keys-response :resources))))))
+      (is (= {:service-name3 {:key-guid nil
+                              :credentials nil
+                              :plan "standard"
+                              :guid "SERVICE_GUID3"
+                              :type "service-type3"}}
+             (cf/service-entry entity (service-keys-response :resources))))))
 
 (deftest get-service-information
   (with-fake-http
@@ -140,10 +139,10 @@
      (cf-url "/v2/service_keys")
      (respond {:body (json/encode service-keys-response)})]
     (with-redefs [cf/service-entry (fn [{:keys [guid]} _]
-                    (cond
-                      (= guid "RNR_GUID") entry1
-                      (= guid "DC_GUID") entry2
-                      :else nil))]
+                                    (cond
+                                      (= guid "RNR_GUID") entry1
+                                      (= guid "DC_GUID") entry2
+                                      :else nil))]
       (is (= (merge entry1 entry2) (cf/get-services cf-auth "SPACE_GUID"))))))
 
 (deftest get-service-plan-guid

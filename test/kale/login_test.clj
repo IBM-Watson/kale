@@ -149,9 +149,9 @@
 (t/deftest no-available-orgs
   (with-redefs [cf/get-organizations (fn [_] [])]
     (t/is (thrown+-with-msg?
-         [:type :kale.common/fail]
-         #"Unable to find any available orgs for the given endpoint."
-         (sut/attempt-to-get-org cf-auth "bad-org" "redshirt")))))
+           [:type :kale.common/fail]
+           #"Unable to find any available orgs for the given endpoint."
+           (sut/attempt-to-get-org cf-auth "bad-org" "redshirt")))))
 
 (t/deftest get-existing-space
   (with-fake-http
@@ -184,9 +184,9 @@
 (t/deftest no-available-spaces
   (with-redefs [cf/get-spaces (fn [_ _] [])]
     (t/is (thrown+-with-msg?
-         [:type :kale.common/fail]
-         #"Unable to find any available spaces for the org."
-         (sut/attempt-to-get-space cf-auth "ORG_GUID" "bad-space")))))
+           [:type :kale.common/fail]
+           #"Unable to find any available spaces for the org."
+           (sut/attempt-to-get-space cf-auth "ORG_GUID" "bad-space")))))
 
 (t/deftest get-org-space
   (with-redefs [sut/attempt-to-get-org
@@ -195,8 +195,7 @@
                 (fn [_ _ _] (space-entity "SPACE_GUID1" "space-name"))]
     (t/is (= {:org "org-name"
               :space "space-name"
-              :guid {
-                     :org "ORG_GUID1"
+              :guid {:org "ORG_GUID1"
                      :space "SPACE_GUID1"}}
              (sut/get-org-space cf-auth "org-name" "space-name" "redshirt")))))
 
@@ -237,16 +236,18 @@
       (t/is (= (str "Logging in..." new-line)
                (with-out-str
                  (t/is (=
-                     (str new-line
-                          "Log in successful!" new-line new-line
-                          "Current environment:" new-line
-                          "   user:                         redshirt" new-line
-                          "   endpoint:                     "
-                          "https://api.endpoint.net" new-line
-                          "   org:                          org-name" new-line
-                          "   space:                        space-name"
-                          new-line)
-                     (sut/login {:foo "bar"} ["login"] []))))))
+                        (str new-line
+                             "Log in successful!" new-line new-line
+                             "Current environment:" new-line
+                             "   user:                         redshirt"
+                             new-line
+                             "   endpoint:                     "
+                             "https://api.endpoint.net" new-line
+                             "   org:                          org-name"
+                             new-line
+                             "   space:                        space-name"
+                             new-line)
+                        (sut/login {:foo "bar"} ["login"] []))))))
       (t/is (= @captured-state
                {:foo "bar"
                 :login {:username "redshirt"

@@ -51,16 +51,16 @@
         ;; If the parent service exists
         (if-let [endpoint (-> services kw :credentials)]
           (try+ (cond
-              (= item-key :cluster)
-                (missing-cluster? selection endpoint)
-              (= item-key :config)
-                (missing-config? selection endpoint)
-              (= item-key :collection)
-                (missing-collection? selection endpoint))
+                 (= item-key :cluster)
+                 (missing-cluster? selection endpoint)
+                 (= item-key :config)
+                 (missing-config? selection endpoint)
+                 (= item-key :collection)
+                 (missing-collection? selection endpoint))
             (catch (number? (:status %)) _ true))
         ;; If the service is lacking credentials, assume the element is
         ;; missing (we couldn't access it anyways if it existed)
-        true)))
+         true)))
     ;; The selection doesn't exist
     false))
 

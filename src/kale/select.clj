@@ -4,10 +4,10 @@
 
 (ns kale.select
   (:require [kale.common :refer [fail new-line unknown-action
-                                get-options reject-extra-args
-                                get-command-msg]]
+                                 get-options reject-extra-args
+                                 get-command-msg]]
             [kale.update :refer [update-user-selection
-                                update-org-space]]
+                                 update-org-space]]
             [kale.cloud-foundry :as cf]
             [kale.aliases :as aliases]
             [clojure.string :as str]
@@ -71,9 +71,9 @@
       (str (get-msg :switch-org org-name space-name)
            (cond
              (> space-count 8)
-               (get-msg :other-spaces-num (dec space-count))
+             (get-msg :other-spaces-num (dec space-count))
              (> space-count 1)
-               (get-msg :other-spaces (list-spaces spaces space-name)))))))
+             (get-msg :other-spaces (list-spaces spaces space-name)))))))
 
 (defmethod select :space
   [state [cmd what space-name & args] flags]
@@ -104,8 +104,8 @@
                                         (:services state))))
         default-service-name (first (getter state))
         my-service-name (if named-service-type
-                     service-name
-                     default-service-name)]
+                         service-name
+                         default-service-name)]
     (when (and service-name (not named-service-type))
       (fail (get-msg :unknown-service service-name)))
     (when (and named-service-type (not= my-type-name named-service-type))
@@ -216,7 +216,7 @@
                            (my/creds-for-service state (keyword service-key))
                            solr_cluster_id))
         found-collections (filter #(or (not collection-name)
-                                   (= collection-name %)) collections)
+                                    (= collection-name %)) collections)
         my-collection (first found-collections)]
     (when-not service-key
       (fail (get-msg :unclear-base-cluster)))
