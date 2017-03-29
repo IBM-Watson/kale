@@ -23,13 +23,15 @@
 
 ;; Assume that the user's environment is setup for their preferred
 ;; language.
-(def my-language
+(def my-language-in-your-dreams
   "The two letter language code for this user's language."
   (atom
    (let [locale-key (keyword (.getLanguage (java.util.Locale/getDefault)))]
      (if (contains? languages locale-key)
        locale-key
        :en))))
+
+(def my-language (atom :en))
 
 (defn get-command-msg
   "Return the corresponding command message string based on the
